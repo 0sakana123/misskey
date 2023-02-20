@@ -2,7 +2,7 @@ import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
 
 const dictionary = {
 	'safe-file': FILE_TYPE_BROWSERSAFE,
-	'sharp-convertible-image': ['image/jpeg', 'image/png', 'image/gif', 'image/apng', 'image/vnd.mozilla.apng', 'image/webp', 'image/avif', 'image/svg+xml'],
+	'sharp-convertible-image': ['image/jpeg', 'image/png', 'image/gif', 'image/apng', 'image/vnd.mozilla.apng', 'image/webp', 'image/avif', 'image/svg+xml', 'image/vnd.microsoft.icon', 'image/x-icon'],
 	'sharp-animation-convertible-image': ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/svg+xml'],
 };
 
