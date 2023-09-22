@@ -25,7 +25,7 @@ import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, EmojisRepository, FlashsRepository, GalleryPostsRepository, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/index.js';
+import type { ChannelsRepository, ClipsRepository, EmojisRepository, FlashsRepository, GalleryPostsRepository, Meta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/index.js';
 import { deepClone } from '@/misc/clone.js';
 import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
@@ -109,6 +109,18 @@ export class ClientServerService {
 
 		reply.header('Cache-Control', 'max-age=300');
 		return (res);
+	}
+
+	@bindThis
+	private generateCommonPugData(meta: Meta) {
+		return {
+			instanceName: meta.name ?? 'Misskey',
+			icon: meta.iconUrl,
+			themeColor: meta.themeColor,
+			serverErrorImageUrl: meta.serverErrorImageUrl ?? 'https://xn--931a.moe/assets/error.jpg',
+			infoImageUrl: meta.infoImageUrl ?? 'https://xn--931a.moe/assets/info.jpg',
+			notFoundImageUrl: meta.notFoundImageUrl ?? 'https://xn--931a.moe/assets/not-found.jpg',
+		};
 	}
 
 	@bindThis
@@ -342,12 +354,10 @@ export class ClientServerService {
 			reply.header('Cache-Control', 'public, max-age=30');
 			return await reply.view('base', {
 				img: meta.bannerUrl,
-				title: meta.name ?? 'Misskey',
-				instanceName: meta.name ?? 'Misskey',
 				url: this.config.url,
+				title: meta.name ?? 'Misskey',
 				desc: meta.description,
-				icon: meta.iconUrl,
-				themeColor: meta.themeColor,
+				...this.generateCommonPugData(meta),
 			});
 		};
 
@@ -428,9 +438,7 @@ export class ClientServerService {
 					user, profile, me,
 					avatarUrl: await this.userEntityService.getAvatarUrl(user),
 					sub: request.params.sub,
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				// リモートユーザーなので
@@ -474,9 +482,7 @@ export class ClientServerService {
 					avatarUrl: await this.userEntityService.getAvatarUrl(await this.usersRepository.findOneByOrFail({ id: note.userId })),
 					// TODO: Let locale changeable by instance setting
 					summary: getNoteSummary(_note),
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);
@@ -511,9 +517,7 @@ export class ClientServerService {
 					page: _page,
 					profile,
 					avatarUrl: await this.userEntityService.getAvatarUrl(await this.usersRepository.findOneByOrFail({ id: page.userId })),
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);
@@ -535,9 +539,7 @@ export class ClientServerService {
 					flash: _flash,
 					profile,
 					avatarUrl: await this.userEntityService.getAvatarUrl(await this.usersRepository.findOneByOrFail({ id: flash.userId })),
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);
@@ -559,9 +561,7 @@ export class ClientServerService {
 					clip: _clip,
 					profile,
 					avatarUrl: await this.userEntityService.getAvatarUrl(await this.usersRepository.findOneByOrFail({ id: clip.userId })),
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);
@@ -581,9 +581,7 @@ export class ClientServerService {
 					post: _post,
 					profile,
 					avatarUrl: await this.userEntityService.getAvatarUrl(await this.usersRepository.findOneByOrFail({ id: post.userId })),
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);
@@ -602,9 +600,7 @@ export class ClientServerService {
 				reply.header('Cache-Control', 'public, max-age=15');
 				return await reply.view('channel', {
 					channel: _channel,
-					instanceName: meta.name ?? 'Misskey',
-					icon: meta.iconUrl,
-					themeColor: meta.themeColor,
+					...this.generateCommonPugData(meta),
 				});
 			} else {
 				return await renderBase(reply);

@@ -13,7 +13,7 @@
 		<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
 			<template #empty>
 				<div class="_fullinfo">
-					<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
+					<img :src="infoImageUrl" class="_ghost"/>
 					<div>{{ i18n.ts.noMessagesYet }}</div>
 				</div>
 			</template>
@@ -69,6 +69,7 @@ import { i18n } from '@/i18n';
 import { $i } from '@/account';
 import { defaultStore } from '@/store';
 import { definePageMetadata } from '@/scripts/page-metadata';
+import { infoImageUrl } from '@/instance';
 
 const props = defineProps<{
 	userAcct?: string;

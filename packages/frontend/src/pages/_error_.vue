@@ -2,7 +2,7 @@
 <MkLoading v-if="!loaded"/>
 <Transition :name="$store.state.animation ? '_transition_zoom' : ''" appear>
 	<div v-show="loaded" class="mjndxjch">
-		<img src="https://xn--931a.moe/assets/error.jpg" class="_ghost"/>
+		<img :src="serverErrorImageUrl" class="_ghost" :class="$style.img"/>
 		<p><b><i class="ti ti-alert-triangle"></i> {{ i18n.ts.pageLoadError }}</b></p>
 		<p v-if="meta && (version === meta.version)">{{ i18n.ts.pageLoadErrorDescription }}</p>
 		<p v-else-if="serverIsDead">{{ i18n.ts.serverIsDead }}</p>
@@ -27,6 +27,7 @@ import { unisonReload } from '@/scripts/unison-reload';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { miLocalStorage } from '@/local-storage';
+import { serverErrorImageUrl } from '@/instance';
 
 const props = withDefaults(defineProps<{
 	error?: Error;

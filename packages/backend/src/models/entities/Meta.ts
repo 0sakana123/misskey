@@ -112,15 +112,26 @@ export class Meta {
 	@Column('varchar', {
 		length: 512,
 		nullable: true,
-		default: 'https://xn--931a.moe/aiart/yubitun.png',
-	})
-	public errorImageUrl: string | null;
-
-	@Column('varchar', {
-		length: 512,
-		nullable: true,
 	})
 	public iconUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public serverErrorImageUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public notFoundImageUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public infoImageUrl: string | null;
 
 	@Column('boolean', {
 		default: true,
