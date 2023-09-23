@@ -10,6 +10,7 @@ import { StatusError } from '@/misc/status-error.js';
 import { bindThis } from '@/decorators.js';
 import type { Response } from 'node-fetch';
 import type { URL } from 'node:url';
+import { lookup as dnsLookup } from 'node:dns';
 
 @Injectable()
 export class HttpRequestService {
@@ -40,7 +41,7 @@ export class HttpRequestService {
 		const cache = new CacheableLookup({
 			maxTtl: 3600,	// 1hours
 			errorTtl: 30,	// 30secs
-			lookup: false,	// nativeのdns.lookupにfallbackしない
+			lookup: dnsLookup,	// nativeのdns.lookupにfallbackしない
 		});
 		
 		this.http = new http.Agent({
