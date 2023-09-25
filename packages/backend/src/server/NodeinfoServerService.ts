@@ -78,7 +78,7 @@ export class NodeinfoServerService {
 
 			return {
 				software: {
-					name: 'misskey',
+					name: 'missingkey',
 					version: this.config.version,
 					repository: meta.repositoryUrl,
 				},
