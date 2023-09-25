@@ -43,8 +43,6 @@ function truncateBody<T extends keyof pushNotificationsTypes>(type: T, body: pus
 			}
 		} : {}),
 	};
-
-	return body;
 }
 
 @Injectable()

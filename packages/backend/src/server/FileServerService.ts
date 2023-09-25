@@ -401,7 +401,7 @@ export class FileServerService {
 				mime, ext,
 				path, cleanup,
 				filename,
-			}
+			};
 		} catch (e) {
 			cleanup();
 			throw e;
@@ -436,7 +436,7 @@ export class FileServerService {
 				fileRole: isThumbnail ? 'thumbnail' : isWebpublic ? 'webpublic' : 'original',
 				file,
 				filename: file.name,
-			}
+			};
 		}
 
 		const path = this.internalStorageService.resolvePath(key);
@@ -462,6 +462,6 @@ export class FileServerService {
 			mime: this.fileInfoService.fixMime(file.type),
 			ext: null,
 			path,
-		}
+		};
 	}
 }
