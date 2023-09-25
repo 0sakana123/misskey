@@ -68,7 +68,7 @@ export class Meta {
 	public blockedHosts: string[];
 
 	@Column('varchar', {
-		length: 512, array: true, default: '{/featured,/channels,/explore,/pages,/about-misskey}',
+		length: 512, array: true, default: '{/featured,/channels,/explore,/pages,/about-missingkey}',
 	})
 	public pinnedPages: string[];
 
@@ -309,14 +309,14 @@ export class Meta {
 
 	@Column('varchar', {
 		length: 512,
-		default: 'https://github.com/misskey-dev/misskey',
+		default: 'https://github.com/hos1miya/missingkey',
 		nullable: false,
 	})
 	public repositoryUrl: string;
 
 	@Column('varchar', {
 		length: 512,
-		default: 'https://github.com/misskey-dev/misskey/issues/new',
+		default: 'https://github.com/hos1miya/missingkey/issues/new',
 		nullable: true,
 	})
 	public feedbackUrl: string | null;

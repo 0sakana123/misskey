@@ -1,7 +1,7 @@
 <template>
 <MkModal ref="modal" :z-priority="'middle'" @click="$refs.modal.close()" @closed="$emit('closed')">
 	<div :class="$style.root">
-		<div :class="$style.title"><MkSparkle>{{ i18n.ts.misskeyUpdated }}</MkSparkle></div>
+		<div :class="$style.title"><MkSparkle>{{ i18n.ts.missingKeyUpdated }}</MkSparkle></div>
 		<div :class="$style.version">✨{{ version }}🚀</div>
 		<MkButton full @click="whatIsNew">{{ i18n.ts.whatIsNew }}</MkButton>
 		<MkButton :class="$style.gotIt" primary full @click="$refs.modal.close()">{{ i18n.ts.gotIt }}</MkButton>

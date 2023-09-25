@@ -5,7 +5,7 @@
 		<XTimeline class="tl"/>
 		<div class="shape1"></div>
 		<div class="shape2"></div>
-		<img src="/client-assets/misskey.svg" class="misskey"/>
+		<img src="/client-assets/misskey.svg" class="missingkey"/>
 		<div class="emojis">
 			<MkEmoji :normal="true" :no-style="true" emoji="👍"/>
 			<MkEmoji :normal="true" :no-style="true" emoji="❤"/>
@@ -24,7 +24,7 @@
 				</h1>
 				<div class="about">
 					<!-- eslint-disable-next-line vue/no-v-html -->
-					<div class="desc" v-html="meta.description || i18n.ts.headlineMisskey"></div>
+					<div class="desc" v-html="meta.description || i18n.ts.headlineMissingkey"></div>
 				</div>
 				<div class="action">
 					<MkButton inline rounded gradate data-cy-signup style="margin-right: 12px;" @click="signup()">{{ i18n.ts.signup }}</MkButton>
@@ -112,10 +112,10 @@ function showMenu(ev) {
 			os.pageWindow('/about');
 		},
 	}, {
-		text: i18n.ts.aboutMisskey,
+		text: i18n.ts.aboutMissingKey,
 		icon: 'ti ti-info-circle',
 		action: () => {
-			os.pageWindow('/about-misskey');
+			os.pageWindow('/about-missingkey');
 		},
 	}, null, {
 		text: i18n.ts.help,
@@ -181,7 +181,7 @@ function showMenu(ev) {
 			opacity: 0.5;
 		}
 
-		> .misskey {
+		> .missingkey {
 			position: absolute;
 			top: 42px;
 			left: 42px;

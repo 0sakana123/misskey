@@ -10,7 +10,7 @@
 			</h1>
 			<div class="about">
 				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div class="desc" v-html="meta.description || $ts.headlineMisskey"></div>
+				<div class="desc" v-html="meta.description || $ts.headlineMissingKey"></div>
 			</div>
 			<div class="action">
 				<MkButton class="signup" inline gradate @click="signup()">{{ $ts.signup }}</MkButton>
@@ -30,7 +30,7 @@
 				</I18n>
 			</div>
 		</div>
-		<img src="/client-assets/misskey.svg" class="misskey"/>
+		<img src="/client-assets/misskey.svg" class="missingkey"/>
 	</div>
 </div>
 </template>
@@ -109,10 +109,10 @@ export default defineComponent({
 					os.pageWindow('/about');
 				},
 			}, {
-				text: this.$ts.aboutMisskey,
+				text: this.$ts.aboutMissingKey,
 				icon: 'ti ti-info-circle',
 				action: () => {
-					os.pageWindow('/about-misskey');
+					os.pageWindow('/about-missingkey');
 				},
 			}, null, {
 				text: this.$ts.help,
@@ -165,7 +165,7 @@ export default defineComponent({
 			clip-path: polygon(0% 0%, 40% 0%, 22% 100%, 0% 100%);
 		}
 
-		> .misskey {
+		> .missingkey {
 			position: absolute;
 			bottom: 64px;
 			left: 64px;

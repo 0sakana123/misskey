@@ -9,7 +9,7 @@
 			</h1>
 			<template v-if="full">
 				<div v-if="meta" class="about">
-					<div class="desc" v-html="meta.description || $ts.introMisskey"></div>
+					<div class="desc" v-html="meta.description || $ts.introMissingKey"></div>
 				</div>
 				<div class="action">
 					<button class="_buttonPrimary" @click="signup()">{{ $ts.signup }}</button>
@@ -29,7 +29,7 @@
 				</div>
 				<div v-if="poweredBy" class="powered-by">
 					<b><MkA to="/">{{ host }}</MkA></b>
-					<small>Powered by <a href="https://github.com/misskey-dev/misskey" target="_blank">Misskey</a></small>
+					<small>Powered by <a href="https://github.com/hos1miya/missingkey" target="_blank">MissingKey</a></small>
 				</div>
 			</template>
 		</div>

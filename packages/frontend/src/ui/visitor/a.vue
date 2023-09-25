@@ -5,7 +5,7 @@
 			<h1 v-if="meta"><img v-if="meta.logoImageUrl" class="logo" :src="meta.logoImageUrl"><span v-else class="text">{{ instanceName }}</span></h1>
 			<div v-if="meta" class="about">
 				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div class="desc" v-html="meta.description || $ts.introMisskey"></div>
+				<div class="desc" v-html="meta.description || $ts.introMissingKey"></div>
 			</div>
 			<div class="action">
 				<button class="_button primary" @click="signup()">{{ $ts.signup }}</button>
@@ -29,7 +29,7 @@
 			</main>
 			<div class="powered-by">
 				<b><MkA to="/">{{ host }}</MkA></b>
-				<small>Powered by <a href="https://github.com/misskey-dev/misskey" target="_blank">Misskey</a></small>
+				<small>Powered by <a href="https://github.com/hos1miya/missingkey" target="_blank">MissingKey</a></small>
 			</div>
 		</div>
 	</div>

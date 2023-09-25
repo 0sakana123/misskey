@@ -10,7 +10,7 @@
 		</svg>
 	</div>
 	<div :class="$style.main">
-		<div :class="$style.title">{{ i18n.ts.didYouLikeMisskey }}</div>
+		<div :class="$style.title">{{ i18n.ts.didYouLikeMissingKey }}</div>
 		<div :class="$style.text">
 			<I18n :src="i18n.ts.pleaseDonate" tag="span">
 				<template #host>

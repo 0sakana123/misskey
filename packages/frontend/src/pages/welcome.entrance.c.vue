@@ -11,7 +11,7 @@
 			<MkEmoji :normal="true" :no-style="true" emoji="🍮"/>
 		</div>
 		<div class="main">
-			<img src="/client-assets/misskey.svg" class="misskey"/>
+			<img src="/client-assets/misskey.svg" class="missingkey"/>
 			<div class="form _panel">
 				<div class="bg">
 					<div class="fade"></div>
@@ -22,7 +22,7 @@
 					</h1>
 					<div class="about">
 						<!-- eslint-disable-next-line vue/no-v-html -->
-						<div class="desc" v-html="meta.description || $ts.headlineMisskey"></div>
+						<div class="desc" v-html="meta.description || $ts.headlineMissingKey"></div>
 					</div>
 					<div class="action">
 						<MkButton inline gradate @click="signup()">{{ $ts.signup }}</MkButton>
@@ -129,10 +129,10 @@ export default defineComponent({
 					os.pageWindow('/about');
 				},
 			}, {
-				text: this.$ts.aboutMisskey,
+				text: this.$ts.aboutMissingKey,
 				icon: 'ti ti-info-circle',
 				action: () => {
-					os.pageWindow('/about-misskey');
+					os.pageWindow('/about-missingkey');
 				},
 			}, null, {
 				text: this.$ts.help,
@@ -193,7 +193,7 @@ export default defineComponent({
 			width: min(460px, 100%);
 			margin: auto;
 
-			> .misskey {
+			> .missingkey {
 				width: 150px;
 				margin-bottom: 16px;
 

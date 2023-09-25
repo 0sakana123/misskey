@@ -20,12 +20,12 @@
 			<FormSection>
 				<div class="_gaps_m">
 					<MkKeyValue :copy="version">
-						<template #key>Misskey</template>
+						<template #key>MissingKey</template>
 						<template #value>{{ version }}</template>
 					</MkKeyValue>
-					<div v-html="i18n.t('poweredByMisskeyDescription', { name: $instance.name ?? host })">
+					<div v-html="i18n.t('poweredByMissingKeyDescription', { name: $instance.name ?? host })">
 					</div>
-					<FormLink to="/about-misskey">{{ i18n.ts.aboutMisskey }}</FormLink>
+					<FormLink to="/about-missingkey">{{ i18n.ts.aboutMissingKey }}</FormLink>
 				</div>
 			</FormSection>
 

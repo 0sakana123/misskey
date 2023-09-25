@@ -47,7 +47,7 @@ export const packedFederationInstanceSchema = {
 		softwareName: {
 			type: 'string',
 			optional: false, nullable: true,
-			example: 'misskey',
+			example: 'missingkey',
 		},
 		softwareVersion: {
 			type: 'string',
