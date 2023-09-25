@@ -432,6 +432,14 @@ describe('API: Endpoints', () => {
 		}));
 
 		test('ファイルに名前を付けられる', async () => {
+			const res = await uploadFile(alice, { name: 'Belmond.jpg' });
+
+			assert.strictEqual(res.status, 200);
+			assert.strictEqual(typeof res.body === 'object' && !Array.isArray(res.body), true);
+			assert.strictEqual(res.body.name, 'Belmond.jpg');
+		});
+
+		test('ファイルに名前を付けられるが、拡張子は正しいものになる', async () => {
 			const res = await assert.request(server)
 				.post('/drive/files/create')
 				.field('i', alice.token)
@@ -440,7 +448,7 @@ describe('API: Endpoints', () => {
 
 			expect(res).have.status(200);
 			expect(res.body).be.a('object');
-			expect(res.body).have.property('name').eql('Belmond.png');
+			expect(res.body).have.property('name').eql('Belmond.png.jpg');
 		}));
 
 		test('ファイル無しで怒られる', async () => {
