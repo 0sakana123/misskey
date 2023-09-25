@@ -53,7 +53,13 @@ With Misskey's built in drive, you get cloud storage right in your social media,
 
 Misskey Documentation can be found at [Misskey Hub](https://misskey-hub.net/), some of the links and graphics above also lead to specific portions of it.
 
-## Sponsors
-<div align="center">
-	<a class="rss3" title="RSS3" href="https://rss3.io/" target="_blank"><img src="https://rss3.mypinata.cloud/ipfs/QmUG6H3Z7D5P511shn7sB4CPmpjH5uZWu4m5mWX7U3Gqbu" alt="RSS3" height="60"></a>
-</div>
+## About this fork
+- **Based on modern Misskey v13**\
+MissingKey is based on Misskey 13.6.1 and you can use almost features of that!
+- **Simpler and easier to use**\
+MissingKey is easy to use, because it has minimized the extra features added in later versions (mainly for me).
+- **Small scale specialized**\
+Setting up a system intended for a large scale is complicated. MissingKey, which is primarily intended for use by small groups, requires no unnecessary configuration.
+- **Finally...**\
+It is better to have a text that is more conscious, so I have included a text that looks like it xD
+- And much more...
