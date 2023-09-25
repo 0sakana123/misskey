@@ -203,8 +203,6 @@ export class FileServerService {
 				reply.header('Content-Disposition', contentDisposition('inline', filename));
 				return fs.createReadStream(file.path);
 			} else {
-				const stream = fs.createReadStream(file.path);
-				stream.on('error', this.commonReadableHandlerGenerator(reply));
 				reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.file.type) ? file.file.type : 'application/octet-stream');
 				reply.header('Cache-Control', 'max-age=31536000, immutable');
 				reply.header('Content-Disposition', contentDisposition('inline', file.filename));
