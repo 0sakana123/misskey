@@ -103,8 +103,8 @@ export class ClientServerService {
 
 		const instance = await this.metaService.fetch(true);
 
-		res.short_name = instance.name ?? 'Misskey';
-		res.name = instance.name ?? 'Misskey';
+		res.short_name = instance.name ?? 'MissingKey';
+		res.name = instance.name ?? 'MissingKey';
 		if (instance.themeColor) res.theme_color = instance.themeColor;
 
 		reply.header('Cache-Control', 'max-age=300');
@@ -114,7 +114,7 @@ export class ClientServerService {
 	@bindThis
 	private generateCommonPugData(meta: Meta) {
 		return {
-			instanceName: meta.name ?? 'Misskey',
+			instanceName: meta.name ?? 'MissingKey',
 			icon: meta.iconUrl,
 			themeColor: meta.themeColor,
 			serverErrorImageUrl: meta.serverErrorImageUrl ?? 'https://xn--931a.moe/assets/error.jpg',
