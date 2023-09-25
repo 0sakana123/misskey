@@ -135,7 +135,7 @@ export function loadConfig() {
 	mixin.apiUrl = `${mixin.scheme}://${mixin.host}/api`;
 	mixin.authUrl = `${mixin.scheme}://${mixin.host}/auth`;
 	mixin.driveUrl = `${mixin.scheme}://${mixin.host}/files`;
-	mixin.userAgent = `MissingKey/${meta.version} (${config.url})`;
+	mixin.userAgent = `MissingKey/${meta.version} Misskey (${config.url})`;
 	mixin.clientEntry = clientManifest['src/init.ts'];
 	mixin.clientManifestExists = clientManifestExists;
 
