@@ -24,6 +24,7 @@ import XVideo from '@/components/MkMediaVideo.vue';
 import * as os from '@/os';
 import { FILE_TYPE_BROWSERSAFE } from '@/const';
 import { defaultStore } from '@/store';
+import { miLocalStorage } from '@/local-storage';
 
 const props = defineProps<{
 	mediaList: misskey.entities.DriveFile[];
@@ -84,6 +85,8 @@ onMounted(() => {
 		const id = element.dataset.id;
 		const file = props.mediaList.find(media => media.id === id);
 
+		const lastDotIndex = file.name.lastIndexOf('.');
+
 		itemData.src = file.url;
 		itemData.w = Number(file.properties.width);
 		itemData.h = Number(file.properties.height);
@@ -93,6 +96,14 @@ onMounted(() => {
 		itemData.msrc = file.thumbnailUrl;
 		itemData.alt = file.comment || file.name;
 		itemData.comment = file.comment || file.name;
+		itemData.userId = file.user.username;
+		itemData.host = file.userHost || window.location.hostname;
+		itemData.fileId = file.id;
+		if (lastDotIndex !== -1) {
+			itemData.extension = "." + file.name.substring(lastDotIndex + 1).toLowerCase();
+		} else {
+			itemData.extension = "";
+		}
 		itemData.thumbCropped = true;
 	});
 
@@ -131,6 +142,7 @@ onMounted(() => {
 
 				pswp.on('change', () => {
 					el.href = pswp.currSlide.data.src;
+					el.download = pswp.currSlide.data.userId + "." + pswp.currSlide.data.host + "_" + pswp.currSlide.data.fileId + pswp.currSlide.data.extension;
 				});
 			}
 		});
