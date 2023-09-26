@@ -10,7 +10,7 @@
 					</div>
 
 					<div class="main _margin">
-						<MkButton v-if="!showNext && hasNext" class="load next" @click="showNext = true"><i class="ti ti-chevron-up"></i></MkButton>
+						<MkButton v-if="!showNext" class="load next" @click="showNext = true"><i class="ti ti-chevron-up"></i></MkButton>
 						<div class="note _margin _gaps_s">
 							<MkRemoteCaution v-if="note.user.host != null" :href="note.url ?? note.uri"/>
 							<XNoteDetailed :key="note.id" v-model:note="note" class="note"/>
@@ -25,7 +25,7 @@
 								</div>
 							</MkA>
 						</div>
-						<MkButton v-if="!showPrev && hasPrev" class="load prev" @click="showPrev = true"><i class="ti ti-chevron-down"></i></MkButton>
+						<MkButton v-if="!showPrev" class="load prev" @click="showPrev = true"><i class="ti ti-chevron-down"></i></MkButton>
 					</div>
 
 					<div v-if="showPrev" class="_margin">
@@ -59,8 +59,6 @@ const props = defineProps<{
 
 let note = $ref<null | misskey.entities.Note>();
 let clips = $ref();
-let hasPrev = $ref(false);
-let hasNext = $ref(false);
 let showPrev = $ref(false);
 let showNext = $ref(false);
 let error = $ref();
@@ -85,8 +83,6 @@ const nextPagination = {
 };
 
 function fetchNote() {
-	hasPrev = false;
-	hasNext = false;
 	showPrev = false;
 	showNext = false;
 	note = null;
@@ -98,20 +94,8 @@ function fetchNote() {
 			os.api('notes/clips', {
 				noteId: note.id,
 			}),
-			os.api('users/notes', {
-				userId: note.userId,
-				untilId: note.id,
-				limit: 1,
-			}),
-			os.api('users/notes', {
-				userId: note.userId,
-				sinceId: note.id,
-				limit: 1,
-			}),
-		]).then(([_clips, prev, next]) => {
+		]).then(([_clips]) => {
 			clips = _clips;
-			hasPrev = prev.length !== 0;
-			hasNext = next.length !== 0;
 		});
 	}).catch(err => {
 		error = err;
