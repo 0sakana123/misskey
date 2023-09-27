@@ -1,7 +1,7 @@
 <template>
 <div :class="$style.root" :style="bg">
 	<img v-if="faviconUrl" :class="$style.icon" :src="faviconUrl"/>
-	<div :class="$style.name">{{ instance.name }}</div>
+	<a :class="$style.name" :href="host" :title="instance.name">{{ instance.name }}</a>
 </div>
 </template>
 
@@ -15,6 +15,7 @@ const props = defineProps<{
 	instance?: {
 		faviconUrl?: string
 		name: string
+		host?: string
 		themeColor?: string
 	}
 }>();
@@ -24,6 +25,8 @@ const instance = props.instance ?? {
 	name: instanceName,
 	themeColor: (document.querySelector('meta[name="theme-color-orig"]') as HTMLMetaElement).content,
 };
+
+const host = props.instance ? instance.host : "";
 
 const faviconUrl = $computed(() => props.instance ? getProxiedImageUrlNullable(props.instance.faviconUrl, 'preview') : getProxiedImageUrlNullable(Instance.iconUrl, 'preview') ?? getProxiedImageUrlNullable(Instance.faviconUrl, 'preview') ?? '/favicon.ico');
 
