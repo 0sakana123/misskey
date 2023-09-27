@@ -127,7 +127,7 @@ onMounted(() => {
 			name: 'download-button',
 			order: 9,
 			isButton: true,
-			tagName: 'a',
+			tagName: 'button',
 
 			// SVG with outline
 			html: {
@@ -136,14 +136,31 @@ onMounted(() => {
 				outlineID: 'pswp__icn-download'
 			},
 
-			onInit: (el, pswp) => {
+			//onInit: (el, pswp) => {
+			onInit: (el) => {
 				el.setAttribute('download', '');
 				el.setAttribute('target', '_blank');
 				el.setAttribute('rel', 'noopener');
 
+				/*
 				pswp.on('change', () => {
 					el.href = pswp.currSlide.data.src;
 					el.download = pswp.currSlide.data.userId + "." + pswp.currSlide.data.host + "_" + pswp.currSlide.data.fileId + pswp.currSlide.data.extension;
+				});
+				*/
+			},
+						
+			onClick: function (pswp) {
+				fetch(pswp.currSlide.data.src)
+				.then((response) => response.blob())
+				.then((blob) => {
+					const downloadLink = document.createElement('a');
+					downloadLink.href = window.URL.createObjectURL(blob);
+					downloadLink.download = pswp.currSlide.data.userId + "." + pswp.currSlide.data.host + "_" + pswp.currSlide.data.fileId + pswp.currSlide.data.extension;
+					downloadLink.click();
+				})
+				.catch((error) => {
+					console.error('ダウンロードエラー:', error);
 				});
 			}
 		});
