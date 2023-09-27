@@ -9,7 +9,7 @@
 					<MkA v-if="note.renoteId" class="rp" :to="`/notes/${note.renoteId}`">RN: ...</MkA>
 				</div>
 				<div v-if="note.files.length > 0" class="richcontent">
-					<MkMediaList :media-list="note.files"/>
+					<MkMediaList :mediaList="note.files" :mediaUser="note.user"/>
 				</div>
 				<div v-if="note.poll">
 					<MkPoll :note="note" :readOnly="true"/>

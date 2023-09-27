@@ -76,7 +76,7 @@
 						</div>
 					</div>
 					<div v-if="appearNote.files.length > 0" class="files">
-						<MkMediaList :media-list="appearNote.files"/>
+						<MkMediaList :mediaList="appearNote.files" :mediaUser="appearNote.user"/>
 					</div>
 					<MkPoll v-if="appearNote.poll" ref="pollViewer" :note="appearNote" class="poll"/>
 					<MkUrlPreview v-for="url in urls" :key="url" :url="url" :compact="true" :detail="true" class="url-preview"/>

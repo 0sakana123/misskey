@@ -9,7 +9,7 @@
 	</div>
 	<details v-if="note.files.length > 0">
 		<summary>({{ $t('withNFiles', { n: note.files.length }) }})</summary>
-		<MkMediaList :media-list="note.files"/>
+		<MkMediaList :mediaList="note.files" :mediaUser="note.user"/>
 	</details>
 	<details v-if="note.poll">
 		<summary>{{ i18n.ts.poll }}</summary>

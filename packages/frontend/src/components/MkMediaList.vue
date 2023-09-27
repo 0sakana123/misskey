@@ -28,6 +28,7 @@ import { miLocalStorage } from '@/local-storage';
 
 const props = defineProps<{
 	mediaList: misskey.entities.DriveFile[];
+	mediaUser: misskey.entities.User[];
 	raw?: boolean;
 }>();
 
@@ -96,8 +97,8 @@ onMounted(() => {
 		itemData.msrc = file.thumbnailUrl;
 		itemData.alt = file.comment || file.name;
 		itemData.comment = file.comment || file.name;
-		itemData.userId = file.user.username;
-		itemData.host = file.userHost || window.location.hostname;
+		itemData.userId = props.mediaUser.username;
+		itemData.host = props.mediaUser.host || window.location.hostname;
 		itemData.fileId = file.id;
 		if (lastDotIndex !== -1) {
 			itemData.extension = "." + file.name.substring(lastDotIndex + 1).toLowerCase();
