@@ -138,13 +138,13 @@ onMounted(() => {
 
 			onInit: (el, pswp) => {
 				el.setAttribute('title', '');
-				el.setAttribute('ariaLabel', '');
+				el.setAttribute('href', '');
 				//el.setAttribute('target', '_blank');
 				//el.setAttribute('rel', 'noopener');
 
 				pswp.on('change', () => {
 					el.title = pswp.currSlide.data.userId + "." + pswp.currSlide.data.host + "_" + pswp.currSlide.data.fileId + pswp.currSlide.data.extension;
-					el.ariaLabel = pswp.currSlide.data.src;
+					el.href = pswp.currSlide.data.src;
 				});
 			},
 						
