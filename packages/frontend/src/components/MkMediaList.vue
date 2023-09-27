@@ -149,7 +149,7 @@ onMounted(() => {
 			},
 						
 			onClick: function (el, pswp) {
-				fetch(el.ariaLabel)
+				fetch(el.value)
 				.then((response) => response.blob())
 				.then((blob) => {
 					const downloadLink = document.createElement('a');
