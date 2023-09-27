@@ -109,6 +109,7 @@ onMounted(() => {
 	});
 
 	lightbox.on('uiRegister', () => {
+		let downloadTitle, downloadUrl;
 		lightbox.pswp.ui.registerElement({
 			name: 'altText',
 			className: 'pswp__alt-text-container',
@@ -145,16 +146,18 @@ onMounted(() => {
 				pswp.on('change', () => {
 					el.title = pswp.currSlide.data.userId + "." + pswp.currSlide.data.host + "_" + pswp.currSlide.data.fileId + pswp.currSlide.data.extension;
 					el.value = pswp.currSlide.data.src;
+					downloadTitle = el.title;
+					downloadUrl = el.value;
 				});
 			},
 						
 			onClick: function (el, pswp) {
-				fetch(el.value)
+				fetch(downloadUrl)
 				.then((response) => response.blob())
 				.then((blob) => {
 					const downloadLink = document.createElement('a');
 					downloadLink.href = window.URL.createObjectURL(blob);
-					downloadLink.download = el.title;
+					downloadLink.download = downloadTitle;
 					downloadLink.click();
 				})
 				.catch((error) => {
