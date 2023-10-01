@@ -50,7 +50,7 @@ import { navbarItemDef } from '@/navbar';
 import { openAccountMenu } from '@/account';
 import MkButton from '@/components/MkButton.vue';
 import { StickySidebar } from '@/scripts/sticky-sidebar';
-//import MisskeyLogo from '@assets/client/misskey.svg';
+//import MisskeyLogo from '@assets/client/missingkey.svg';
 
 export default defineComponent({
 	components: {
