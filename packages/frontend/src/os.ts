@@ -176,6 +176,12 @@ export function toast(message: string) {
 	}, {}, 'closed');
 }
 
+export function toastShort(message: string) {
+	popup(MkToast, {
+		message, timeout: 1000,
+	}, {}, 'closed');
+}
+
 export function alert(props: {
 	type?: 'error' | 'info' | 'success' | 'warning' | 'waiting' | 'question';
 	title?: string | null;

@@ -43,7 +43,7 @@ const alt = computed(() => `:${customEmojiName.value}:`);
 let errored = $ref(url.value == null);
 
 useTooltip(customEmojiRef, () => {
-	os.toast(props.host ? `:${customEmojiName.value}@${props.host}:` : `:${customEmojiName.value}:`)
+	os.toastShort(props.host ? `:${customEmojiName.value}@${props.host}:` : `:${customEmojiName.value}:`)
 });
 </script>
 

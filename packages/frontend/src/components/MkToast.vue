@@ -20,9 +20,12 @@
 import { onMounted, ref } from 'vue';
 import * as os from '@/os';
 
-defineProps<{
+const props = withDefaults(defineProps<{
 	message: string;
-}>();
+	timeout?: number;
+}>(), {
+	timeout: 4000,
+});
 
 const emit = defineEmits<{
 	(ev: 'closed'): void;
@@ -34,7 +37,7 @@ let showing = $ref(true);
 onMounted(() => {
 	window.setTimeout(() => {
 		showing = false;
-	}, 4000);
+	}, props.timeout);
 });
 </script>
 
