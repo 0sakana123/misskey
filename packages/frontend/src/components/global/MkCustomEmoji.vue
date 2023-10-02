@@ -46,7 +46,7 @@ let errored = $ref(url.value == null);
 useTooltip(customEmojiRef, (showing) => {
 	os.popup(XReactionTooltip, {
 		showing,
-		reaction: props.name,
+		reaction: `:${customEmojiName.value}:@.`,
 		targetElement: customEmojiRef.value.$el,
 	}, {}, 'closed');
 });
