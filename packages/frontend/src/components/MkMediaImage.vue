@@ -5,7 +5,7 @@
 		<div :class="$style.hiddenTextWrapper">
 			<b v-if="image.isSensitive" style="display: block;"><i class="ti ti-alert-triangle"></i> {{ i18n.ts.sensitive }}{{ defaultStore.state.enableDataSaverMode ? ` (${i18n.ts.image}${image.size ? ' ' + bytes(image.size) : ''})` : '' }}</b>
 			<b v-else style="display: block;"><i class="ti ti-photo"></i> {{ defaultStore.state.enableDataSaverMode && image.size ? bytes(image.size) : i18n.ts.image }}</b>
-			<span style="display: block;">{{ $ts.clickToShow }}</span>
+			<span style="display: block;">{{ i18n.ts.clickToShow }}</span>
 		</div>
 	</div>
 </div>
