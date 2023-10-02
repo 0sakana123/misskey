@@ -10,7 +10,6 @@ import { defaultStore } from '@/store';
 import { customEmojis } from '@/custom-emojis';
 import { useTooltip } from '@/scripts/use-tooltip';
 import * as os from '@/os';
-import XReactionTooltip from '@/components/MkReactionTooltip.vue';
 
 const props = defineProps<{
 	name: string;
@@ -43,7 +42,7 @@ const url = computed(() =>
 const alt = computed(() => `:${customEmojiName.value}:`);
 let errored = $ref(url.value == null);
 
-useTooltip(customEmojiRef, (showing) => {
+useTooltip(customEmojiRef, () => {
 	os.toast(props.host ? `:${customEmojiName.value}@${props.host}:` : `:${customEmojiName.value}:`)
 });
 </script>
