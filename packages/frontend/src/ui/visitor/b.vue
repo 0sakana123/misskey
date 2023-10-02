@@ -16,7 +16,7 @@
 			</main>
 			<div v-if="!root" class="powered-by">
 				<b><MkA to="/">{{ host }}</MkA></b>
-				<small>Powered by <a href="https://github.com/hos1miya/missingkey" target="_blank">Misskey</a></small>
+				<small>Powered by <a href="https://github.com/hos1miya/missingkey" target="_blank">MissingKey</a></small>
 			</div>
 		</div>
 	</div>
