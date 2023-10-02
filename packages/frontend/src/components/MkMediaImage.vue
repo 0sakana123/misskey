@@ -29,6 +29,7 @@ import { getStaticImageUrl } from '@/scripts/media-proxy';
 import bytes from '@/filters/bytes';
 import ImgWithBlurhash from '@/components/MkImgWithBlurhash.vue';
 import { defaultStore } from '@/store';
+import { i18n } from '@/i18n';
 
 const props = defineProps<{
 	image: misskey.entities.DriveFile;
