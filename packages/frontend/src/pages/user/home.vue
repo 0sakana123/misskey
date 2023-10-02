@@ -60,7 +60,8 @@
 							<dd class="value">{{ user.birthday.replace('-', '/').replace('-', '/') }} ({{ $t('yearsOld', { age }) }})</dd>
 						</dl>
 						<dl class="field">
-							<dt class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
+							<dt v-if="user.host" class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.firstObservedDate }}</dt>
+							<dt v-else class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
 							<dd class="value">{{ dateString(user.createdAt) }} (<MkTime :time="user.createdAt"/>)</dd>
 						</dl>
 					</div>

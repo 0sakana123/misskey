@@ -212,7 +212,7 @@ export async function openAccountMenu(opts: {
 	if (opts.withExtraOperation) {
 		popupMenu([...[{
 			type: 'link',
-			text: `${ i18n.ts.profile } - ${ $i.username }`,
+			text: `${ i18n.ts.profile } - @${ $i.username }`,
 			to: `/@${ $i.username }`,
 			avatar: $i,
 		}, null, ...(opts.includeCurrentAccount ? [createItem($i)] : []), ...accountItemPromises, {
