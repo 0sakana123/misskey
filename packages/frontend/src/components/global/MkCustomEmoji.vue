@@ -44,11 +44,7 @@ const alt = computed(() => `:${customEmojiName.value}:`);
 let errored = $ref(url.value == null);
 
 useTooltip(customEmojiRef, (showing) => {
-	os.popup(XReactionTooltip, {
-		showing,
-		reaction: `:${customEmojiName.value}:@.`,
-		targetElement: customEmojiRef.value.$el,
-	}, {}, 'closed');
+	os.toast(props.host ? `:${customEmojiName.value}@${props.host}:` : `:${customEmojiName.value}:`)
 });
 </script>
 
