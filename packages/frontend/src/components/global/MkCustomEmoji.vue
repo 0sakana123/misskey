@@ -1,13 +1,16 @@
 <template>
 <span v-if="errored">:{{ customEmojiName }}:</span>
-<img v-else :class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]" :src="url" :alt="alt" :title="alt" decoding="async" @error="errored = true" @load="errored = false"/>
+<img v-else :class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]" :src="url" :alt="alt" :title="alt" decoding="async" ref="customEmojiRef" @error="errored = true" @load="errored = false"/>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { getStaticImageUrl } from '@/scripts/media-proxy';
 import { defaultStore } from '@/store';
 import { customEmojis } from '@/custom-emojis';
+import { useTooltip } from '@/scripts/use-tooltip';
+import * as os from '@/os';
+import XReactionTooltip from '@/components/MkReactionTooltip.vue';
 
 const props = defineProps<{
 	name: string;
@@ -16,6 +19,8 @@ const props = defineProps<{
 	host?: string | null;
 	url?: string;
 }>();
+
+const customEmojiRef = ref(null);
 
 const customEmojiName = computed(() => (props.name[0] === ':' ? props.name.substr(1, props.name.length - 2) : props.name).replace('@.', ''));
 
@@ -37,6 +42,14 @@ const url = computed(() =>
 
 const alt = computed(() => `:${customEmojiName.value}:`);
 let errored = $ref(url.value == null);
+
+useTooltip(customEmojiRef, (showing) => {
+	os.popup(XReactionTooltip, {
+		showing,
+		reaction: props.name,
+		targetElement: customEmojiRef.value.$el,
+	}, {}, 'closed');
+});
 </script>
 
 <style lang="scss" module>
