@@ -27,15 +27,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			return {
 				machine: os.hostname(),
 				cpu: {
-					model: os.cpus()[1].model,
+					model: os.cpus()[0].model,
 					cores: os.cpus().length,
 				},
 				mem: {
 					total: memStats.total,
 				},
 				fs: {
-					total: fsStats[1].size,
-					used: fsStats[1].used,
+					total: fsStats[2].size,
+					used: fsStats[2].used,
 				},
 			};
 		});
