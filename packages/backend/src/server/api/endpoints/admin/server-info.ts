@@ -122,15 +122,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				psql: await this.db.query('SHOW server_version').then(x => x[0].server_version),
 				redis: redis_version,
 				cpu: {
-					model: os.cpus()[0].model,
+					model: os.cpus()[1].model,
 					cores: os.cpus().length,
 				},
 				mem: {
 					total: memStats.total,
 				},
 				fs: {
-					total: fsStats[0].size,
-					used: fsStats[0].used,
+					total: fsStats[1].size,
+					used: fsStats[1].used,
 				},
 				net: {
 					interface: netInterface,
