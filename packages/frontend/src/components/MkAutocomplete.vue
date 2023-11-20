@@ -40,13 +40,13 @@ import contains from '@/scripts/contains';
 import { char2twemojiFilePath, char2fluentEmojiFilePath } from '@/scripts/emoji-base';
 import { acct } from '@/filters/user';
 import * as os from '@/os';
-import { MFM_TAGS } from '@/scripts/mfm-tags';
 import { defaultStore } from '@/store';
 import { emojilist } from '@/scripts/emojilist';
 import { instance } from '@/instance';
 import { i18n } from '@/i18n';
 import { miLocalStorage } from '@/local-storage';
 import { customEmojis } from '@/custom-emojis';
+import { MFM_TAGS } from '@/const.js';
 
 type EmojiDef = {
 	emoji: string;
