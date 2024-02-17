@@ -185,6 +185,14 @@ export const meta = {
 					optional: false, nullable: false,
 				},
 			},
+			blockedSoftwares: {
+				type: 'array',
+				optional: true, nullable: false,
+				items: {
+					type: 'string',
+					optional: false, nullable: false,
+				},
+			},
 			hcaptchaSecretKey: {
 				type: 'string',
 				optional: true, nullable: true,
@@ -371,6 +379,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				pinnedUsers: instance.pinnedUsers,
 				hiddenTags: instance.hiddenTags,
 				blockedHosts: instance.blockedHosts,
+				blockedSoftwares: instance.blockedSoftwares,
 				hcaptchaSecretKey: instance.hcaptchaSecretKey,
 				recaptchaSecretKey: instance.recaptchaSecretKey,
 				turnstileSecretKey: instance.turnstileSecretKey,

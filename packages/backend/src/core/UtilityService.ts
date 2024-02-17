@@ -31,6 +31,12 @@ export class UtilityService {
 	}
 
 	@bindThis
+	public isBlockedSoftware(blockedSoftwares: string[], software: string | null): boolean {
+		if (software == null) return false;
+		return blockedSoftwares.some(x => `.${software.toLowerCase()}`.includes(`.${x}`));
+	}
+
+	@bindThis
 	public extractDbHost(uri: string): string {
 		const url = new URL(uri);
 		return this.toPuny(url.hostname);

@@ -7,8 +7,14 @@
 				<span>{{ i18n.ts.blockedInstances }}</span>
 				<template #caption>{{ i18n.ts.blockedInstancesDescription }}</template>
 			</MkTextarea>
-
 			<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
+		</FormSuspense>
+		<FormSuspense :p="init2">
+			<MkTextarea v-model="blockedSoftwares">
+				<span>{{ i18n.ts.blockedSoftwares }}</span>
+				<template #caption>{{ i18n.ts.blockedSoftwaresDescription }}</template>
+			</MkTextarea>
+			<MkButton primary @click="save2"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
 		</FormSuspense>
 	</MkSpacer>
 </MkStickyContainer>
@@ -26,15 +32,29 @@ import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 
 let blockedHosts: string = $ref('');
+let blockedSoftwares: string = $ref('');
 
 async function init() {
 	const meta = await os.api('admin/meta');
 	blockedHosts = meta.blockedHosts.join('\n');
 }
 
+async function init2() {
+	const meta = await os.api('admin/meta');
+	blockedSoftwares = meta.blockedSoftwares.join('\n');
+}
+
 function save() {
 	os.apiWithDialog('admin/update-meta', {
 		blockedHosts: blockedHosts.split('\n') || [],
+	}).then(() => {
+		fetchInstance();
+	});
+}
+
+function save2() {
+	os.apiWithDialog('admin/update-meta', {
+		blockedSoftwares: blockedSoftwares.split('\n') || [],
 	}).then(() => {
 		fetchInstance();
 	});

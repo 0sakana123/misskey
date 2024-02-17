@@ -74,10 +74,17 @@ export class InboxProcessorService {
 
 		const host = this.utilityService.toPuny(new URL(signature.keyId).hostname);
 
-		// ブロックしてたら中断
+		// ドメインブロックしてたら中断
 		const meta = await this.metaService.fetch();
 		if (this.utilityService.isBlockedHost(meta.blockedHosts, host)) {
 			return `Blocked request: ${host}`;
+		}
+
+		// ソフトウェアブロックしてたら中断
+		let toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
+		//let toInstance = await this.instancesRepository.findOneBy({ host: this.federatedInstanceService.fetch(host) });
+		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
+			return 'skip (software blocked)';
 		}
 
 		const keyIdLower = signature.keyId.toLowerCase();
@@ -87,16 +94,16 @@ export class InboxProcessorService {
 
 		// HTTP-Signature keyIdを元にDBから取得
 		let authUser: {
-		user: CacheableRemoteUser;
-		key: UserPublickey | null;
-	} | null = await this.apDbResolverService.getAuthUserFromKeyId(signature.keyId);
+			user: CacheableRemoteUser;
+			key: UserPublickey | null;
+		} | null = await this.apDbResolverService.getAuthUserFromKeyId(signature.keyId);
 
 		// keyIdでわからなければ、activity.actorを元にDBから取得 || activity.actorを元にリモートから取得
 		if (authUser == null) {
 			try {
 				authUser = await this.apDbResolverService.getAuthUserFromApId(getApId(activity.actor));
 			} catch (err) {
-			// 対象が4xxならスキップ
+				// 対象が4xxならスキップ
 				if (err instanceof StatusError) {
 					if (err.isClientError) {
 						return `skip: Ignored deleted actors on both ends ${activity.actor} - ${err.statusCode}`;
@@ -121,7 +128,7 @@ export class InboxProcessorService {
 
 		// また、signatureのsignerは、activity.actorと一致する必要がある
 		if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {
-		// 一致しなくても、でもLD-Signatureがありそうならそっちも見る
+			// 一致しなくても、でもLD-Signatureがありそうならそっちも見る
 			if (activity.signature) {
 				if (activity.signature.type !== 'RsaSignature2017') {
 					return `skip: unsupported LD-signature type ${activity.signature.type}`;
