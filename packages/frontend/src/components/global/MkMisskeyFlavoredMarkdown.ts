@@ -68,6 +68,11 @@ export default defineComponent({
 			return t.match(/^[0-9.]+s$/) ? t : null;
 		};
 
+		const validColor = (c: string | null | undefined): string | null => {
+			if (c == null) return null;
+			return c.match(/^[0-9a-f]{3,6}$/i) ? c : null;
+		};
+		
 		const useAnim = defaultStore.state.advancedMfm && defaultStore.state.animatedMfm;
 
 		/**
@@ -109,26 +114,30 @@ export default defineComponent({
 
 				case 'fn': {
 					// TODO: CSSを文字列で組み立てていくと token.props.args.~~~ 経由でCSSインジェクションできるのでよしなにやる
-					let style;
+					let style: string | undefined;
 					switch (token.props.name) {
 						case 'tada': {
 							const speed = validTime(token.props.args.speed) ?? '1s';
-							style = 'font-size: 150%;' + (useAnim ? `animation: tada ${speed} linear infinite both;` : '');
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = 'font-size: 150%;' + (useAnim ? `animation: tada ${speed} linear infinite both; animation-delay: ${delay};` : '');
 							break;
 						}
 						case 'jelly': {
 							const speed = validTime(token.props.args.speed) ?? '1s';
-							style = (useAnim ? `animation: mfm-rubberBand ${speed} linear infinite both;` : '');
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = (useAnim ? `animation: mfm-rubberBand ${speed} linear infinite both; animation-delay: ${delay};` : '');
 							break;
 						}
 						case 'twitch': {
 							const speed = validTime(token.props.args.speed) ?? '0.5s';
-							style = useAnim ? `animation: mfm-twitch ${speed} ease infinite;` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = useAnim ? `animation: mfm-twitch ${speed} ease infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'shake': {
 							const speed = validTime(token.props.args.speed) ?? '0.5s';
-							style = useAnim ? `animation: mfm-shake ${speed} ease infinite;` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = useAnim ? `animation: mfm-shake ${speed} ease infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'spin': {
@@ -141,17 +150,20 @@ export default defineComponent({
 								token.props.args.y ? 'mfm-spinY' :
 								'mfm-spin';
 							const speed = validTime(token.props.args.speed) ?? '1.5s';
-							style = useAnim ? `animation: ${anime} ${speed} linear infinite; animation-direction: ${direction};` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = useAnim ? `animation: ${anime} ${speed} linear infinite; animation-direction: ${direction}; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'jump': {
 							const speed = validTime(token.props.args.speed) ?? '0.75s';
-							style = useAnim ? `animation: mfm-jump ${speed} linear infinite;` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = useAnim ? `animation: mfm-jump ${speed} linear infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'bounce': {
 							const speed = validTime(token.props.args.speed) ?? '0.75s';
-							style = useAnim ? `animation: mfm-bounce ${speed} linear infinite; transform-origin: center bottom;` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = useAnim ? `animation: mfm-bounce ${speed} linear infinite; transform-origin: center bottom; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'flip': {
@@ -196,7 +208,8 @@ export default defineComponent({
 						}
 						case 'rainbow': {
 							const speed = validTime(token.props.args.speed) ?? '1s';
-							style = useAnim ? `animation: mfm-rainbow ${speed} linear infinite;` : '';
+							const delay = validTime(token.props.args.delay) ?? '0s';
+							style = `animation: mfm-rainbow ${speed} linear infinite; animation-delay: ${delay};`;
 							break;
 						}
 						case 'sparkle': {
@@ -229,15 +242,28 @@ export default defineComponent({
 							break;
 						}
 						case 'fg': {
-							let color = token.props.args.color;
-							if (!/^[0-9a-f]{3,6}$/i.test(color)) color = 'f00';
-							style = `color: #${color};`;
+							let color = validColor(token.props.args.color);
+							color = color ?? 'f00';
+							style = `color: #${color}; overflow-wrap: anywhere;`;
 							break;
 						}
 						case 'bg': {
-							let color = token.props.args.color;
-							if (!/^[0-9a-f]{3,6}$/i.test(color)) color = 'f00';
-							style = `background-color: #${color};`;
+							let color = validColor(token.props.args.color);
+							color = color ?? 'f00';
+							style = `background-color: #${color}; overflow-wrap: anywhere;`;
+							break;
+						}
+						case 'border': {
+							let color = validColor(token.props.args.color);
+							color = color ? `#${color}` : 'var(--accent)';
+							let b_style = token.props.args.style;
+							if (
+								!['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+									.includes(b_style)
+							) b_style = 'solid';
+							const width = parseFloat(token.props.args.width ?? '1');
+							const radius = parseFloat(token.props.args.radius ?? '0');
+							style = `border: ${width}px ${b_style} ${color}; border-radius: ${radius}px;${token.props.args.noclip ? '' : ' overflow: clip;'}`;
 							break;
 						}
 						case 'ruby': {
@@ -269,7 +295,7 @@ export default defineComponent({
 							]);
 						}
 					}
-					if (style == null) {
+					if (style === undefined) {
 						return h('span', {}, ['$[', token.props.name, ' ', ...genEl(token.children, scale), ']']);
 					} else {
 						return h('span', {
