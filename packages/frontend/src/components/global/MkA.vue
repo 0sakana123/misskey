@@ -37,6 +37,10 @@ const active = $computed(() => {
 function onContextmenu(ev) {
 	const selection = window.getSelection();
 	if (selection && selection.toString() !== '') return;
+
+	const extractedHost : string = props.to.substring(props.to.lastIndexOf("@") + 1);
+	const extractedName : string = props.to.substring(props.to.indexOf("@") + 1, props.to.lastIndexOf("@"));
+
 	os.contextMenu([{
 		type: 'label',
 		text: props.to,
@@ -58,7 +62,13 @@ function onContextmenu(ev) {
 		action: () => {
 			window.open(props.to, '_blank');
 		},
-	}, {
+	}, (extractedHost.includes(".")) ? {
+		icon: 'ti ti-external-link',
+		text: i18n.ts.showOnRemote,
+		action: () => {
+			window.open(`https://${extractedHost}/@${extractedName}`, '_blank');
+		},
+	} : undefined, {
 		icon: 'ti ti-link',
 		text: i18n.ts.copyLink,
 		action: () => {
