@@ -41,6 +41,13 @@ class LocalTimelineChannel extends Channel {
 		if (note.visibility !== 'public') return;
 		if (note.channelId != null && !this.followingChannels.has(note.channelId)) return;
 
+		// 流れてきたNoteがミュートすべきNoteだったら無視する
+		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
+		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
+		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
+		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
+		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
+
 		// リプライなら再pack
 		if (note.replyId != null) {
 			note.reply = await this.noteEntityService.pack(note.replyId, this.user, {
@@ -65,13 +72,6 @@ class LocalTimelineChannel extends Channel {
 		if (isUserRelated(note, this.muting)) return;
 		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
 		if (isUserRelated(note, this.blocking)) return;
-
-		// 流れてきたNoteがミュートすべきNoteだったら無視する
-		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
-		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
-		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
-		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
-		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
 
 		this.connection.cacheNote(note);
 
