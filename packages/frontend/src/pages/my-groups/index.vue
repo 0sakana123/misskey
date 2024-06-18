@@ -117,11 +117,11 @@ const headerActions = $computed(() => []);
 const headerTabs = $computed(() => [{
 	key: 'owned',
 	title: i18n.ts.ownedGroups,
-	icon: 'ti ti-user-cog',
+	icon: 'ti ti-users',
 }, {
 	key: 'joined',
 	title: i18n.ts.joinedGroups,
-	icon: 'ti ti-users',
+	icon: 'ti ti-user',
 }, {
 	key: 'invites',
 	title: i18n.ts.invites,

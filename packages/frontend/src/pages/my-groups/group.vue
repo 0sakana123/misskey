@@ -2,7 +2,7 @@
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
 	<MkSpacer :content-max="700">
-		<div class="mk-list-page">
+		<div class="mk-group-page">
 			<Transition :name="$store.state.animation ? '_transition_zoom' : ''" mode="out-in">
 				<div v-if="list" class="">
 					<div class="">
@@ -102,7 +102,7 @@ async function renameGroup() {
 function transfer() {
 	os.selectUser().then(user => {
 		os.apiWithDialog('users/groups/transfer', {
-			groupId: this.group.id,
+			groupId: group.id,
 			userId: user.id
 		});
 	});
@@ -130,7 +130,7 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata(computed(() => group ? {
 	title: group.name,
-	icon: 'ti ti-users-group',
+	icon: 'ti ti-users',
 } : null));
 </script>
 
