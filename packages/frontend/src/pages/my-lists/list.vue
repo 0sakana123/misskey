@@ -76,7 +76,13 @@ function addUser() {
 	});
 }
 
-function removeUser(user) {
+async function removeUser(user) {
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.t('removeAreYouSure', { x: user.username }),
+	});
+	if (canceled) return;
+
 	os.api('users/lists/pull', {
 		listId: list.id,
 		userId: user.id,

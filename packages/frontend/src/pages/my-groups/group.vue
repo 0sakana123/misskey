@@ -75,13 +75,20 @@ function invite() {
 	});
 }
 
-function removeUser(user) {
+async function removeUser(user) {
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.t('removeAreYouSure', { x: user.username }),
+	});
+	if (canceled) return;
+
 	os.api('users/groups/pull', {
 		groupId: group.id,
 		userId: user.id
 	}).then(() => {
 		users = users.filter(x => x.id !== user.id);
 	});
+	os.success();
 }
 
 async function renameGroup() {
