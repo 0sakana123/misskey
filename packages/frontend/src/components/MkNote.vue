@@ -107,6 +107,9 @@
 				<button v-if="appearNote.myReaction != null" ref="reactButton" :class="$style.footerButton" class="_button" @click="undoReact(appearNote)">
 					<i class="ti ti-minus"></i>
 				</button>
+				<button v-if="appearNote.user.instance != null" ref="showOnRemoteButton" :class="$style.footerButton" class="_button" @click="openRemote(appearNote)">
+					<i class="ti ti-external-link"></i>
+				</button>
 				<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="menu()">
 					<i class="ti ti-dots"></i>
 				</button>
@@ -190,6 +193,7 @@ const menuButton = shallowRef<HTMLElement>();
 const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
+const showOnRemoteButton = shallowRef<HTMLElement>();
 let appearNote = $computed(() => isRenote ? note.renote as misskey.entities.Note : note);
 const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
@@ -328,6 +332,10 @@ function undoReact(note): void {
 	os.api('notes/reactions/delete', {
 		noteId: note.id,
 	});
+}
+
+function openRemote(note): void {
+	window.open(note.uri, '_blank');
 }
 
 const currentClipPage = inject<Ref<misskey.entities.Clip> | null>('currentClipPage', null);
