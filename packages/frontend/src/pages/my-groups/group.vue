@@ -4,7 +4,7 @@
 	<MkSpacer :content-max="700">
 		<div class="mk-group-page">
 			<Transition :name="$store.state.animation ? '_transition_zoom' : ''" mode="out-in">
-				<div v-if="list" class="">
+				<div v-if="group" class="">
 					<div class="">
 						<MkButton inline @click="invite()">{{ i18n.ts.invite }}</MkButton>
 						<MkButton inline @click="renameGroup()">{{ i18n.ts.rename }}</MkButton>
@@ -15,7 +15,7 @@
 			</Transition>
 
 			<Transition :name="$store.state.animation ? '_transition_zoom' : ''" mode="out-in">
-				<div v-if="list" class="members _margin">
+				<div v-if="group" class="members _margin">
 					<div class="">{{ i18n.ts.members }}</div>
 					<div class="">
 						<div class="users">
