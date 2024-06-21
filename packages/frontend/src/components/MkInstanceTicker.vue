@@ -41,7 +41,7 @@ $height: 2ex;
 	display: flex;
 	align-items: center;
 	height: $height;
-	border-radius: 4px 0 0 4px;
+	border-radius: 1ex 0 0 1ex;
 	overflow: clip;
 	color: #fff;
 	text-shadow: /* .866 ≈ sin(60deg) */
@@ -67,6 +67,7 @@ $height: 2ex;
 .icon {
 	height: $height;
 	flex-shrink: 0;
+	border-radius: 0 1ex 1ex 0;
 }
 
 .name {
