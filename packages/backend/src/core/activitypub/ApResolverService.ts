@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ILocalUser } from '@/models/entities/User.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
-import type { NotesRepository, PollsRepository, NoteReactionsRepository, UsersRepository } from '@/models/index.js';
+import type { NotesRepository, PollsRepository, NoteReactionsRepository, UsersRepository, InstancesRepository } from '@/models/index.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
@@ -27,6 +27,7 @@ export class Resolver {
 		private notesRepository: NotesRepository,
 		private pollsRepository: PollsRepository,
 		private noteReactionsRepository: NoteReactionsRepository,
+		private instancesRepository: InstancesRepository,
 		private utilityService: UtilityService,
 		private instanceActorService: InstanceActorService,
 		private metaService: MetaService,
@@ -94,7 +95,12 @@ export class Resolver {
 
 		const meta = await this.metaService.fetch();
 		if (this.utilityService.isBlockedHost(meta.blockedHosts, host)) {
-			throw new Error('Instance is blocked');
+			throw new Error('Instance is blocked (host)');
+		}
+		
+		const toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
+		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
+			throw new Error('Instance is blocked (software)');
 		}
 
 		if (this.config.signToActivityPubGet && !this.user) {
