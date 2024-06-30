@@ -60,6 +60,7 @@ importers:
       '@fastify/static': 6.8.0
       '@fastify/view': 7.4.1
       '@jest/globals': 29.4.2
+      '@misskey-dev/sharp-read-bmp': 1.0.0
       '@nestjs/common': 9.3.7
       '@nestjs/core': 9.3.7
       '@nestjs/testing': 9.3.7
@@ -219,6 +220,7 @@ importers:
       '@fastify/multipart': 7.4.0
       '@fastify/static': 6.8.0
       '@fastify/view': 7.4.1
+      '@misskey-dev/sharp-read-bmp': 1.0.0
       '@nestjs/common': 9.3.7_mnr6j2del53muneqly5h4y27ai
       '@nestjs/core': 9.3.7_ojttuksvundfk3amlyo674va74
       '@nestjs/testing': 9.3.7_zmctrozi6xxh3beaccl6ebop6u
@@ -1782,6 +1784,14 @@ packages:
       - supports-color
     dev: false
     optional: true
+
+  /@misskey-dev/sharp-read-bmp/1.0.0:
+    resolution: {integrity: sha512-PHMBgW9vbZvTiesAUtiDqO6VdWZx1ht4wXSt3ondam/wiwTfiE4wjxOjNBG5gw3yDcghC2yzCNFZHG2DM938xw==}
+    dependencies:
+      decode-bmp: 0.2.1
+      decode-ico: 0.4.1
+      sharp: 0.31.3
+    dev: false
 
   /@mole-inc/bin-wrapper/8.0.1:
     resolution: {integrity: sha512-sTGoeZnjI8N4KS+sW2AN95gDBErhAguvkw/tWdCjeM8bvxpz5lqrnd0vOJABA1A+Ic3zED7PYoLP/RANLgVotA==}
