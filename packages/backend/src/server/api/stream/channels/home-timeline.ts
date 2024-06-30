@@ -15,6 +15,7 @@ class HomeTimelineChannel extends Channel {
 
 	constructor(
 		private noteEntityService: NoteEntityService,
+		private notesRepository: NotesRepository,
 
 		id: string,
 		connection: Channel['connection'],
@@ -41,13 +42,6 @@ class HomeTimelineChannel extends Channel {
 		// Ignore notes from instances the user has muted
 		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
 
-		// 流れてきたNoteがミュートすべきNoteだったら無視する
-		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
-		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
-		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
-		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
-		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
-
 		if (['followers', 'specified'].includes(note.visibility)) {
 			note = await this.noteEntityService.pack(note.id, this.user!, {
 				detail: true,
@@ -69,6 +63,27 @@ class HomeTimelineChannel extends Channel {
 					detail: true,
 				});
 			}
+		}
+
+		// 流れてきたNoteがミュートすべきNoteだったら無視する
+		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
+		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
+		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
+		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
+		if (note.replyId != null) {
+			const reply = this.notesRepository.findOneBy({
+				id: note.replyId,
+			});
+			if (this.userProfile && await checkWordMute(reply, this.user, this.userProfile.mutedWords)) return;
+		}
+		else if (note.renoteId != null) {
+			const renote = this.notesRepository.findOneBy({
+				id: note.renoteId,
+			});
+			if (this.userProfile && await checkWordMute(renote, this.user, this.userProfile.mutedWords)) return;
+		}
+		else {
+			if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
 		}
 
 		// 関係ない返信は除外
