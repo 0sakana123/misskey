@@ -71,13 +71,13 @@ class HomeTimelineChannel extends Channel {
 		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
 		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
 		if (note.replyId != null) {
-			const reply = this.notesRepository.findOneBy({
+			const reply = await this.notesRepository.findOneBy({
 				id: note.replyId,
 			});
 			if (this.userProfile && await checkWordMute(reply, this.user, this.userProfile.mutedWords)) return;
 		}
 		else if (note.renoteId != null) {
-			const renote = this.notesRepository.findOneBy({
+			const renote = await this.notesRepository.findOneBy({
 				id: note.renoteId,
 			});
 			if (this.userProfile && await checkWordMute(renote, this.user, this.userProfile.mutedWords)) return;
