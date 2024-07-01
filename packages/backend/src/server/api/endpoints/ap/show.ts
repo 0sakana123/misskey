@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { UsersRepository, NotesRepository, InstancesRepository } from '@/models/index.js';
+import type { UsersRepository, NotesRepository } from '@/models/index.js';
 import type { Note } from '@/models/entities/Note.js';
 import type { CacheableLocalUser, User } from '@/models/entities/User.js';
 import { isActor, isPost, getApId } from '@/core/activitypub/type.js';
@@ -91,9 +91,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
-		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
-
 		private utilityService: UtilityService,
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
@@ -120,10 +117,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	private async fetchAny(uri: string, me: CacheableLocalUser | null | undefined): Promise<SchemaType<typeof meta['res']> | null> {
 	// ブロックしてたら中断
 		const fetchedMeta = await this.metaService.fetch();
-		const dbHost = this.utilityService.extractDbHost(uri);
-		const toInstance = await this.instancesRepository.findOneBy({ host: dbHost });
-		if (this.utilityService.isBlockedHost(fetchedMeta.blockedHosts, dbHost)) return null;
-		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(fetchedMeta.blockedSoftwares, toInstance.softwareName)) return null;
+		if (this.utilityService.isBlockedHost(fetchedMeta.blockedHosts, this.utilityService.extractDbHost(uri))) return null;
 
 		let local = await this.mergePack(me, ...await Promise.all([
 			this.apDbResolverService.getUserFromApId(uri),

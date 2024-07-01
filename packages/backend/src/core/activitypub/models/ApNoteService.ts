@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import promiseLimit from 'promise-limit';
 import { DI } from '@/di-symbols.js';
-import type { MessagingMessagesRepository, PollsRepository, EmojisRepository, InstancesRepository } from '@/models/index.js';
+import type { MessagingMessagesRepository, PollsRepository, EmojisRepository, UsersRepository } from '@/models/index.js';
 import type { Config } from '@/config.js';
 import type { CacheableRemoteUser } from '@/models/entities/User.js';
 import type { Note } from '@/models/entities/Note.js';
@@ -49,9 +49,6 @@ export class ApNoteService {
 
 		@Inject(DI.messagingMessagesRepository)
 		private messagingMessagesRepository: MessagingMessagesRepository,
-
-		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
 
 		private idService: IdService,
 		private apMfmService: ApMfmService,
@@ -336,11 +333,8 @@ export class ApNoteService {
 	
 		// ブロックしてたら中断
 		const meta = await this.metaService.fetch();
-		const dbHost = this.utilityService.extractDbHost(uri);
-		const toInstance = await this.instancesRepository.findOneBy({ host: dbHost });
-		if (this.utilityService.isBlockedHost(meta.blockedHosts, dbHost)) throw { statusCode: 451 };
-		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) throw { statusCode: 451 };
-		
+		if (this.utilityService.isBlockedHost(meta.blockedHosts, this.utilityService.extractDbHost(uri))) throw { statusCode: 451 };
+	
 		const unlock = await this.appLockService.getApLock(uri);
 	
 		try {
