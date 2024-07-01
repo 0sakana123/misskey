@@ -17,8 +17,6 @@ class HybridTimelineChannel extends Channel {
 	public static shouldShare = true;
 	public static requireCredential = true;
 
-	private notesRepository: NotesRepository;
-
 	constructor(
 		private metaService: MetaService,
 		private roleService: RoleService,
@@ -81,21 +79,8 @@ class HybridTimelineChannel extends Channel {
 		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
 		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
 		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
-		if (note.replyId != null) {
-			const reply = await this.notesRepository.findOneBy({
-				id: note.replyId,
-			});
-			if (reply && this.userProfile && await checkWordMute(reply, this.user, this.userProfile.mutedWords)) return;
-		}
-		else if (note.renoteId != null) {
-			const renote = await this.notesRepository.findOneBy({
-				id: note.renoteId,
-			});
-			if (renote && this.userProfile && await checkWordMute(renote, this.user, this.userProfile.mutedWords)) return;
-		}
-		else {
-			if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
-		}
+		const originalNote = await this.noteEntityService.getOriginalNoteText(note);
+		if (this.userProfile && await checkWordMute(originalNote, this.user, this.userProfile.mutedWords)) return;
 
 		// Ignore notes from instances the user has muted
 		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;

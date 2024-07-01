@@ -24,7 +24,7 @@ export class NoteEntityService implements OnModuleInit {
 	private driveFileEntityService: DriveFileEntityService;
 	private customEmojiService: CustomEmojiService;
 	private reactionService: ReactionService;
-	
+
 	constructor(
 		private moduleRef: ModuleRef,
 
@@ -68,10 +68,10 @@ export class NoteEntityService implements OnModuleInit {
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 		this.reactionService = this.moduleRef.get('ReactionService');
 	}
-	
+
 	@bindThis
 	private async hideNote(packedNote: Packed<'Note'>, meId: User['id'] | null) {
-	// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
+		// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
 		let hide = false;
 
 		// visibility が specified かつ自分が指定されていなかったら非表示
@@ -81,7 +81,7 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (meId === packedNote.userId) {
 				hide = false;
 			} else {
-			// 指定されているかどうか
+				// 指定されているかどうか
 				const specified = packedNote.visibleUserIds!.some((id: any) => meId === id);
 
 				if (specified) {
@@ -99,13 +99,13 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (meId === packedNote.userId) {
 				hide = false;
 			} else if (packedNote.reply && (meId === packedNote.reply.userId)) {
-			// 自分の投稿に対するリプライ
+				// 自分の投稿に対するリプライ
 				hide = false;
 			} else if (packedNote.mentions && packedNote.mentions.some(id => meId === id)) {
-			// 自分へのメンション
+				// 自分へのメンション
 				hide = false;
 			} else {
-			// フォロワーかどうか
+				// フォロワーかどうか
 				const following = await this.followingsRepository.findOneBy({
 					followeeId: packedNote.userId,
 					followerId: meId,
@@ -180,7 +180,7 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (reaction === null) {
 				return undefined;
 			}
-		// 実装上抜けがあるだけかもしれないので、「ヒントに含まれてなかったら(=undefinedなら)return」のようにはしない
+			// 実装上抜けがあるだけかもしれないので、「ヒントに含まれてなかったら(=undefinedなら)return」のようにはしない
 		}
 
 		const reaction = await this.noteReactionsRepository.findOneBy({
@@ -404,12 +404,29 @@ export class NoteEntityService implements OnModuleInit {
 		const query = this.notesRepository.createQueryBuilder('note')
 			.where('note.userId = :userId', { userId })
 			.andWhere('note.renoteId = :renoteId', { renoteId });
-	
+
 		// 指定した投稿を除く
 		if (excludeNoteId) {
 			query.andWhere('note.id != :excludeNoteId', { excludeNoteId });
 		}
-	
+
 		return await query.getCount();
-	}	
+	}
+
+	@bindThis
+	public async getOriginalNoteText(note: Packed<'Note'>): Promise<Packed<'Note'>> {
+		// timelineでのハードミュート判定用Note加工
+		// Todo: 返信、引用RN時の判定(DB見て考察)
+
+		if (note.renoteId != null) {
+			const renote = await this.notesRepository.findOneBy({
+				id: note.renoteId,
+			});
+			if (renote !== null) {
+				// textを元ノートの本文に置き換え
+				note.text = renote.text;
+			}
+		}
+		return note;
+	}
 }
