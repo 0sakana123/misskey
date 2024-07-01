@@ -8,6 +8,12 @@
 
 You should also include the user name that made the change.
 -->
+## 1.1.2 (2024/07/02)
+
+### Bugfixes
+- Client: ハードワードミュートの挙動修正
+
+
 ## 1.1.0 (2024/07/01)
 
 ### Improvements
