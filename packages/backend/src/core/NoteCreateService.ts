@@ -451,7 +451,20 @@ export class NoteCreateService {
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
+				
+				// RenoteやReplyの場合元ノート本文を対象に判定する
+				let targetNote : Note;
+				if (note.renoteId != null) {
+					targetNote = this.notesRepository.findOneBy({ id: note.renoteId });
+				}
+				else if (note.replyId != null) {
+					targetNote = this.notesRepository.findOneBy({ id: note.replyId });
+				}
+				else {
+					targetNote = note;
+				}
+
+				checkWordMute(targetNote, { id: u.userId }, u.mutedWords).then(shouldMute => {
 					if (shouldMute) {
 						this.mutedNotesRepository.insert({
 							id: this.idService.genId(),
