@@ -8,6 +8,29 @@
 
 You should also include the user name that made the change.
 -->
+## 1.1.0 (2024/07/01)
+
+### Improvements
+- Client: 新規MfM追加(ruby, unixtime, border)
+- Client: アイコン右クリックメニューからリモートのユーザーページを直接開けるように
+- Client: ノート下部のメニューにリモートで表示ボタンを追加(レイアウトは今後最適化？)
+
+### Bugfixes
+- Client: テキスト内容の調整
+- Client: グループ機能のUIを復元(新規グループの作成・編集・削除が可能に)
+- Client: インスタンスティッカーのアイコンを円形に
+- Server: ハードワードミュートがリノートにも適用されるように
+
+
+## 1.0.1 (2023/11/20)
+
+### Improvements
+- Client: x3, x4以外のMfMでノートを畳まないように
+
+### Bugfixes
+- Client: ウィジェットのサーバーメトリクスのディスク容量が正しく表示されない問題を修正
+
+
 ## 1.0.0 (2023/10/02)
 
 ### Improvements
