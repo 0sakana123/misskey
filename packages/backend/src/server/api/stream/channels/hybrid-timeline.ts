@@ -17,11 +17,12 @@ class HybridTimelineChannel extends Channel {
 	public static shouldShare = true;
 	public static requireCredential = true;
 
+	private notesRepository: NotesRepository;
+
 	constructor(
 		private metaService: MetaService,
 		private roleService: RoleService,
 		private noteEntityService: NoteEntityService,
-		private notesRepository: NotesRepository,
 
 		id: string,
 		connection: Channel['connection'],
@@ -84,13 +85,13 @@ class HybridTimelineChannel extends Channel {
 			const reply = await this.notesRepository.findOneBy({
 				id: note.replyId,
 			});
-			if (this.userProfile && await checkWordMute(reply, this.user, this.userProfile.mutedWords)) return;
+			if (reply && this.userProfile && await checkWordMute(reply, this.user, this.userProfile.mutedWords)) return;
 		}
 		else if (note.renoteId != null) {
 			const renote = await this.notesRepository.findOneBy({
 				id: note.renoteId,
 			});
-			if (this.userProfile && await checkWordMute(renote, this.user, this.userProfile.mutedWords)) return;
+			if (renote && this.userProfile && await checkWordMute(renote, this.user, this.userProfile.mutedWords)) return;
 		}
 		else {
 			if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;

@@ -192,7 +192,7 @@ export class NoteCreateService {
 		private perUserNotesChart: PerUserNotesChart,
 		private activeUsersChart: ActiveUsersChart,
 		private instanceChart: InstanceChart,
-	) {}
+	) { }
 
 	@bindThis
 	public async create(user: {
@@ -379,7 +379,7 @@ export class NoteCreateService {
 		// 投稿を作成
 		try {
 			if (insert.hasPoll) {
-			// Start transaction
+				// Start transaction
 				await this.db.transaction(async transactionalEntityManager => {
 					await transactionalEntityManager.insert(Note, insert);
 
@@ -402,7 +402,7 @@ export class NoteCreateService {
 
 			return insert;
 		} catch (e) {
-		// duplicate key error
+			// duplicate key error
 			if (isDuplicateKeyValueError(e)) {
 				const err = new Error('Duplicated note');
 				err.name = 'duplicated';
@@ -451,14 +451,28 @@ export class NoteCreateService {
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				
+
 				// RenoteやReplyの場合元ノート本文を対象に判定する
-				let targetNote : Note;
+				let targetNote!: Note;
 				if (note.renoteId != null) {
-					targetNote = this.notesRepository.findOneBy({ id: note.renoteId });
+					this.notesRepository.findOneBy({ id: note.renoteId }).then(result => {
+						if (result === null) {
+							targetNote = note;
+						}
+						else {
+							targetNote = result;
+						}
+					});
 				}
 				else if (note.replyId != null) {
-					targetNote = this.notesRepository.findOneBy({ id: note.replyId });
+					this.notesRepository.findOneBy({ id: note.replyId }).then(result => {
+						if (result === null) {
+							targetNote = note;
+						}
+						else {
+							targetNote = result;
+						}
+					});
 				}
 				else {
 					targetNote = note;
