@@ -64,7 +64,7 @@ import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import MkAsUi from '@/components/MkAsUi.vue';
 import { AsUiComponent, AsUiRoot, patch, registerAsUiLib, render } from '@/scripts/aiscript/ui';
-import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api';
 import MkFolder from '@/components/MkFolder.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 
@@ -150,19 +150,7 @@ async function run() {
 		THIS_ID: values.STR(flash.id),
 		THIS_URL: values.STR(`${url}/play/${flash.id}`),
 	}, {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			// nop
 		},
