@@ -64,7 +64,7 @@ export class InboxProcessorService {
 	@bindThis
 	public async process(job: Bull.Job<InboxJobData>): Promise<string> {
 		const signature = job.data.signature;	// HTTP-signature
-		const activity = job.data.activity;
+		let activity = job.data.activity;
 
 		//#region Log
 		const info = Object.assign({}, activity) as any;
@@ -81,7 +81,7 @@ export class InboxProcessorService {
 		}
 
 		// ソフトウェアブロックしてたら中断
-		let toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
+		const toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
 		//let toInstance = await this.instancesRepository.findOneBy({ host: this.federatedInstanceService.fetch(host) });
 		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
 			return 'skip (software blocked)';
@@ -157,6 +157,8 @@ export class InboxProcessorService {
 				if (!verified) {
 					return 'skip: LD-Signatureの検証に失敗しました';
 				}
+
+				activity = await ldSignature.compactToWellKnown(activity);
 
 				// もう一度actorチェック
 				if (authUser.user.uri !== activity.actor) {
