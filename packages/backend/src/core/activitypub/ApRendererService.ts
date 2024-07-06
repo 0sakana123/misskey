@@ -22,6 +22,7 @@ import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.j
 import type { UserKeypair } from '@/models/entities/UserKeypair.js';
 import type { UsersRepository, UserProfilesRepository, NotesRepository, DriveFilesRepository, EmojisRepository, PollsRepository } from '@/models/index.js';
 import { bindThis } from '@/decorators.js';
+import { WellKnownContext } from '@/core/activitypub/misc/contexts.js';
 import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
 import type { IActivity, IObject } from './type.js';
@@ -117,7 +118,7 @@ export class ApRendererService {
 		if (block.blockee?.uri == null) {
 			throw new Error('renderBlock: missing blockee uri');
 		}
-	
+
 		return {
 			type: 'Block',
 			id: `${this.config.url}/blocks/${block.id}`,
@@ -135,10 +136,10 @@ export class ApRendererService {
 			published: note.createdAt.toISOString(),
 			object,
 		} as any;
-	
+
 		if (object.to) activity.to = object.to;
 		if (object.cc) activity.cc = object.cc;
-	
+
 		return activity;
 	}
 
@@ -198,7 +199,7 @@ export class ApRendererService {
 			actor: `${this.config.url}/users/${relayActor.id}`,
 			object: 'https://www.w3.org/ns/activitystreams#Public',
 		};
-	
+
 		return follow;
 	}
 
@@ -224,7 +225,7 @@ export class ApRendererService {
 			actor: this.userEntityService.isLocalUser(follower) ? `${this.config.url}/users/${follower.id}` : follower.uri,
 			object: this.userEntityService.isLocalUser(followee) ? `${this.config.url}/users/${followee.id}` : followee.uri,
 		} as any;
-	
+
 		return follow;
 	}
 
@@ -302,16 +303,16 @@ export class ApRendererService {
 			const items = await this.driveFilesRepository.findBy({ id: In(ids) });
 			return ids.map(id => items.find(item => item.id === id)).filter(item => item != null) as DriveFile[];
 		};
-	
+
 		let inReplyTo;
 		let inReplyToNote: Note | null;
-	
+
 		if (note.replyId) {
 			inReplyToNote = await this.notesRepository.findOneBy({ id: note.replyId });
-	
+
 			if (inReplyToNote != null) {
 				const inReplyToUser = await this.usersRepository.findOneBy({ id: inReplyToNote.userId });
-	
+
 				if (inReplyToUser != null) {
 					if (inReplyToNote.uri) {
 						inReplyTo = inReplyToNote.uri;
@@ -327,24 +328,24 @@ export class ApRendererService {
 		} else {
 			inReplyTo = null;
 		}
-	
+
 		let quote;
-	
+
 		if (note.renoteId) {
 			const renote = await this.notesRepository.findOneBy({ id: note.renoteId });
-	
+
 			if (renote) {
 				quote = renote.uri ? renote.uri : `${this.config.url}/notes/${renote.id}`;
 			}
 		}
-	
+
 		const attributedTo = `${this.config.url}/users/${note.userId}`;
-	
+
 		const mentions = (JSON.parse(note.mentionedRemoteUsers) as IMentionedRemoteUsers).map(x => x.uri);
-	
+
 		let to: string[] = [];
 		let cc: string[] = [];
-	
+
 		if (note.visibility === 'public') {
 			to = ['https://www.w3.org/ns/activitystreams#Public'];
 			cc = [`${attributedTo}/followers`].concat(mentions);
@@ -357,44 +358,44 @@ export class ApRendererService {
 		} else {
 			to = mentions;
 		}
-	
+
 		const mentionedUsers = note.mentions.length > 0 ? await this.usersRepository.findBy({
 			id: In(note.mentions),
 		}) : [];
-	
+
 		const hashtagTags = (note.tags ?? []).map(tag => this.renderHashtag(tag));
 		const mentionTags = mentionedUsers.map(u => this.renderMention(u));
-	
+
 		const files = await getPromisedFiles(note.fileIds);
-	
+
 		const text = note.text ?? '';
 		let poll: Poll | null = null;
-	
+
 		if (note.hasPoll) {
 			poll = await this.pollsRepository.findOneBy({ noteId: note.id });
 		}
-	
+
 		let apText = text;
-	
+
 		if (quote) {
 			apText += `\n\nRE: ${quote}`;
 		}
-	
+
 		const summary = note.cw === '' ? String.fromCharCode(0x200B) : note.cw;
-	
+
 		const content = this.apMfmService.getNoteHtml(Object.assign({}, note, {
 			text: apText,
 		}));
-	
+
 		const emojis = await this.getEmojis(note.emojis);
 		const apemojis = emojis.map(emoji => this.renderEmoji(emoji));
-	
+
 		const tag = [
 			...hashtagTags,
 			...mentionTags,
 			...apemojis,
 		];
-	
+
 		const asPoll = poll ? {
 			type: 'Question',
 			content: this.apMfmService.getNoteHtml(Object.assign({}, note, {
@@ -410,11 +411,11 @@ export class ApRendererService {
 				},
 			})),
 		} : {};
-	
+
 		const asTalk = isTalk ? {
 			_misskey_talk: true,
 		} : {};
-	
+
 		return {
 			id: `${this.config.url}/notes/${note.id}`,
 			type: 'Note',
@@ -533,7 +534,7 @@ export class ApRendererService {
 				},
 			})),
 		};
-	
+
 		return question;
 	}
 
@@ -597,7 +598,7 @@ export class ApRendererService {
 			object,
 			published: new Date().toISOString(),
 		} as any;
-	
+
 		return activity;
 	}
 
@@ -623,56 +624,25 @@ export class ApRendererService {
 	@bindThis
 	public renderActivity(x: any): IActivity | null {
 		if (x == null) return null;
-	
+
 		if (typeof x === 'object' && x.id == null) {
 			x.id = `${this.config.url}/${uuid()}`;
 		}
-	
-		return Object.assign({
-			'@context': [
-				'https://www.w3.org/ns/activitystreams',
-				'https://w3id.org/security/v1',
-				{
-					// as non-standards
-					manuallyApprovesFollowers: 'as:manuallyApprovesFollowers',
-					sensitive: 'as:sensitive',
-					Hashtag: 'as:Hashtag',
-					quoteUrl: 'as:quoteUrl',
-					// Mastodon
-					toot: 'http://joinmastodon.org/ns#',
-					Emoji: 'toot:Emoji',
-					featured: 'toot:featured',
-					discoverable: 'toot:discoverable',
-					// schema
-					schema: 'http://schema.org#',
-					PropertyValue: 'schema:PropertyValue',
-					value: 'schema:value',
-					// Misskey
-					misskey: 'https://misskey-hub.net/ns#',
-					'_misskey_content': 'misskey:_misskey_content',
-					'_misskey_quote': 'misskey:_misskey_quote',
-					'_misskey_reaction': 'misskey:_misskey_reaction',
-					'_misskey_votes': 'misskey:_misskey_votes',
-					'_misskey_talk': 'misskey:_misskey_talk',
-					'isCat': 'misskey:isCat',
-					// vcard
-					vcard: 'http://www.w3.org/2006/vcard/ns#',
-				},
-			],
-		}, x);
+
+		return Object.assign({}, WellKnownContext, x);
 	}
-	
+
 	@bindThis
 	public async attachLdSignature(activity: any, user: { id: User['id']; host: null; }): Promise<IActivity> {
 		const keypair = await this.userKeypairStoreService.getUserKeypair(user.id);
-	
+
 		const ldSignature = this.ldSignatureService.use();
 		ldSignature.debug = false;
 		activity = await ldSignature.signRsaSignature2017(activity, keypair.privateKey, `${this.config.url}/users/${user.id}#main-key`);
-	
+
 		return activity;
 	}
-	
+
 	/**
 	 * Render OrderedCollectionPage
 	 * @param id URL of self
@@ -713,11 +683,11 @@ export class ApRendererService {
 			type: 'OrderedCollection',
 			totalItems,
 		};
-	
+
 		if (first) page.first = first;
 		if (last) page.last = last;
 		if (orderedItems) page.orderedItems = orderedItems;
-	
+
 		return page;
 	}
 
