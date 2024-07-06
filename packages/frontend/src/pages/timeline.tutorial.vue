@@ -57,6 +57,11 @@
 				<a href="https://misskey-hub.net/help.html" target="_blank" class="_link">{{ i18n.ts.help }}</a>
 			</template>
 		</I18n>
+		<I18n :src="i18n.ts._tutorial.step7_4" tag="div">
+			<template #generalsetting>
+				<MkA class="_link" to="/settings/general">{{ i18n.ts.clientSettings }}</MkA>
+			</template>
+		</I18n>
 		<div>{{ i18n.ts._tutorial.step7_3 }}</div>
 	</div>
 	<div v-else-if="tutorial === 7" :class="$style.body">
