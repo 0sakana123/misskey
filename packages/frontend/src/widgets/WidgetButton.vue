@@ -12,7 +12,7 @@ import { Interpreter, Parser, utils } from '@syuilo/aiscript';
 import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget';
 import { GetFormResultType } from '@/scripts/form';
 import * as os from '@/os';
-import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api';
 import { $i } from '@/account';
 import MkButton from '@/components/MkButton.vue';
 
@@ -55,19 +55,7 @@ const run = async () => {
 		storageKey: 'widget',
 		token: $i?.token,
 	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			// nop
 		},

@@ -1,5 +1,5 @@
 import { Interpreter, Parser, utils, values } from '@syuilo/aiscript';
-import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api';
 import { inputText } from '@/os';
 import { noteActions, notePostInterruptors, noteViewInterruptors, postFormActions, userActions } from '@/store';
 
@@ -15,19 +15,7 @@ export function install(plugin) {
 		plugin: plugin,
 		storageKey: 'plugins:' + plugin.id,
 	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			console.log(value);
 		},

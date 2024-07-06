@@ -13,7 +13,7 @@ import { Interpreter, Parser, utils, values } from '@syuilo/aiscript';
 import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget';
 import { GetFormResultType } from '@/scripts/form';
 import * as os from '@/os';
-import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api';
 import { $i } from '@/account';
 import MkAsUi from '@/components/MkAsUi.vue';
 import MkContainer from '@/components/MkContainer.vue';
@@ -62,19 +62,7 @@ async function run() {
 			root.value = _root.value;
 		}),
 	}, {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			// nop
 		},
