@@ -48,16 +48,16 @@ const hide = ref((defaultStore.state.nsfw === 'force' || defaultStore.state.enab
 	> i {
 		display: block;
 		position: absolute;
-		border-radius: 6px;
+		border-bottom-left-radius: 18px;
 		background-color: var(--fg);
 		color: var(--accentLighten);
 		font-size: 14px;
 		opacity: .5;
-		padding: 3px 6px;
+		padding: 8px 12px;
 		text-align: center;
 		cursor: pointer;
-		top: 12px;
-		right: 12px;
+		top: 0px;
+		right: 0px;
 	}
 
 	> video {
