@@ -89,16 +89,16 @@ watch(() => props.image, () => {
 .hide {
 	display: block;
 	position: absolute;
-	border-radius: 6px;
+	border-bottom-left-radius: 18px;
 	background-color: var(--accentedBg);
 	-webkit-backdrop-filter: var(--blur, blur(15px));
 	backdrop-filter: var(--blur, blur(15px));
 	color: var(--accent);
 	font-size: 0.8em;
-	padding: 6px 8px;
+	padding: 8px 12px;
 	text-align: center;
-	top: 12px;
-	right: 12px;
+	top: 0px;
+	right: 0px;
 }
 
 .imageContainer {
