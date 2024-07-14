@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as mfm from 'mfm-js';
-import { Not, In, DataSource } from 'typeorm';
+import { In, DataSource } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { extractMentions } from '@/misc/extract-mentions.js';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
@@ -451,7 +452,6 @@ export class NoteCreateService {
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-
 				// RenoteやReplyの場合元ノート本文を対象に判定する
 				let targetNote!: Note;
 				if (note.renoteId != null) {

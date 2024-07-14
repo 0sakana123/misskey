@@ -1,6 +1,5 @@
 import { URL } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
 import httpSignature from '@peertube/http-signature';
 import { DI } from '@/di-symbols.js';
 import type { InstancesRepository, DriveFilesRepository } from '@/models/index.js';
@@ -10,8 +9,6 @@ import { MetaService } from '@/core/MetaService.js';
 import { ApRequestService } from '@/core/activitypub/ApRequestService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
-import { Cache } from '@/misc/cache.js';
-import type { Instance } from '@/models/entities/Instance.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import ApRequestChart from '@/core/chart/charts/ap-request.js';
 import FederationChart from '@/core/chart/charts/federation.js';
@@ -27,7 +24,7 @@ import { ApInboxService } from '@/core/activitypub/ApInboxService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type Bull from 'bull';
-import type { DeliverJobData, InboxJobData } from '../types.js';
+import type { InboxJobData } from '../types.js';
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 @Injectable()
@@ -79,14 +76,16 @@ export class InboxProcessorService {
 		if (this.utilityService.isBlockedHost(meta.blockedHosts, host)) {
 			return `Blocked request: ${host}`;
 		}
-
+		/*
 		// ソフトウェアブロックしてたら中断
 		const toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
 		//let toInstance = await this.instancesRepository.findOneBy({ host: this.federatedInstanceService.fetch(host) });
-		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
-			return 'skip (software blocked)';
+		if (toInstance !== null) {
+			if (this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
+				return 'skip (software blocked)';
+			}
 		}
-
+		*/
 		const keyIdLower = signature.keyId.toLowerCase();
 		if (keyIdLower.startsWith('acct:')) {
 			return `Old keyId is no longer supported. ${keyIdLower}`;
