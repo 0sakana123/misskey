@@ -9,7 +9,7 @@
 	>
 		<div v-if="showing" class="_acrylic" :class="$style.root" :style="{ zIndex }">
 			<div style="padding: 16px 24px;">
-				{{ message }}
+				<Mfm :text="message"/>
 			</div>
 		</div>
 	</Transition>
