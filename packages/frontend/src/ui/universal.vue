@@ -2,7 +2,7 @@
 <div :class="[$style.root, { [$style.withWallpaper]: wallpaper }]">
 	<XSidebar v-if="!isMobile" :class="$style.sidebar"/>
 
-	<MkStickyContainer :class="$style.contents">
+	<MkStickyContainer ref="contentsEl" :class="$style.contents">
 		<template #header><XStatusBars :class="$style.statusbars"/></template>
 		<main style="min-width: 0;" :style="{ background: pageMetadata?.value?.bg }" @contextmenu.stop="onContextmenu">
 			<div :class="$style.content" style="container-type: inline-size;">
@@ -99,6 +99,7 @@ import { mainRouter } from '@/router';
 import { PageMetadata, provideMetadataReceiver, setPageMetadata } from '@/scripts/page-metadata';
 import { deviceKind } from '@/scripts/device-kind';
 import { miLocalStorage } from '@/local-storage';
+import { useScrollPositionManager } from '@/nirax';
 const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
@@ -115,6 +116,7 @@ window.addEventListener('resize', () => {
 
 let pageMetadata = $ref<null | ComputedRef<PageMetadata>>();
 const widgetsEl = $shallowRef<HTMLElement>();
+const contentsEl = $shallowRef<HTMLElement>();
 const widgetsShowing = $ref(false);
 
 provide('router', mainRouter);
@@ -208,6 +210,8 @@ function top() {
 }
 
 const wallpaper = miLocalStorage.getItem('wallpaper') != null;
+
+useScrollPositionManager(() => contentsEl, mainRouter);
 </script>
 
 <style lang="scss" module>
