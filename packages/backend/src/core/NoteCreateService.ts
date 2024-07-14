@@ -445,14 +445,15 @@ export class NoteCreateService {
 		this.incNotesCountOfUser(user);
 
 		// Word mute
-		mutedWordsCache.fetch(null, () => this.userProfilesRepository.find({
+		await mutedWordsCache.fetch(null, () => this.userProfilesRepository.find({
 			where: {
 				enableWordMute: true,
 			},
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				// RenoteやReplyの元ノート本文でのミュート判定
+				/*
+				// Renoteの元ノート本文でのミュート判定
 				if (note.renoteId != null) {
 					this.notesRepository.findOneBy({ id: note.renoteId }).then(result => {
 						if (result !== null) {
@@ -469,6 +470,7 @@ export class NoteCreateService {
 						}
 					});
 				}
+				// Replyの元ノート本文でのミュート判定
 				if (note.replyId != null) {
 					this.notesRepository.findOneBy({ id: note.replyId }).then(result => {
 						if (result !== null) {
@@ -485,15 +487,37 @@ export class NoteCreateService {
 						}
 					});
 				}
-
-				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
+				*/
+				// ミュート処理
+				checkWordMute(note, { id: u.userId }, u.mutedWords).then(async shouldMute => {
+					// このノートにミュートすべき単語が含まれていればレコード追加
 					if (shouldMute) {
 						this.mutedNotesRepository.insert({
 							id: this.idService.genId(),
 							userId: u.userId,
-							noteId: note.id,
+							noteId: note.id, // このノートのid
 							reason: 'word',
 						});
+						// 続けて、Renoteの元ノートであると仮定してRenote先をレコード追加
+						const muteRenotes = await this.notesRepository.findBy({ renoteId: note.id });
+						for (const muteRenote of muteRenotes) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: muteRenote.id, // RN先ノートのid
+								reason: 'wordOfRnOrigin',
+							});
+						}
+						// 続けて、Replyの元ノートであると仮定してReply先をレコード追加
+						const muteReplies = await this.notesRepository.findBy({ replyId: note.id });
+						for (const muteReply of muteReplies) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: muteReply.id, // RP先ノートのid
+								reason: 'wordOfRpOrigin',
+							});
+						}
 					}
 				});
 			}
