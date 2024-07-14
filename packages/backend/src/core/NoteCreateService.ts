@@ -452,33 +452,41 @@ export class NoteCreateService {
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				// RenoteやReplyの場合元ノート本文を対象に判定する
-				let targetNote!: Note;
+				// RenoteやReplyの元ノート本文でのミュート判定
 				if (note.renoteId != null) {
 					this.notesRepository.findOneBy({ id: note.renoteId }).then(result => {
-						if (result === null) {
-							targetNote = note;
-						}
-						else {
-							targetNote = result;
+						if (result !== null) {
+							checkWordMute(result, { id: u.userId }, u.mutedWords).then(shouldMute => {
+								if (shouldMute) {
+									this.mutedNotesRepository.insert({
+										id: this.idService.genId(),
+										userId: u.userId,
+										noteId: note.id,
+										reason: 'wordOfRnOrigin',
+									});
+								}
+							});
 						}
 					});
 				}
-				else if (note.replyId != null) {
+				if (note.replyId != null) {
 					this.notesRepository.findOneBy({ id: note.replyId }).then(result => {
-						if (result === null) {
-							targetNote = note;
-						}
-						else {
-							targetNote = result;
+						if (result !== null) {
+							checkWordMute(result, { id: u.userId }, u.mutedWords).then(shouldMute => {
+								if (shouldMute) {
+									this.mutedNotesRepository.insert({
+										id: this.idService.genId(),
+										userId: u.userId,
+										noteId: note.id,
+										reason: 'wordOfRpOrigin',
+									});
+								}
+							});
 						}
 					});
-				}
-				else {
-					targetNote = note;
 				}
 
-				checkWordMute(targetNote, { id: u.userId }, u.mutedWords).then(shouldMute => {
+				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
 					if (shouldMute) {
 						this.mutedNotesRepository.insert({
 							id: this.idService.genId(),
