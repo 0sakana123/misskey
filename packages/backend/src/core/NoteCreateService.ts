@@ -44,6 +44,8 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
+import { LoggerService } from '@/core/LoggerService.js';
+import type Logger from '@/logger.js';
 
 const mutedWordsCache = new Cache<{ userId: UserProfile['userId']; mutedWords: UserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -139,6 +141,7 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService {
+	private logger: Logger;
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -193,7 +196,10 @@ export class NoteCreateService {
 		private perUserNotesChart: PerUserNotesChart,
 		private activeUsersChart: ActiveUsersChart,
 		private instanceChart: InstanceChart,
-	) { }
+		private loggerService: LoggerService,
+	) {
+		this.logger = this.loggerService.getLogger('notecreate');
+	}
 
 	@bindThis
 	public async create(user: {
@@ -445,47 +451,89 @@ export class NoteCreateService {
 		this.incNotesCountOfUser(user);
 
 		// Word mute
-		mutedWordsCache.fetch(null, () => this.userProfilesRepository.find({
+		await mutedWordsCache.fetch(null, () => this.userProfilesRepository.find({
 			where: {
 				enableWordMute: true,
 			},
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				// RenoteやReplyの場合元ノート本文を対象に判定する
-				let targetNote!: Note;
-				if (note.renoteId != null) {
-					this.notesRepository.findOneBy({ id: note.renoteId }).then(result => {
-						if (result === null) {
-							targetNote = note;
+				// Renoteの元ノート本文でのミュート判定
+				if (data.renote !== null && data.renote !== undefined) {
+					checkWordMute(data.renote, { id: u.userId }, u.mutedWords).then(shouldMute => {
+						if (shouldMute) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: note.id,
+								reason: 'word',
+							});
+							this.logger.info(`Mute words detected in renote origin ${note.renoteId}`);
 						}
 						else {
-							targetNote = result;
-						}
-					});
-				}
-				else if (note.replyId != null) {
-					this.notesRepository.findOneBy({ id: note.replyId }).then(result => {
-						if (result === null) {
-							targetNote = note;
-						}
-						else {
-							targetNote = result;
+							this.logger.info(`No mute words in renote origin ${note.renoteId}`);
 						}
 					});
 				}
 				else {
-					targetNote = note;
+					this.logger.info('No renote id data');
 				}
-
-				checkWordMute(targetNote, { id: u.userId }, u.mutedWords).then(shouldMute => {
+				// Replyの元ノート本文でのミュート判定
+				if (data.reply !== null && data.reply !== undefined) {
+					checkWordMute(data.reply, { id: u.userId }, u.mutedWords).then(shouldMute => {
+						if (shouldMute) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: note.id,
+								reason: 'word',
+							});
+							this.logger.info(`Mute words detected in reply origin ${note.replyId}`);
+						}
+						else {
+							this.logger.info(`No mute words in reply origin ${note.replyId}`);
+						}
+					});
+				}
+				else {
+					this.logger.info('No reply id data');
+				}
+				// ミュート処理
+				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
+					// このノートにミュートすべき単語が含まれていればレコード追加
 					if (shouldMute) {
 						this.mutedNotesRepository.insert({
 							id: this.idService.genId(),
 							userId: u.userId,
-							noteId: note.id,
+							noteId: note.id, // このノートのid
 							reason: 'word',
 						});
+						/*
+						// このノートをRenoteしたノートをレコード追加
+						if (note.renoteCount > 0) {
+							const muteRenotes = await this.notesRepository.findBy({ renoteId: note.id });
+							for (const muteRenote of muteRenotes) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: muteRenote.id, // RN先ノートのid
+									reason: 'wordOfRnOrigin',
+								});
+							}
+						}
+						// このノートにReplyしたノートをレコード追加
+						if (note.repliesCount > 0) {
+							const muteReplies = await this.notesRepository.findBy({ replyId: note.id });
+							for (const muteReply of muteReplies) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: muteReply.id, // RP先ノートのid
+									reason: 'wordOfRpOrigin',
+								});
+							}
+						}
+						*/
 					}
 				});
 			}
