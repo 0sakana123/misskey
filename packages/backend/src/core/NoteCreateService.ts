@@ -488,32 +488,6 @@ export class NoteCreateService {
 							noteId: note.id, // このノートのid
 							reason: 'word',
 						});
-						/*
-						// このノートをRenoteしたノートをレコード追加
-						if (note.renoteCount > 0) {
-							const muteRenotes = await this.notesRepository.findBy({ renoteId: note.id });
-							for (const muteRenote of muteRenotes) {
-								this.mutedNotesRepository.insert({
-									id: this.idService.genId(),
-									userId: u.userId,
-									noteId: muteRenote.id, // RN先ノートのid
-									reason: 'wordOfRnOrigin',
-								});
-							}
-						}
-						// このノートにReplyしたノートをレコード追加
-						if (note.repliesCount > 0) {
-							const muteReplies = await this.notesRepository.findBy({ replyId: note.id });
-							for (const muteReply of muteReplies) {
-								this.mutedNotesRepository.insert({
-									id: this.idService.genId(),
-									userId: u.userId,
-									noteId: muteReply.id, // RP先ノートのid
-									reason: 'wordOfRpOrigin',
-								});
-							}
-						}
-						*/
 					}
 				});
 			}

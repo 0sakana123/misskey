@@ -1,7 +1,7 @@
 // NIRAX --- A lightweight router
 
 import { EventEmitter } from 'eventemitter3';
-import { Component, onMounted, shallowRef, ShallowRef } from 'vue';
+import { Ref, Component, ref, shallowRef, ShallowRef } from 'vue';
 import { pleaseLogin } from '@/scripts/please-login';
 import { safeURIDecode } from '@/scripts/safe-uri-decode';
 
@@ -263,33 +263,13 @@ export class Router extends EventEmitter<{
 		});
 	}
 
-	public replace(path: string, key?: string | null) {
+	public replace(path: string, key?: string | null, emitEvent = true) {
 		this.navigate(path, key);
+		if (emitEvent) {
+			this.emit('replace', {
+				path,
+				key: this.currentKey,
+			});
+		}
 	}
-}
-
-export function useScrollPositionManager(getScrollContainer: () => HTMLElement, router: Router) {
-	const scrollPosStore = new Map<string, number>();
-
-	onMounted(() => {
-		const scrollContainer = getScrollContainer();
-
-		scrollContainer.addEventListener('scroll', () => {
-			scrollPosStore.set(router.getCurrentKey(), scrollContainer.scrollTop);
-		}, { passive: true });
-
-		router.addListener('change', ctx => {
-			const scrollPos = scrollPosStore.get(ctx.key) ?? 0;
-			scrollContainer.scroll({ top: scrollPos, behavior: 'instant' });
-			if (scrollPos !== 0) {
-				window.setTimeout(() => { // 遷移直後はタイミングによってはコンポーネントが復元し切ってない可能性も考えられるため少し時間を空けて再度スクロール
-					scrollContainer.scroll({ top: scrollPos, behavior: 'instant' });
-				}, 100);
-			}
-		});
-
-		router.addListener('same', () => {
-			scrollContainer.scroll({ top: 0, behavior: 'smooth' });
-		});
-	});
 }
