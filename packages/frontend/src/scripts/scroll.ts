@@ -25,7 +25,7 @@ export function getScrollPosition(el: HTMLElement | null): number {
 
 export function onScrollTop(el: HTMLElement, cb: () => unknown, tolerance: number = 1, once: boolean = false) {
 	// とりあえず評価してみる
-	if (isTopVisible(el)) {
+	if (el.isConnected && isTopVisible(el)) {
 		cb();
 		if (once) return null;
 	}
@@ -49,7 +49,7 @@ export function onScrollBottom(el: HTMLElement, cb: () => unknown, tolerance: nu
 	const container = getScrollContainer(el);
 
 	// とりあえず評価してみる
-	if (isBottomVisible(el, tolerance, container)) {
+	if (el.isConnected && isBottomVisible(el, tolerance, container)) {
 		cb();
 		if (once) return null;
 	}
