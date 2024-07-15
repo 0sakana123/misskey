@@ -453,41 +453,33 @@ export class NoteCreateService {
 		})).then(us => {
 			for (const u of us) {
 				// Renoteの元ノート本文でのミュート判定
-				if (note.renoteId !== null) {
-					this.notesRepository.findOneBy({ id: note.renoteId }).then(async result => {
-						if (result !== null) {
-							checkWordMute(result, { id: u.userId }, u.mutedWords).then(async shouldMute => {
-								if (shouldMute) {
-									this.mutedNotesRepository.insert({
-										id: this.idService.genId(),
-										userId: u.userId,
-										noteId: note.id,
-										reason: 'wordOfRnOrigin',
-									});
-								}
+				if (data.renote !== null && data.renote !== undefined) {
+					checkWordMute(data.renote, { id: u.userId }, u.mutedWords).then(shouldMute => {
+						if (shouldMute) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: note.id,
+								reason: 'wordOfRnOrigin',
 							});
 						}
 					});
 				}
 				// Replyの元ノート本文でのミュート判定
-				if (note.replyId !== null) {
-					this.notesRepository.findOneBy({ id: note.replyId }).then(async result => {
-						if (result !== null) {
-							checkWordMute(result, { id: u.userId }, u.mutedWords).then(async shouldMute => {
-								if (shouldMute) {
-									this.mutedNotesRepository.insert({
-										id: this.idService.genId(),
-										userId: u.userId,
-										noteId: note.id,
-										reason: 'wordOfRpOrigin',
-									});
-								}
+				if (data.reply !== null && data.reply !== undefined) {
+					checkWordMute(data.reply, { id: u.userId }, u.mutedWords).then(shouldMute => {
+						if (shouldMute) {
+							this.mutedNotesRepository.insert({
+								id: this.idService.genId(),
+								userId: u.userId,
+								noteId: note.id,
+								reason: 'wordOfRpOrigin',
 							});
 						}
 					});
 				}
 				// ミュート処理
-				checkWordMute(note, { id: u.userId }, u.mutedWords).then(async shouldMute => {
+				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
 					// このノートにミュートすべき単語が含まれていればレコード追加
 					if (shouldMute) {
 						this.mutedNotesRepository.insert({
