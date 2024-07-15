@@ -466,7 +466,7 @@ export class NoteCreateService {
 								id: this.idService.genId(),
 								userId: u.userId,
 								noteId: note.id,
-								reason: 'wordOfRnOrigin',
+								reason: 'word',
 							});
 							this.logger.info(`Mute words detected in renote origin ${note.renoteId}`);
 						}
@@ -486,12 +486,12 @@ export class NoteCreateService {
 								id: this.idService.genId(),
 								userId: u.userId,
 								noteId: note.id,
-								reason: 'wordOfRpOrigin',
+								reason: 'word',
 							});
-							this.logger.info(`Mute words detected in reply origin ${note.renoteId}`);
+							this.logger.info(`Mute words detected in reply origin ${note.replyId}`);
 						}
 						else {
-							this.logger.info(`No mute words in reply origin ${note.renoteId}`);
+							this.logger.info(`No mute words in reply origin ${note.replyId}`);
 						}
 					});
 				}
