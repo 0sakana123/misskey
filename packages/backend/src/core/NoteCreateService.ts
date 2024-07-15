@@ -452,12 +452,11 @@ export class NoteCreateService {
 			select: ['userId', 'mutedWords'],
 		})).then(us => {
 			for (const u of us) {
-				/*
 				// Renoteの元ノート本文でのミュート判定
-				if (note.renoteId != null) {
-					this.notesRepository.findOneBy({ id: note.renoteId }).then(result => {
+				if (note.renoteId !== null) {
+					this.notesRepository.findOneBy({ id: note.renoteId }).then(async result => {
 						if (result !== null) {
-							checkWordMute(result, { id: u.userId }, u.mutedWords).then(shouldMute => {
+							checkWordMute(result, { id: u.userId }, u.mutedWords).then(async shouldMute => {
 								if (shouldMute) {
 									this.mutedNotesRepository.insert({
 										id: this.idService.genId(),
@@ -471,10 +470,10 @@ export class NoteCreateService {
 					});
 				}
 				// Replyの元ノート本文でのミュート判定
-				if (note.replyId != null) {
-					this.notesRepository.findOneBy({ id: note.replyId }).then(result => {
+				if (note.replyId !== null) {
+					this.notesRepository.findOneBy({ id: note.replyId }).then(async result => {
 						if (result !== null) {
-							checkWordMute(result, { id: u.userId }, u.mutedWords).then(shouldMute => {
+							checkWordMute(result, { id: u.userId }, u.mutedWords).then(async shouldMute => {
 								if (shouldMute) {
 									this.mutedNotesRepository.insert({
 										id: this.idService.genId(),
@@ -487,7 +486,6 @@ export class NoteCreateService {
 						}
 					});
 				}
-				*/
 				// ミュート処理
 				checkWordMute(note, { id: u.userId }, u.mutedWords).then(async shouldMute => {
 					// このノートにミュートすべき単語が含まれていればレコード追加
@@ -498,26 +496,32 @@ export class NoteCreateService {
 							noteId: note.id, // このノートのid
 							reason: 'word',
 						});
-						// 続けて、Renoteの元ノートであると仮定してRenote先をレコード追加
-						const muteRenotes = await this.notesRepository.findBy({ renoteId: note.id });
-						for (const muteRenote of muteRenotes) {
-							this.mutedNotesRepository.insert({
-								id: this.idService.genId(),
-								userId: u.userId,
-								noteId: muteRenote.id, // RN先ノートのid
-								reason: 'wordOfRnOrigin',
-							});
+						/*
+						// このノートをRenoteしたノートをレコード追加
+						if (note.renoteCount > 0) {
+							const muteRenotes = await this.notesRepository.findBy({ renoteId: note.id });
+							for (const muteRenote of muteRenotes) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: muteRenote.id, // RN先ノートのid
+									reason: 'wordOfRnOrigin',
+								});
+							}
 						}
-						// 続けて、Replyの元ノートであると仮定してReply先をレコード追加
-						const muteReplies = await this.notesRepository.findBy({ replyId: note.id });
-						for (const muteReply of muteReplies) {
-							this.mutedNotesRepository.insert({
-								id: this.idService.genId(),
-								userId: u.userId,
-								noteId: muteReply.id, // RP先ノートのid
-								reason: 'wordOfRpOrigin',
-							});
+						// このノートにReplyしたノートをレコード追加
+						if (note.repliesCount > 0) {
+							const muteReplies = await this.notesRepository.findBy({ replyId: note.id });
+							for (const muteReply of muteReplies) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: muteReply.id, // RP先ノートのid
+									reason: 'wordOfRpOrigin',
+								});
+							}
 						}
+						*/
 					}
 				});
 			}
