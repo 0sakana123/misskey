@@ -265,7 +265,7 @@ agreeBelow: "下記に同意する"
 basicNotesBeforeCreateAccount: "基本的な注意事項"
 tos: "利用規約"
 start: "始める"
-home: "ホーム"
+home: "フォロー中"
 remoteUserCaution: "リモートユーザーのため、情報が不完全です。"
 activity: "アクティビティ"
 images: "画像"
@@ -333,7 +333,7 @@ pages: "ページ"
 integration: "連携"
 connectService: "接続する"
 disconnectService: "切断する"
-enableLocalTimeline: "ローカルタイムラインを有効にする"
+enableLocalTimeline: "インスタンス内タイムラインを有効にする"
 enableGlobalTimeline: "グローバルタイムラインを有効にする"
 disablingTimelinesInfo: "これらのタイムラインを無効化しても、利便性のため管理者およびモデレーターは引き続き利用することができます。"
 registration: "登録"
@@ -1237,7 +1237,7 @@ _role:
     high: "高"
   _options:
     gtlAvailable: "グローバルタイムラインの閲覧"
-    ltlAvailable: "ローカルタイムラインの閲覧"
+    ltlAvailable: "インスタンス内タイムラインの閲覧"
     canPublicNote: "パブリック投稿の許可"
     canInvite: "インスタンス招待コードの発行"
     canManageCustomEmojis: "カスタム絵文字の管理"
@@ -1685,16 +1685,16 @@ _poll:
   remainingSeconds: "終了まであと{s}秒"
 
 _visibility:
-  public: "パブリック"
+  public: "全体"
   publicDescription: "インターネット上に一般公開"
   home: "ホーム"
   homeDescription: "フォロワー向けに公開(RN可)"
-  followers: "フォロワー"
+  followers: "フォロワー限定"
   followersDescription: "フォロワーのみに公開(RN不可)"
-  specified: "ダイレクト"
+  specified: "ダイレクトメッセージ"
   specifiedDescription: "指定したユーザーのみに公開"
-  localOnly: "ローカルのみ"
-  localOnlyDescription: "当インスタンス内のみで閲覧可能にする"
+  localOnly: "インスタンス内のみ"
+  localOnlyDescription: "このインスタンス内でのみ閲覧可能にする"
 
 _postForm:
   replyPlaceholder: "このノートに返信..."
@@ -1760,9 +1760,9 @@ _instanceCharts:
   filesTotal: "ファイル数の累積"
 
 _timelines:
-  home: "ホーム"
-  local: "ローカル"
-  social: "ソーシャル"
+  home: "フォロー中"
+  local: "インスタンス内"
+  social: "ハイブリッド"
   global: "グローバル"
 
 _play:

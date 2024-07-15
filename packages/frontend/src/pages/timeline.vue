@@ -119,17 +119,17 @@ const headerActions = $computed(() => []);
 const headerTabs = $computed(() => [{
 	key: 'home',
 	title: i18n.ts._timelines.home,
-	icon: 'ti ti-home',
+	icon: 'ti ti-heart',
 	iconOnly: true,
 }, ...(isLocalTimelineAvailable ? [{
 	key: 'local',
 	title: i18n.ts._timelines.local,
-	icon: 'ti ti-planet',
+	icon: 'ti ti-home',
 	iconOnly: true,
 }, {
 	key: 'social',
 	title: i18n.ts._timelines.social,
-	icon: 'ti ti-rocket',
+	icon: 'ti ti-planet',
 	iconOnly: true,
 }] : []), ...(isGlobalTimelineAvailable ? [{
 	key: 'global',
@@ -157,7 +157,7 @@ const headerTabsWhenNotLogin = $computed(() => [
 	...(isLocalTimelineAvailable ? [{
 		key: 'local',
 		title: i18n.ts._timelines.local,
-		icon: 'ti ti-planet',
+		icon: 'ti ti-home',
 		iconOnly: true,
 	}] : []),
 	...(isGlobalTimelineAvailable ? [{

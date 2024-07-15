@@ -34,8 +34,8 @@ function getInstanceIcon(instance): string {
 
 <style lang="scss" module>
 .root {
-	$bodyTitleHieght: 18px;
-	$bodyInfoHieght: 16px;
+	$bodyTitleHeight: 18px;
+	$bodyInfoHeight: 16px;
 
 	display: flex;
 	align-items: center;
@@ -45,8 +45,8 @@ function getInstanceIcon(instance): string {
 
 	> :global(.icon) {
 		display: block;
-		width: ($bodyTitleHieght + $bodyInfoHieght);
-		height: ($bodyTitleHieght + $bodyInfoHieght);
+		width: ($bodyTitleHeight + $bodyInfoHeight);
+		height: ($bodyTitleHeight + $bodyInfoHeight);
 		object-fit: cover;
 		border-radius: 4px;
 		margin-right: 10px;
@@ -65,7 +65,7 @@ function getInstanceIcon(instance): string {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
-			line-height: $bodyTitleHieght;
+			line-height: $bodyTitleHeight;
 		}
 
 		> :global(.sub) {
@@ -73,7 +73,7 @@ function getInstanceIcon(instance): string {
 			width: 100%;
 			font-size: 80%;
 			opacity: 0.7;
-			line-height: $bodyInfoHieght;
+			line-height: $bodyInfoHeight;
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
