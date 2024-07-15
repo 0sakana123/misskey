@@ -49,19 +49,17 @@ class HomeTimelineChannel extends Channel {
 				return;
 			}
 		} else {
-			// リプライなら元ノート参照、ミュート判定
+			// replyをpack
 			if (note.replyId != null) {
-				note.reply = await this.noteEntityService.pack(note.replyId, this.user!, {
+				note.reply = await this.noteEntityService.pack(note.replyId, this.user, {
 					detail: true,
 				});
-				if (this.userProfile && await checkWordMute(note.reply, this.user, this.userProfile.mutedWords)) return;
 			}
-			// Renoteなら元ノート参照、ミュート判定
+			// renoteをpack
 			if (note.renoteId != null) {
-				note.renote = await this.noteEntityService.pack(note.renoteId, this.user!, {
+				note.renote = await this.noteEntityService.pack(note.renoteId, this.user, {
 					detail: true,
 				});
-				if (this.userProfile && await checkWordMute(note.renote, this.user, this.userProfile.mutedWords)) return;
 			}
 		}
 
@@ -72,23 +70,53 @@ class HomeTimelineChannel extends Channel {
 			if (reply.userId !== this.user!.id && note.userId !== this.user!.id && reply.userId !== note.userId) return;
 		}
 
-		// ワードミュート判定
-		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
-
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
 		if (isUserRelated(note, this.muting)) return;
 		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
 		if (isUserRelated(note, this.blocking)) return;
 
-		this.connection.cacheNote(note);
-
-		this.send('note', note);
+		// ワードミュート判定
+		this.checkWordMutes(note).then(result => {
+			if (result) {
+				return;
+			}
+			else {
+				this.connection.cacheNote(note);
+				this.send('note', note);
+			}
+		});
 	}
 
 	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
+	}
+
+	@bindThis
+	private async checkWordMutes(note: Packed<'Note'>): Promise<boolean> {
+		// リプライなら元ノート参照、ミュート判定
+		if (note.replyId != null) {
+			note.reply = await this.noteEntityService.pack(note.replyId, this.user, {
+				detail: true,
+			});
+			if (this.userProfile !== null && this.userProfile !== undefined) {
+				if (await checkWordMute(note.reply, this.user, this.userProfile.mutedWords)) return true;
+			}
+		}
+		// Renoteなら元ノート参照、ミュート判定
+		if (note.renoteId != null) {
+			note.renote = await this.noteEntityService.pack(note.renoteId, this.user, {
+				detail: true,
+			});
+			if (this.userProfile !== null && this.userProfile !== undefined) {
+				if (await checkWordMute(note.renote, this.user, this.userProfile.mutedWords)) return true;
+			}
+		}
+		// このノート自体のミュート判定
+		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return true;
+
+		return false;
 	}
 }
 
