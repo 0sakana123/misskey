@@ -86,8 +86,8 @@ defineExpose<WidgetComponentExpose>({
 
 <style lang="scss" scoped>
 .wbrkwalb {
-	$bodyTitleHieght: 18px;
-	$bodyInfoHieght: 16px;
+	$bodyTitleHeight: 18px;
+	$bodyInfoHeight: 16px;
 
 	height: (62px + 1px) + (62px + 1px) + (62px + 1px) + (62px + 1px) + 62px;
 	overflow: hidden;
@@ -105,8 +105,8 @@ defineExpose<WidgetComponentExpose>({
 
 			> img {
 				display: block;
-				width: ($bodyTitleHieght + $bodyInfoHieght);
-				height: ($bodyTitleHieght + $bodyInfoHieght);
+				width: ($bodyTitleHeight + $bodyInfoHeight);
+				height: ($bodyTitleHeight + $bodyInfoHeight);
 				object-fit: cover;
 				border-radius: 4px;
 				margin-right: 8px;
@@ -125,14 +125,14 @@ defineExpose<WidgetComponentExpose>({
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
-					line-height: $bodyTitleHieght;
+					line-height: $bodyTitleHeight;
 				}
 
 				> p {
 					margin: 0;
 					font-size: 75%;
 					opacity: 0.7;
-					line-height: $bodyInfoHieght;
+					line-height: $bodyInfoHeight;
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;

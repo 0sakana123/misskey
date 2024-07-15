@@ -38,8 +38,8 @@ onMounted(() => {
 
 <style lang="scss" module>
 .root {
-	$bodyTitleHieght: 18px;
-	$bodyInfoHieght: 16px;
+	$bodyTitleHeight: 18px;
+	$bodyInfoHeight: 16px;
 
 	display: flex;
 	align-items: center;
@@ -49,8 +49,8 @@ onMounted(() => {
 
 	> :global(.avatar) {
 		display: block;
-		width: ($bodyTitleHieght + $bodyInfoHieght);
-		height: ($bodyTitleHieght + $bodyInfoHieght);
+		width: ($bodyTitleHeight + $bodyInfoHeight);
+		height: ($bodyTitleHeight + $bodyInfoHeight);
 		margin-right: 12px;
 	}
 
@@ -67,7 +67,7 @@ onMounted(() => {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
-			line-height: $bodyTitleHieght;
+			line-height: $bodyTitleHeight;
 		}
 
 		> :global(.sub) {
@@ -75,7 +75,7 @@ onMounted(() => {
 			width: 100%;
 			font-size: 95%;
 			opacity: 0.7;
-			line-height: $bodyInfoHieght;
+			line-height: $bodyInfoHeight;
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
