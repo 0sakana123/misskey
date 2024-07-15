@@ -44,8 +44,6 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import type Logger from '@/logger.js';
 
 const mutedWordsCache = new Cache<{ userId: UserProfile['userId']; mutedWords: UserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -141,7 +139,6 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService {
-	private logger: Logger;
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -196,10 +193,7 @@ export class NoteCreateService {
 		private perUserNotesChart: PerUserNotesChart,
 		private activeUsersChart: ActiveUsersChart,
 		private instanceChart: InstanceChart,
-		private loggerService: LoggerService,
-	) {
-		this.logger = this.loggerService.getLogger('notecreate');
-	}
+	) { }
 
 	@bindThis
 	public async create(user: {
@@ -468,15 +462,8 @@ export class NoteCreateService {
 								noteId: note.id,
 								reason: 'word',
 							});
-							this.logger.info(`Mute words detected in renote origin ${note.renoteId}`);
-						}
-						else {
-							this.logger.info(`No mute words in renote origin ${note.renoteId}`);
 						}
 					});
-				}
-				else {
-					this.logger.info('No renote id data');
 				}
 				// Replyの元ノート本文でのミュート判定
 				if (data.reply !== null && data.reply !== undefined) {
@@ -488,15 +475,8 @@ export class NoteCreateService {
 								noteId: note.id,
 								reason: 'word',
 							});
-							this.logger.info(`Mute words detected in reply origin ${note.replyId}`);
-						}
-						else {
-							this.logger.info(`No mute words in reply origin ${note.replyId}`);
 						}
 					});
-				}
-				else {
-					this.logger.info('No reply id data');
 				}
 				// ミュート処理
 				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
