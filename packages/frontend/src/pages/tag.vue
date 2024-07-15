@@ -36,7 +36,7 @@ const headerTabs = $computed(() => []);
 
 function create() {
 	os.post({
-		initialText: `${props.tag} `,
+		initialText: `#${props.tag} `,
 	});
 }
 
