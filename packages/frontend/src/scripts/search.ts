@@ -46,7 +46,14 @@ export async function search() {
 			uri: q,
 		});
 
-		os.promiseDialog(promise, null, null, i18n.ts.fetchingAsApObject);
+		os.promiseDialog(
+			promise,
+			null,
+			async (err) => {
+				mainRouter.push(`/search?q=${encodeURIComponent(q)}`);
+			},
+			i18n.ts.fetchingAsApObject,
+		);
 
 		const res = await promise;
 

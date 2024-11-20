@@ -25,6 +25,8 @@ const props = defineProps<{
 
 const query = props.query;
 
+// /scripts/searchから呼ばれる際にAP照会は行われるため2重の処理は不要
+/*
 if ($i != null) {
 	if (query.startsWith('https://') || (query.startsWith('@') && !query.includes(' '))) {
 		const promise = os.api('ap/show', {
@@ -42,6 +44,7 @@ if ($i != null) {
 		}
 	}
 }
+*/
 
 const pagination = {
 	endpoint: 'notes/search' as const,
