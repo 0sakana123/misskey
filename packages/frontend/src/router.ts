@@ -356,6 +356,10 @@ export const routes = [{
 		name: 'ads',
 		component: page(() => import('./pages/admin/ads.vue')),
 	}, {
+		path: '/avatar-decorations',
+		name: 'avatar-decorations',
+		component: page(() => import('./pages/admin/avatar-decorations.vue')),
+	}, {
 		path: '/roles/:id/edit',
 		name: 'roles',
 		component: page(() => import('./pages/admin/roles.edit.vue')),
