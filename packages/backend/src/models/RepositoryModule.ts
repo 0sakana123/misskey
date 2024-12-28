@@ -34,6 +34,12 @@ const $appsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $avatarDecorationsRepository: Provider = {
+	provide: DI.avatarDecorationsRepository,
+	useFactory: (db: DataSource) => db.getRepository(AvatarDecoration),
+	inject: [DI.db],
+};
+
 const $noteFavoritesRepository: Provider = {
 	provide: DI.noteFavoritesRepository,
 	useFactory: (db: DataSource) => db.getRepository(NoteFavorite),
@@ -421,6 +427,7 @@ const $roleAssignmentsRepository: Provider = {
 		$announcementsRepository,
 		$announcementReadsRepository,
 		$appsRepository,
+		$avatarDecorationsRepository,
 		$noteFavoritesRepository,
 		$noteThreadMutingsRepository,
 		$noteReactionsRepository,
@@ -491,6 +498,7 @@ const $roleAssignmentsRepository: Provider = {
 		$announcementsRepository,
 		$announcementReadsRepository,
 		$appsRepository,
+		$avatarDecorationsRepository,
 		$noteFavoritesRepository,
 		$noteThreadMutingsRepository,
 		$noteReactionsRepository,
