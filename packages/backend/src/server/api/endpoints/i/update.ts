@@ -18,6 +18,7 @@ import { AccountUpdateService } from '@/core/AccountUpdateService.js';
 import { HashtagService } from '@/core/HashtagService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -87,6 +88,11 @@ export const paramDef = {
 		birthday: { ...birthdaySchema, nullable: true },
 		lang: { type: 'string', enum: [null, ...Object.keys(langmap)] as string[], nullable: true },
 		avatarId: { type: 'string', format: 'misskey:id', nullable: true },
+		avatarDecorations: {
+			type: 'array', maxItems: 1, items: {
+				type: 'string',
+			}
+		},
 		bannerId: { type: 'string', format: 'misskey:id', nullable: true },
 		fields: {
 			type: 'array',
@@ -118,15 +124,21 @@ export const paramDef = {
 		ffVisibility: { type: 'string', enum: ['public', 'followers', 'private'] },
 		pinnedPageId: { type: 'string', format: 'misskey:id' },
 		mutedWords: { type: 'array' },
-		mutedInstances: { type: 'array', items: {
-			type: 'string',
-		} },
-		mutingNotificationTypes: { type: 'array', items: {
-			type: 'string', enum: notificationTypes,
-		} },
-		emailNotificationTypes: { type: 'array', items: {
-			type: 'string',
-		} },
+		mutedInstances: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
+		mutingNotificationTypes: {
+			type: 'array', items: {
+				type: 'string', enum: notificationTypes,
+			}
+		},
+		emailNotificationTypes: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
 	},
 } as const;
 
@@ -152,6 +164,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private accountUpdateService: AccountUpdateService,
 		private hashtagService: HashtagService,
 		private roleService: RoleService,
+		private avatarDecorationService: AvatarDecorationService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id });
@@ -222,6 +235,16 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 				if (banner == null || banner.userId !== user.id) throw new ApiError(meta.errors.noSuchBanner);
 				if (!banner.type.startsWith('image/')) throw new ApiError(meta.errors.bannerNotAnImage);
+			}
+
+			if (ps.avatarDecorations) {
+				const decorations = await this.avatarDecorationService.getAll(true);
+				const myRoles = await this.roleService.getUserRoles(user.id);
+				const allRoles = await this.roleService.getRoles();
+				const decorationIds = decorations
+					.filter(d => d.roleIdsThatCanBeUsedThisDecoration.filter(roleId => allRoles.some(r => r.id === roleId)).length === 0 || myRoles.some(r => d.roleIdsThatCanBeUsedThisDecoration.includes(r.id)))
+					.map(d => d.id);
+				updates.avatarDecorations = ps.avatarDecorations.filter(id => decorationIds.includes(id));
 			}
 
 			if (ps.pinnedPageId) {

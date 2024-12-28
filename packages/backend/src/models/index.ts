@@ -6,6 +6,7 @@ import { AnnouncementRead } from '@/models/entities/AnnouncementRead.js';
 import { Antenna } from '@/models/entities/Antenna.js';
 import { AntennaNote } from '@/models/entities/AntennaNote.js';
 import { App } from '@/models/entities/App.js';
+import { AvatarDecoration } from '@/models/AvatarDecoration.js';
 import { AttestationChallenge } from '@/models/entities/AttestationChallenge.js';
 import { AuthSession } from '@/models/entities/AuthSession.js';
 import { Blocking } from '@/models/entities/Blocking.js';
@@ -77,6 +78,7 @@ export {
 	Antenna,
 	AntennaNote,
 	App,
+	AvatarDecoration,
 	AttestationChallenge,
 	AuthSession,
 	Blocking,
@@ -147,6 +149,7 @@ export type AnnouncementReadsRepository = Repository<AnnouncementRead>;
 export type AntennasRepository = Repository<Antenna>;
 export type AntennaNotesRepository = Repository<AntennaNote>;
 export type AppsRepository = Repository<App>;
+export type AvatarDecorationsRepository = Repository<AvatarDecoration>;
 export type AttestationChallengesRepository = Repository<AttestationChallenge>;
 export type AuthSessionsRepository = Repository<AuthSession>;
 export type BlockingsRepository = Repository<Blocking>;

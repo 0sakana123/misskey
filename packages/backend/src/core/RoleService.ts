@@ -192,6 +192,12 @@ export class RoleService implements OnApplicationShutdown {
 	}
 
 	@bindThis
+	public async getRoles() {
+		const roles = await this.rolesCache.fetch(null, () => this.rolesRepository.findBy({}));
+		return roles;
+	}
+
+	@bindThis
 	public async getUserRoles(userId: User['id']) {
 		const assigns = await this.roleAssignmentByUserIdCache.fetch(userId, () => this.roleAssignmentsRepository.findBy({ userId }));
 		const assignedRoleIds = assigns.map(x => x.roleId);

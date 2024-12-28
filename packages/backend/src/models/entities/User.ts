@@ -100,6 +100,11 @@ export class User {
 	@JoinColumn()
 	public banner: DriveFile | null;
 
+	@Column('varchar', {
+		length: 512, array: true, default: '{}',
+	})
+	public avatarDecorations: string[];
+
 	@Index()
 	@Column('varchar', {
 		length: 128, array: true, default: '{}',

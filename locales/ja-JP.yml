@@ -967,6 +967,10 @@ videos: "動画"
 dataSaver: "データセーバー"
 drivecleaner: "ドライブクリーナー"
 createNoteFromTheFile: "このファイルからノートを作成"
+avatarDecorations: "アイコンデコレーション"
+createAvatarDecoration: "アイコンデコレーションを作成"
+updateAvatarDecoration: "アイコンデコレーションを更新"
+deleteAvatarDecoration: "アイコンデコレーションを削除"
 
 _achievements:
   earnedAt: "獲得日時"

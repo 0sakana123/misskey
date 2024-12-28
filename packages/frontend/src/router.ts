@@ -306,6 +306,9 @@ export const routes = [{
 	path: '/custom-emojis-manager',
 	component: page(() => import('./pages/custom-emojis-manager.vue')),
 }, {
+	path: '/avatar-decorations',
+	component: page(() => import('./pages/admin/avatar-decorations.vue')),
+}, {
 	path: '/registry/keys/system/:path(*)?',
 	component: page(() => import('./pages/registry.keys.vue')),
 }, {
