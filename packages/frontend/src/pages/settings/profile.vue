@@ -58,22 +58,7 @@
 	<MkFolder>
 		<template #icon><i class="ti ti-sparkles"></i></template>
 		<template #label>{{ i18n.ts.avatarDecorations }}</template>
-		<div class="_gaps">
-			<MkInfo>{{ i18n.t('_profile.avatarDecorationMax', { max: $i?.policies.avatarDecorationLimit }) }} ({{ i18n.t('remainingN', { n: $i?.policies.avatarDecorationLimit - $i.avatarDecorations.length }) }})</MkInfo>
-			<MkButton v-if="$i.avatarDecorations.length > 0" danger @click="detachAllDecorations">{{ i18n.ts.detachAll }}</MkButton>
-			<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-gap: 12px;">
-				<div
-					v-for="avatarDecoration in avatarDecorations"
-					:key="avatarDecoration.id"
-					:class="[$style.avatarDecoration, { [$style.avatarDecorationActive]: $i.avatarDecorations.some(x => x.id === avatarDecoration.id) }]"
-					@click="openDecoration(avatarDecoration)"
-				>
-					<div :class="$style.avatarDecorationName"><MkCondensedLine :minScale="0.5">{{ avatarDecoration.name }}</MkCondensedLine></div>
-					<MkAvatar style="width: 60px; height: 60px;" :user="$i" :decorations="[{ url: avatarDecoration.url }]" forceShowDecoration/>
-					<i v-if="avatarDecoration.roleIdsThatCanBeUsedThisDecoration.length > 0 && !$i.roles.some(r => avatarDecoration.roleIdsThatCanBeUsedThisDecoration.includes(r.id))" :class="$style.avatarDecorationLock" class="ti ti-lock"></i>
-				</div>
-			</div>
-		</div>
+		<XAvatarDecoration/>
 	</MkFolder>
 
 	<MkFolder>
@@ -90,7 +75,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, watch, defineAsyncComponent } from 'vue';
+import { computed, reactive, ref, watch, defineAsyncComponent } from 'vue';
+import XAvatarDecoration from './profile.avatar-decoration.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
@@ -107,8 +93,6 @@ import { $i } from '@/account';
 import { langmap } from '@/scripts/langmap';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { claimAchievement } from '@/scripts/achievements';
-
-let avatarDecorations: any[] = $ref([]);
 
 const profile = reactive({
 	name: $i.name,
@@ -128,10 +112,6 @@ watch(() => profile, () => {
 });
 
 const fields = reactive($i.fields.map(field => ({ name: field.name, value: field.value })));
-
-os.api('get-avatar-decorations').then(_avatarDecorations => {
-	avatarDecorations = _avatarDecorations;
-});
 
 function addField() {
 	fields.push({
@@ -221,25 +201,6 @@ function changeBanner(ev) {
 	});
 }
 
-function openDecoration(avatarDecoration) {
-	os.popup(defineAsyncComponent(() => import('./profile.avatar-decoration-dialog.vue')), {
-		decoration: avatarDecoration,
-	}, {}, 'closed');
-}
-
-function detachAllDecorations() {
-	os.confirm({
-		type: 'warning',
-		text: i18n.ts.areYouSure,
-	}).then(async ({ canceled }) => {
-		if (canceled) return;
-		await os.apiWithDialog('i/update', {
-			avatarDecorations: [],
-		});
-		$i.avatarDecorations = [];
-	});
-}
-
 const headerActions = $computed(() => []);
 
 const headerTabs = $computed(() => []);
@@ -277,22 +238,5 @@ definePageMetadata({
 		top: 16px;
 		right: 16px;
 	}
-}
-
-.avatarDecoration {
-	cursor: pointer;
-	padding: 16px 16px 24px 16px;
-	border: solid 2px var(--divider);
-	border-radius: 8px;
-	text-align: center;
-}
-.avatarDecorationActive {
-	border-color: var(--accent);
-}
-.avatarDecorationName {
-	position: relative;
-	z-index: 10;
-	font-weight: bold;
-	margin-bottom: 16px;
 }
 </style>

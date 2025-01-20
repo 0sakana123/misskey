@@ -45,6 +45,7 @@ import MkFolder from '@/components/MkFolder.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import MkRange from '@/components/MkRange.vue';
 import { $i } from '@/account.js';
+
 const props = defineProps<{
 		decoration: {
 			id: string;
@@ -59,28 +60,36 @@ const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();
 const using = computed(() => $i.avatarDecorations.some(x => x.id === props.decoration.id));
 const angle = ref(using.value ? $i.avatarDecorations.find(x => x.id === props.decoration.id).angle ?? 0 : 0);
 const flipH = ref(using.value ? $i.avatarDecorations.find(x => x.id === props.decoration.id).flipH ?? false : false);
+
 function cancel() {
 	dialog.value.close();
 }
+
 async function attach() {
 	const decoration = {
 		id: props.decoration.id,
 		angle: angle.value,
 		flipH: flipH.value,
 	};
+	const update = [...$i.avatarDecorations, decoration];
 	await os.apiWithDialog('i/update', {
-		avatarDecorations: [...$i.avatarDecorations, decoration],
+		avatarDecorations: update,
 	});
-	$i.avatarDecorations = [...$i.avatarDecorations, decoration];
+	$i.avatarDecorations = update;
+
 	dialog.value.close();
 }
+
 async function detach() {
+	const update = $i.avatarDecorations.filter(x => x.id !== props.decoration.id);
 	await os.apiWithDialog('i/update', {
-		avatarDecorations: $i.avatarDecorations.filter(x => x.id !== props.decoration.id),
+		avatarDecorations: update,
 	});
-	$i.avatarDecorations = $i.avatarDecorations.filter(x => x.id !== props.decoration.id);
+	$i.avatarDecorations = update;
+	
 	dialog.value.close();
 }
+
 </script>
 	<style lang="scss" module>
 	.name {
