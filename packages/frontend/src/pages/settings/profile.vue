@@ -1,5 +1,5 @@
 <template>
-<div :class="$style._gaps_m">
+<div class="_gaps_m">
 	<div :class="$style.llvierxe" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : null }">
 		<div :class="$style.avatar">
 			<MkAvatar :class="$style.avatar" :user="$i" @click="changeAvatar"/>
