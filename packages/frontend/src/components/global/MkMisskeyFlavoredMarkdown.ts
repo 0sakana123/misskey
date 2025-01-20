@@ -295,7 +295,7 @@ export default defineComponent({
 							]);
 						}
 						default: {
-							style = `color: #888; font-style: italic;`
+							style = 'color: #888; font-style: italic;';
 						}
 					}
 					if (style === undefined) {

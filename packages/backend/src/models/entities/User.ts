@@ -100,10 +100,14 @@ export class User {
 	@JoinColumn()
 	public banner: DriveFile | null;
 
-	@Column('varchar', {
-		length: 512, array: true, default: '{}',
+	@Column('jsonb', {
+		default: [],
 	})
-	public avatarDecorations: string[];
+	public avatarDecorations: {
+		id: string;
+		angle: number;
+		flipH: boolean;
+	}[];
 
 	@Index()
 	@Column('varchar', {

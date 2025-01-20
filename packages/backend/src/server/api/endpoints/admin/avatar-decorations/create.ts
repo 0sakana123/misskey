@@ -8,7 +8,7 @@ import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 export const meta = {
 	tags: ['admin'],
 	requireCredential: true,
-	requireModerator: true,
+	requireRolePolicy: 'canManageAvatarDecorations',
 } as const;
 export const paramDef = {
 	type: 'object',

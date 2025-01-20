@@ -18,7 +18,18 @@
 			</div>
 		</div>
 	</div>
-	<img v-if="decoration || user.avatarDecorations.length > 0" :class="[$style.decoration]" :src="decoration ?? user.avatarDecorations[0].url" alt="">
+	<template v-if="showDecoration">
+		<img
+			v-for="decoration in decorations ?? user.avatarDecorations"
+			:class="[$style.decoration]"
+			:src="decoration.url"
+			:style="{
+				rotate: getDecorationAngle(decoration),
+				scale: getDecorationScale(decoration),
+			}"
+			alt=""
+		>
+	</template>
 </component>
 </template>
 
@@ -42,17 +53,21 @@ const props = withDefaults(defineProps<{
 	link?: boolean;
 	preview?: boolean;
 	indicator?: boolean;
-	decoration?: string;
+	decorations?: misskey.entities.UserDetailed['avatarDecorations'][number][];
 }>(), {
 	target: null,
 	link: false,
 	preview: false,
 	indicator: false,
+	decorations: undefined,
+	forceShowDecoration: false,
 });
 
 const emit = defineEmits<{
 	(ev: 'click', v: MouseEvent): void;
 }>();
+
+const showDecoration = props.forceShowDecoration || defaultStore.state.showAvatarDecorations;
 
 const bound = $computed(() => props.link
 	? { to: userPage(props.user), target: props.target }
@@ -65,6 +80,15 @@ const url = $computed(() => defaultStore.state.disableShowingAnimatedImages
 function onClick(ev: MouseEvent): void {
 	if (props.link) return;
 	emit('click', ev);
+}
+
+function getDecorationAngle(decoration: misskey.entities.UserDetailed['avatarDecorations'][number]) {
+	const angle = decoration.angle ?? 0;
+	return angle === 0 ? undefined : `${angle * 360}deg`;
+}
+function getDecorationScale(decoration: misskey.entities.UserDetailed['avatarDecorations'][number]) {
+	const scaleX = decoration.flipH ? -1 : 1;
+	return scaleX === 1 ? undefined : `${scaleX} 1`;
 }
 
 let color = $ref<string | undefined>();

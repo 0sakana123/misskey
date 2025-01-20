@@ -2,7 +2,7 @@
 <div class="_gaps_m">
 	<div :class="$style.llvierxe" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : null }">
 		<div :class="$style.avatar">
-			<MkAvatar :class="$style.avatar" :user="$i" @click="changeAvatar"/>
+			<MkAvatar :class="$style.avatar" :user="$i" forceShowDecoration @click="changeAvatar"/>
 			<MkButton primary rounded :class="$style.avatarEdit" @click="changeAvatar">{{ i18n.ts._profile.changeAvatar }}</MkButton>
 		</div>
 		<MkButton primary rounded :class="$style.bannerEdit" @click="changeBanner">{{ i18n.ts._profile.changeBanner }}</MkButton>
@@ -58,15 +58,20 @@
 	<MkFolder>
 		<template #icon><i class="ti ti-sparkles"></i></template>
 		<template #label>{{ i18n.ts.avatarDecorations }}</template>
-		<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-gap: 12px;">
-			<div
-				v-for="avatarDecoration in avatarDecorations"
-				:key="avatarDecoration.id"
-				:class="[$style.avatarDecoration, { [$style.avatarDecorationActive]: $i.avatarDecorations.some(x => x.id === avatarDecoration.id) }]"
-				@click="toggleDecoration(avatarDecoration)"
-			>
-				<div :class="$style.avatarDecorationName">{{ avatarDecoration.name }}</div>
-				<MkAvatar style="width: 64px; height: 64px;" :user="$i" :decoration="avatarDecoration.url"/>
+		<div class="_gaps">
+			<MkInfo>{{ i18n.t('_profile.avatarDecorationMax', { max: $i?.policies.avatarDecorationLimit }) }} ({{ i18n.t('remainingN', { n: $i?.policies.avatarDecorationLimit - $i.avatarDecorations.length }) }})</MkInfo>
+			<MkButton v-if="$i.avatarDecorations.length > 0" danger @click="detachAllDecorations">{{ i18n.ts.detachAll }}</MkButton>
+			<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-gap: 12px;">
+				<div
+					v-for="avatarDecoration in avatarDecorations"
+					:key="avatarDecoration.id"
+					:class="[$style.avatarDecoration, { [$style.avatarDecorationActive]: $i.avatarDecorations.some(x => x.id === avatarDecoration.id) }]"
+					@click="openDecoration(avatarDecoration)"
+				>
+					<div :class="$style.avatarDecorationName"><MkCondensedLine :minScale="0.5">{{ avatarDecoration.name }}</MkCondensedLine></div>
+					<MkAvatar style="width: 60px; height: 60px;" :user="$i" :decorations="[{ url: avatarDecoration.url }]" forceShowDecoration/>
+					<i v-if="avatarDecoration.roleIdsThatCanBeUsedThisDecoration.length > 0 && !$i.roles.some(r => avatarDecoration.roleIdsThatCanBeUsedThisDecoration.includes(r.id))" :class="$style.avatarDecorationLock" class="ti ti-lock"></i>
+				</div>
 			</div>
 		</div>
 	</MkFolder>
@@ -85,7 +90,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, defineAsyncComponent } from 'vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
@@ -216,18 +221,23 @@ function changeBanner(ev) {
 	});
 }
 
-function toggleDecoration(avatarDecoration) {
-	if ($i.avatarDecorations.some(x => x.id === avatarDecoration.id)) {
-		os.apiWithDialog('i/update', {
+function openDecoration(avatarDecoration) {
+	os.popup(defineAsyncComponent(() => import('./profile.avatar-decoration-dialog.vue')), {
+		decoration: avatarDecoration,
+	}, {}, 'closed');
+}
+
+function detachAllDecorations() {
+	os.confirm({
+		type: 'warning',
+		text: i18n.ts.areYouSure,
+	}).then(async ({ canceled }) => {
+		if (canceled) return;
+		await os.apiWithDialog('i/update', {
 			avatarDecorations: [],
 		});
 		$i.avatarDecorations = [];
-	} else {
-		os.apiWithDialog('i/update', {
-			avatarDecorations: [avatarDecoration.id],
-		});
-		$i.avatarDecorations.push(avatarDecoration);
-	}
+	});
 }
 
 const headerActions = $computed(() => []);
