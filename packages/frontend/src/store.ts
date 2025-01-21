@@ -192,11 +192,11 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	useBlurEffectForModal: {
 		where: 'device',
-		default: !/mobile|iphone|android/.test(navigator.userAgent.toLowerCase()), // 循環参照するのでdevice-kind.tsは参照できない
+		default: !/mobile|iphone|android|firefox/.test(navigator.userAgent.toLowerCase()), // 循環参照するのでdevice-kind.tsは参照できない Firefoxはblurが重いため標準で無効に
 	},
 	useBlurEffect: {
 		where: 'device',
-		default: !/mobile|iphone|android/.test(navigator.userAgent.toLowerCase()), // 循環参照するのでdevice-kind.tsは参照できない
+		default: !/mobile|iphone|android|firefox/.test(navigator.userAgent.toLowerCase()), // 循環参照するのでdevice-kind.tsは参照できない Firefoxはblurが重いため標準で無効に
 	},
 	showFixedPostForm: {
 		where: 'device',
@@ -261,6 +261,10 @@ export const defaultStore = markRaw(new Storage('base', {
 	squareAvatars: {
 		where: 'device',
 		default: false,
+	},
+	showAvatarDecorations: {
+		where: 'device',
+		default: true,
 	},
 	postFormWithHashtags: {
 		where: 'device',

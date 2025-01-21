@@ -1,6 +1,6 @@
 <template>
 <span v-if="errored">:{{ customEmojiName }}:</span>
-<img v-else :class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]" :src="url" :alt="alt" :title="alt" decoding="async" ref="customEmojiRef" @error="errored = true" @load="errored = false"/>
+<img v-else ref="customEmojiRef" :class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]" :src="url" :alt="alt" :title="alt" decoding="async" @error="errored = true" @load="errored = false"/>
 </template>
 
 <script lang="ts" setup>
@@ -28,7 +28,7 @@ const rawUrl = computed(() => {
 		return props.url;
 	}
 	if (props.host == null && !customEmojiName.value.includes('@')) {
-		return customEmojis.value.find(x => x.name === customEmojiName.value)?.url || null;
+		return customEmojis.value.find(x => x.name === customEmojiName.value)?.url ?? null;
 	}
 	return props.host ? `/emoji/${customEmojiName.value}@${props.host}.webp` : `/emoji/${customEmojiName.value}.webp`;
 });
@@ -36,14 +36,14 @@ const rawUrl = computed(() => {
 const url = computed(() =>
 	defaultStore.reactiveState.disableShowingAnimatedImages.value && rawUrl.value
 		? getStaticImageUrl(rawUrl.value)
-		: rawUrl.value
+		: rawUrl.value,
 );
 
 const alt = computed(() => `:${customEmojiName.value}:`);
 let errored = $ref(url.value == null);
 
 useTooltip(customEmojiRef, () => {
-	os.toastShort(props.host ? `:${customEmojiName.value}@${props.host}:` : `:${customEmojiName.value}:`)
+	os.toastShort(props.host ? `${customEmojiName.value}@${props.host}` : `${customEmojiName.value}`);
 });
 </script>
 

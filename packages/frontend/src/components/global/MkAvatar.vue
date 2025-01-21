@@ -18,6 +18,19 @@
 			</div>
 		</div>
 	</div>
+	<template v-if="showDecoration">
+		<img
+			v-for="decoration in decorations ?? user.avatarDecorations"
+			:class="[$style.decoration]"
+			:src="decoration.url"
+			:style="{
+				rotate: getDecorationAngle(decoration),
+				scale: getDecorationScale(decoration),
+				translate: getDecorationOffset(decoration),
+			}"
+			alt=""
+		>
+	</template>
 </component>
 </template>
 
@@ -41,16 +54,21 @@ const props = withDefaults(defineProps<{
 	link?: boolean;
 	preview?: boolean;
 	indicator?: boolean;
+	decorations?: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>[];
 }>(), {
 	target: null,
 	link: false,
 	preview: false,
 	indicator: false,
+	decorations: undefined,
+	forceShowDecoration: false,
 });
 
 const emit = defineEmits<{
 	(ev: 'click', v: MouseEvent): void;
 }>();
+
+const showDecoration = props.forceShowDecoration || defaultStore.state.showAvatarDecorations;
 
 const bound = $computed(() => props.link
 	? { to: userPage(props.user), target: props.target }
@@ -63,6 +81,21 @@ const url = $computed(() => defaultStore.state.disableShowingAnimatedImages
 function onClick(ev: MouseEvent): void {
 	if (props.link) return;
 	emit('click', ev);
+}
+
+function getDecorationAngle(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+	const angle = decoration.angle ?? 0;
+	return angle === 0 ? undefined : `${angle * 360}deg`;
+}
+function getDecorationScale(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+	const scaleX = decoration.flipH ? -1 : 1;
+	return scaleX === 1 ? undefined : `${scaleX} 1`;
+}
+
+function getDecorationOffset(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+	const offsetX = decoration.offsetX ?? 0;
+	const offsetY = decoration.offsetY ?? 0;
+	return offsetX === 0 && offsetY === 0 ? undefined : `${offsetX * 100}% ${offsetY * 100}%`;
 }
 
 let color = $ref<string | undefined>();
@@ -128,7 +161,7 @@ watch(() => props.user.avatarBlurhash, () => {
 
 .indicator {
 	position: absolute;
-	z-index: 1;
+	z-index: 2;
 	bottom: 0;
 	left: 0;
 	width: 20%;
@@ -289,5 +322,14 @@ watch(() => props.user.avatarBlurhash, () => {
 			}
 		}
 	}
+}
+
+.decoration {
+	position: absolute;
+	z-index: 1;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	pointer-events: none;
 }
 </style>

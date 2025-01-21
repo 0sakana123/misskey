@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import type { NotesRepository } from '@/models/index.js';
+import { Injectable } from '@nestjs/common';
 import { checkWordMute } from '@/misc/check-word-mute.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
@@ -38,16 +37,8 @@ class HomeTimelineChannel extends Channel {
 			if ((this.user!.id !== note.userId) && !this.following.has(note.userId)) return;
 		}
 
-		// Ignore notes from instances the user has muted
+		// ユーザーがミュートしたインスタンスからであれば無視
 		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
-
-		// 流れてきたNoteがミュートすべきNoteだったら無視する
-		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
-		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
-		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
-		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
-		//const originalNote = await this.noteEntityService.getOriginalNoteText(note);
-		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
 
 		if (['followers', 'specified'].includes(note.visibility)) {
 			note = await this.noteEntityService.pack(note.id, this.user!, {
@@ -58,15 +49,15 @@ class HomeTimelineChannel extends Channel {
 				return;
 			}
 		} else {
-			// リプライなら再pack
+			// replyをpack
 			if (note.replyId != null) {
-				note.reply = await this.noteEntityService.pack(note.replyId, this.user!, {
+				note.reply = await this.noteEntityService.pack(note.replyId, this.user, {
 					detail: true,
 				});
 			}
-			// Renoteなら再pack
+			// renoteをpack
 			if (note.renoteId != null) {
-				note.renote = await this.noteEntityService.pack(note.renoteId, this.user!, {
+				note.renote = await this.noteEntityService.pack(note.renoteId, this.user, {
 					detail: true,
 				});
 			}
@@ -84,15 +75,48 @@ class HomeTimelineChannel extends Channel {
 		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
 		if (isUserRelated(note, this.blocking)) return;
 
-		this.connection.cacheNote(note);
-
-		this.send('note', note);
+		// ワードミュート判定
+		this.checkWordMutes(note).then(result => {
+			if (result) {
+				return;
+			}
+			else {
+				this.connection.cacheNote(note);
+				this.send('note', note);
+			}
+		});
 	}
 
 	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
+	}
+
+	@bindThis
+	private async checkWordMutes(note: Packed<'Note'>): Promise<boolean> {
+		// リプライなら元ノート参照、ミュート判定
+		if (note.replyId != null) {
+			note.reply = await this.noteEntityService.pack(note.replyId, this.user, {
+				detail: true,
+			});
+			if (this.userProfile !== null && this.userProfile !== undefined) {
+				if (await checkWordMute(note.reply, this.user, this.userProfile.mutedWords)) return true;
+			}
+		}
+		// Renoteなら元ノート参照、ミュート判定
+		if (note.renoteId != null) {
+			note.renote = await this.noteEntityService.pack(note.renoteId, this.user, {
+				detail: true,
+			});
+			if (this.userProfile !== null && this.userProfile !== undefined) {
+				if (await checkWordMute(note.renote, this.user, this.userProfile.mutedWords)) return true;
+			}
+		}
+		// このノート自体のミュート判定
+		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return true;
+
+		return false;
 	}
 }
 

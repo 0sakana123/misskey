@@ -3,7 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import jsonld from 'jsonld';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { bindThis } from '@/decorators.js';
-import { CONTEXTS } from './misc/contexts.js';
+import { CONTEXTS, WellKnownContext } from './misc/contexts.js';
+import { validateContentTypeSetAsJsonLD } from './misc/validator.js';
 
 // RsaSignature2017 based from https://github.com/transmute-industries/RsaSignature2017
 
@@ -90,6 +91,13 @@ class LdSignature {
 		});
 	}
 
+	public async compactToWellKnown(data: any): Promise<any> {
+		const options = { documentLoader: this.getLoader() };
+		const context = WellKnownContext as any;
+		delete data['signature'];
+		return await jsonld.compact(data, context, options);
+	}
+
 	@bindThis
 	private getLoader() {
 		return async (url: string): Promise<any> => {
@@ -123,7 +131,12 @@ class LdSignature {
 				Accept: 'application/ld+json, application/json',
 			},
 			timeout: this.loderTimeout,
-		}, { throwErrorWhenResponseNotOk: false }).then(res => {
+		},
+			{
+				throwErrorWhenResponseNotOk: false,
+				validators: [validateContentTypeSetAsJsonLD],
+			},
+		).then(res => {
 			if (!res.ok) {
 				throw `${res.status} ${res.statusText}`;
 			} else {

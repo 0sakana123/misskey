@@ -11,6 +11,8 @@
 import { computed } from 'vue';
 import XNotes from '@/components/MkNotes.vue';
 import { definePageMetadata } from '@/scripts/page-metadata';
+import { i18n } from '@/i18n';
+import * as os from '@/os';
 
 const props = defineProps<{
 	tag: string;
@@ -24,9 +26,19 @@ const pagination = {
 	})),
 };
 
-const headerActions = $computed(() => []);
+const headerActions = $computed(() => [{
+	icon: 'ti ti-plus',
+	text: i18n.ts.note,
+	handler: create,
+}]);
 
 const headerTabs = $computed(() => []);
+
+function create() {
+	os.post({
+		initialText: `#${props.tag} `,
+	});
+}
 
 definePageMetadata(computed(() => ({
 	title: props.tag,

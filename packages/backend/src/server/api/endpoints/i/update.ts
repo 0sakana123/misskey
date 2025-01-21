@@ -18,6 +18,7 @@ import { AccountUpdateService } from '@/core/AccountUpdateService.js';
 import { HashtagService } from '@/core/HashtagService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -69,6 +70,30 @@ export const meta = {
 			code: 'TOO_MANY_MUTED_WORDS',
 			id: '010665b1-a211-42d2-bc64-8f6609d79785',
 		},
+
+		noSuchUser: {
+			message: 'No such user.',
+			code: 'NO_SUCH_USER',
+			id: 'fcd2eef9-a9b2-4c4f-8624-038099e90aa5',
+		},
+
+		uriNull: {
+			message: 'User ActivityPup URI is null.',
+			code: 'URI_NULL',
+			id: 'bf326f31-d430-4f97-9933-5d61e4d48a23',
+		},
+
+		forbiddenToSetYourself: {
+			message: 'You can\'t set yourself as your own alias.',
+			code: 'FORBIDDEN_TO_SET_YOURSELF',
+			id: '25c90186-4ab0-49c8-9bba-a1fa6c202ba4',
+		},
+
+		restrictedByRole: {
+			message: 'This feature is restricted by your role.',
+			code: 'RESTRICTED_BY_ROLE',
+			id: '8feff0ba-5ab5-585b-31f4-4df816663fad',
+		},
 	},
 
 	res: {
@@ -87,6 +112,19 @@ export const paramDef = {
 		birthday: { ...birthdaySchema, nullable: true },
 		lang: { type: 'string', enum: [null, ...Object.keys(langmap)] as string[], nullable: true },
 		avatarId: { type: 'string', format: 'misskey:id', nullable: true },
+		avatarDecorations: {
+			type: 'array', maxItems: 16, items: {
+				type: 'object',
+				properties: {
+					id: { type: 'string', format: 'misskey:id' },
+					angle: { type: 'number', nullable: true, maximum: 0.5, minimum: -0.5 },
+					flipH: { type: 'boolean', nullable: true },
+					offsetX: { type: 'number', nullable: true, maximum: 0.25, minimum: -0.25 },
+					offsetY: { type: 'number', nullable: true, maximum: 0.25, minimum: -0.25 },
+				},
+				required: ['id'],
+			}
+		},
 		bannerId: { type: 'string', format: 'misskey:id', nullable: true },
 		fields: {
 			type: 'array',
@@ -118,15 +156,21 @@ export const paramDef = {
 		ffVisibility: { type: 'string', enum: ['public', 'followers', 'private'] },
 		pinnedPageId: { type: 'string', format: 'misskey:id' },
 		mutedWords: { type: 'array' },
-		mutedInstances: { type: 'array', items: {
-			type: 'string',
-		} },
-		mutingNotificationTypes: { type: 'array', items: {
-			type: 'string', enum: notificationTypes,
-		} },
-		emailNotificationTypes: { type: 'array', items: {
-			type: 'string',
-		} },
+		mutedInstances: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
+		mutingNotificationTypes: {
+			type: 'array', items: {
+				type: 'string', enum: notificationTypes,
+			}
+		},
+		emailNotificationTypes: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
 	},
 } as const;
 
@@ -152,6 +196,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private accountUpdateService: AccountUpdateService,
 		private hashtagService: HashtagService,
 		private roleService: RoleService,
+		private avatarDecorationService: AvatarDecorationService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id });
@@ -222,6 +267,24 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 				if (banner == null || banner.userId !== user.id) throw new ApiError(meta.errors.noSuchBanner);
 				if (!banner.type.startsWith('image/')) throw new ApiError(meta.errors.bannerNotAnImage);
+			}
+
+			if (ps.avatarDecorations) {
+				const decorations = await this.avatarDecorationService.getAll(true);
+				const [myRoles, myPolicies] = await Promise.all([this.roleService.getUserRoles(user.id), this.roleService.getUserPolicies(user.id)]);
+				const allRoles = await this.roleService.getRoles();
+				const decorationIds = decorations
+					.filter(d => d.roleIdsThatCanBeUsedThisDecoration.filter(roleId => allRoles.some(r => r.id === roleId)).length === 0 || myRoles.some(r => d.roleIdsThatCanBeUsedThisDecoration.includes(r.id)))
+					.map(d => d.id);
+
+				if (ps.avatarDecorations.length > myPolicies.avatarDecorationLimit) throw new ApiError(meta.errors.restrictedByRole);
+				updates.avatarDecorations = ps.avatarDecorations.filter(d => decorationIds.includes(d.id)).map(d => ({
+					id: d.id,
+					angle: d.angle ?? 0,
+					flipH: d.flipH ?? false,
+					offsetX: d.offsetX ?? 0,
+					offsetY: d.offsetY ?? 0,
+				}));
 			}
 
 			if (ps.pinnedPageId) {

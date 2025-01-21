@@ -19,6 +19,7 @@ export type RolePolicies = {
 	canPublicNote: boolean;
 	canInvite: boolean;
 	canManageCustomEmojis: boolean;
+	canManageAvatarDecorations: boolean;
 	canHideAds: boolean;
 	driveCapacityMb: number;
 	pinLimit: number;
@@ -30,6 +31,7 @@ export type RolePolicies = {
 	userListLimit: number;
 	userEachUserListsLimit: number;
 	rateLimitFactor: number;
+	avatarDecorationLimit: number;
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -38,6 +40,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canPublicNote: true,
 	canInvite: false,
 	canManageCustomEmojis: false,
+	canManageAvatarDecorations: false,
 	canHideAds: false,
 	driveCapacityMb: 100,
 	pinLimit: 5,
@@ -49,6 +52,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	userListLimit: 10,
 	userEachUserListsLimit: 50,
 	rateLimitFactor: 1,
+	avatarDecorationLimit: 1,
 };
 
 @Injectable()
@@ -192,6 +196,12 @@ export class RoleService implements OnApplicationShutdown {
 	}
 
 	@bindThis
+	public async getRoles() {
+		const roles = await this.rolesCache.fetch(null, () => this.rolesRepository.findBy({}));
+		return roles;
+	}
+
+	@bindThis
 	public async getUserRoles(userId: User['id']) {
 		const assigns = await this.roleAssignmentByUserIdCache.fetch(userId, () => this.roleAssignmentsRepository.findBy({ userId }));
 		const assignedRoleIds = assigns.map(x => x.roleId);
@@ -250,6 +260,7 @@ export class RoleService implements OnApplicationShutdown {
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
 			canManageCustomEmojis: calc('canManageCustomEmojis', vs => vs.some(v => v === true)),
+			canManageAvatarDecorations: calc('canManageAvatarDecorations', vs => vs.some(v => v === true)),
 			canHideAds: calc('canHideAds', vs => vs.some(v => v === true)),
 			driveCapacityMb: calc('driveCapacityMb', vs => Math.max(...vs)),
 			pinLimit: calc('pinLimit', vs => Math.max(...vs)),
@@ -261,6 +272,7 @@ export class RoleService implements OnApplicationShutdown {
 			userListLimit: calc('userListLimit', vs => Math.max(...vs)),
 			userEachUserListsLimit: calc('userEachUserListsLimit', vs => Math.max(...vs)),
 			rateLimitFactor: calc('rateLimitFactor', vs => Math.max(...vs)),
+			avatarDecorationLimit: calc('avatarDecorationLimit', vs => Math.max(...vs)),
 		};
 	}
 

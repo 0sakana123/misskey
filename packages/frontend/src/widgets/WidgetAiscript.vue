@@ -20,7 +20,7 @@ import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExp
 import { GetFormResultType } from '@/scripts/form';
 import * as os from '@/os';
 import MkContainer from '@/components/MkContainer.vue';
-import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api';
 import { $i } from '@/account';
 import { i18n } from '@/i18n';
 
@@ -67,19 +67,7 @@ const run = async () => {
 		storageKey: 'widget',
 		token: $i?.token,
 	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			logs.value.push({
 				id: Math.random().toString(),

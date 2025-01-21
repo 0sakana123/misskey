@@ -24,3 +24,9 @@ function getRandom() {
 export function genObjectId(date: Date): string {
 	return getTime(date.getTime()) + getRandom();
 }
+
+export function parseObjectId(id: string): { date: Date; } {
+	return {
+		date: new Date(parseInt(id.slice(0, 8), 16) * 1000),
+	};
+}

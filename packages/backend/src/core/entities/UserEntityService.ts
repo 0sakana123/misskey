@@ -15,6 +15,7 @@ import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema,
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, ChannelFollowingsRepository, NotificationsRepository, UserNotePiningsRepository, UserProfilesRepository, InstancesRepository, AnnouncementReadsRepository, MessagingMessagesRepository, UserGroupJoiningsRepository, AnnouncementsRepository, AntennaNotesRepository, PagesRepository, UserProfile } from '@/models/index.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { AntennaService } from '../AntennaService.js';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
@@ -24,10 +25,10 @@ import type { PageEntityService } from './PageEntityService.js';
 
 type IsUserDetailed<Detailed extends boolean> = Detailed extends true ? Packed<'UserDetailed'> : Packed<'UserLite'>;
 type IsMeAndIsUserDetailed<ExpectsMe extends boolean | null, Detailed extends boolean> =
-	Detailed extends true ? 
-		ExpectsMe extends true ? Packed<'MeDetailed'> :
-		ExpectsMe extends false ? Packed<'UserDetailedNotMe'> :
-		Packed<'UserDetailed'> :
+	Detailed extends true ?
+	ExpectsMe extends true ? Packed<'MeDetailed'> :
+	ExpectsMe extends false ? Packed<'UserDetailedNotMe'> :
+	Packed<'UserDetailed'> :
 	Packed<'UserLite'>;
 
 const ajv = new Ajv();
@@ -53,6 +54,7 @@ export class UserEntityService implements OnModuleInit {
 	private antennaService: AntennaService;
 	private roleService: RoleService;
 	private userInstanceCache: Cache<Instance | null>;
+	private avatarDecorationService: AvatarDecorationService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -134,6 +136,7 @@ export class UserEntityService implements OnModuleInit {
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 		this.antennaService = this.moduleRef.get('AntennaService');
 		this.roleService = this.moduleRef.get('RoleService');
+		this.avatarDecorationService = this.moduleRef.get('AvatarDecorationService');
 	}
 
 	//#region Validators
@@ -306,8 +309,8 @@ export class UserEntityService implements OnModuleInit {
 		const elapsed = Date.now() - user.lastActiveDate.getTime();
 		return (
 			elapsed < USER_ONLINE_THRESHOLD ? 'online' :
-			elapsed < USER_ACTIVE_THRESHOLD ? 'active' :
-			'offline'
+				elapsed < USER_ACTIVE_THRESHOLD ? 'active' :
+					'offline'
 		);
 	}
 
@@ -380,13 +383,13 @@ export class UserEntityService implements OnModuleInit {
 
 		const followingCount = profile == null ? null :
 			(profile.ffVisibility === 'public') || isMe ? user.followingCount :
-			(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount :
-			null;
+				(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount :
+					null;
 
 		const followersCount = profile == null ? null :
 			(profile.ffVisibility === 'public') || isMe ? user.followersCount :
-			(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
-			null;
+				(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
+					null;
 
 		const isModerator = isMe && opts.detail ? this.roleService.isModerator(user) : null;
 		const isAdmin = isMe && opts.detail ? this.roleService.isAdministrator(user) : null;
@@ -400,6 +403,14 @@ export class UserEntityService implements OnModuleInit {
 			host: user.host,
 			avatarUrl: this.getAvatarUrlSync(user),
 			avatarBlurhash: user.avatar?.blurhash ?? null,
+			avatarDecorations: user.avatarDecorations.length > 0 ? this.avatarDecorationService.getAll(false, true).then(decorations => user.avatarDecorations.filter(ud => decorations.some(d => d.id === ud.id)).map(ud => ({
+				id: ud.id,
+				angle: ud.angle || undefined,
+				flipH: ud.flipH || undefined,
+				offsetX: ud.offsetX || undefined,
+				offsetY: ud.offsetY || undefined,
+				url: decorations.find(d => d.id === ud.id)!.url,
+			}))) : [],
 			isBot: user.isBot ?? falsy,
 			isCat: user.isCat ?? falsy,
 			instance: user.host ? this.userInstanceCache.fetch(user.host,

@@ -57,6 +57,14 @@
 						</MkFolder>
 
 						<MkFolder>
+							<template #label>{{ i18n.ts._role._options.canManageAvatarDecorations }}</template>
+							<template #suffix>{{ policies.canManageAvatarDecorations ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canManageAvatarDecorations">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder>
 							<template #label>{{ i18n.ts._role._options.driveCapacity }}</template>
 							<template #suffix>{{ policies.driveCapacityMb }}MB</template>
 							<MkInput v-model="policies.driveCapacityMb" type="number">
@@ -129,6 +137,13 @@
 							</MkSwitch>
 						</MkFolder>
 
+						<MkFolder>
+							<template #label>{{ i18n.ts._role._options.avatarDecorationLimit }}</template>
+							<template #suffix>{{ policies.avatarDecorationLimit }}</template>
+							<MkInput v-model="policies.avatarDecorationLimit" type="number">
+							</MkInput>
+						</MkFolder>
+
 						<MkButton primary rounded @click="updateBaseRole">{{ i18n.ts.save }}</MkButton>
 					</div>
 				</MkFolder>
@@ -155,27 +170,9 @@ import MkRolePreview from '@/components/MkRolePreview.vue';
 import * as os from '@/os';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
+import { ROLE_POLICIES } from '@/const';
 import { instance } from '@/instance';
 import { useRouter } from '@/router';
-
-const ROLE_POLICIES = [
-	'gtlAvailable',
-	'ltlAvailable',
-	'canPublicNote',
-	'canInvite',
-	'canManageCustomEmojis',
-	'canHideAds',
-	'driveCapacityMb',
-	'pinLimit',
-	'antennaLimit',
-	'wordMuteLimit',
-	'webhookLimit',
-	'clipLimit',
-	'noteEachClipsLimit',
-	'userListLimit',
-	'userEachUserListsLimit',
-	'rateLimitFactor',
-] as const;
 
 const router = useRouter();
 

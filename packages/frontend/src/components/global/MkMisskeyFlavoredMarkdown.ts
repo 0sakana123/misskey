@@ -294,6 +294,9 @@ export default defineComponent({
 								}),
 							]);
 						}
+						default: {
+							style = 'color: #888; font-style: italic;';
+						}
 					}
 					if (style === undefined) {
 						return h('span', {}, ['$[', token.props.name, ' ', ...genEl(token.children, scale), ']']);

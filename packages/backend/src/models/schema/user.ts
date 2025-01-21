@@ -1,62 +1,6 @@
 export const packedUserLiteSchema = {
 	type: 'object',
-	properties: {
-		id: {
-			type: 'string',
-			nullable: false, optional: false,
-			format: 'id',
-			example: 'xxxxxxxxxx',
-		},
-		name: {
-			type: 'string',
-			nullable: true, optional: false,
-			example: '藍',
-		},
-		username: {
-			type: 'string',
-			nullable: false, optional: false,
-			example: 'ai',
-		},
-		host: {
-			type: 'string',
-			nullable: true, optional: false,
-			example: 'misskey.example.com',
-			description: 'The local host is represented with `null`.',
-		},
-		avatarUrl: {
-			type: 'string',
-			format: 'url',
-			nullable: true, optional: false,
-		},
-		avatarBlurhash: {
-			type: 'any',
-			nullable: true, optional: false,
-		},
-		isAdmin: {
-			type: 'boolean',
-			nullable: false, optional: true,
-			default: false,
-		},
-		isModerator: {
-			type: 'boolean',
-			nullable: false, optional: true,
-			default: false,
-		},
-		isBot: {
-			type: 'boolean',
-			nullable: false, optional: true,
-		},
-		isCat: {
-			type: 'boolean',
-			nullable: false, optional: true,
-		},
-		onlineStatus: {
-			type: 'string',
-			format: 'url',
-			nullable: true, optional: false,
-			enum: ['unknown', 'online', 'active', 'offline'],
-		},
-	},
+	ref: 'RoleLite',
 } as const;
 
 export const packedUserDetailedNotMeOnlySchema = {

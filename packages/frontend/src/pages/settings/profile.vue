@@ -1,11 +1,11 @@
 <template>
 <div class="_gaps_m">
-	<div class="llvierxe" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : null }">
-		<div class="avatar">
-			<MkAvatar class="avatar" :user="$i" @click="changeAvatar"/>
-			<MkButton primary rounded class="avatarEdit" @click="changeAvatar">{{ i18n.ts._profile.changeAvatar }}</MkButton>
+	<div :class="$style.llvierxe" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : null }">
+		<div :class="$style.avatar">
+			<MkAvatar :class="$style.avatar" :user="$i" forceShowDecoration @click="changeAvatar"/>
+			<MkButton primary rounded :class="$style.avatarEdit" @click="changeAvatar">{{ i18n.ts._profile.changeAvatar }}</MkButton>
 		</div>
-		<MkButton primary rounded class="bannerEdit" @click="changeBanner">{{ i18n.ts._profile.changeBanner }}</MkButton>
+		<MkButton primary rounded :class="$style.bannerEdit" @click="changeBanner">{{ i18n.ts._profile.changeBanner }}</MkButton>
 	</div>
 
 	<MkInput v-model="profile.name" :max="30" manual-save>
@@ -54,6 +54,12 @@
 		</MkFolder>
 		<template #caption>{{ i18n.ts._profile.metadataDescription }}</template>
 	</FormSlot>
+	
+	<MkFolder>
+		<template #icon><i class="ti ti-sparkles"></i></template>
+		<template #label>{{ i18n.ts.avatarDecorations }}</template>
+		<XAvatarDecoration/>
+	</MkFolder>
 
 	<MkFolder>
 		<template #label>{{ i18n.ts.advancedSettings }}</template>
@@ -69,7 +75,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, watch } from 'vue';
+import { computed, reactive, ref, watch, defineAsyncComponent } from 'vue';
+import XAvatarDecoration from './profile.avatar-decoration.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
@@ -204,7 +211,7 @@ definePageMetadata({
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
 .llvierxe {
 	position: relative;
 	background-size: cover;
