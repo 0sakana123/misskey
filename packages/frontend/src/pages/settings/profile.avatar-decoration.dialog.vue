@@ -15,11 +15,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkSpacer :marginMin="20" :marginMax="28">
 			<div style="text-align: center;">
 				<div :class="$style.name">{{ decoration.name }}</div>
-				<MkAvatar style="width: 64px; height: 64px; margin-bottom: 20px;" :user="$i" :decorations="[...$i.avatarDecorations, { url: decoration.url, angle, flipH }]" forceShowDecoration/>
+				<MkAvatar style="width: 64px; height: 64px; margin-bottom: 20px;" :user="$i" :decorations="decorationsForPreview" forceShowDecoration/>
 			</div>
 			<div class="_gaps_s">
 				<MkRange v-model="angle" continuousUpdate :min="-0.5" :max="0.5" :step="0.025" :textConverter="(v) => `${Math.floor(v * 360)}°`">
 					<template #label>{{ i18n.ts.angle }}</template>
+				</MkRange>
+				<MkRange v-model="offsetX" continuousUpdate :min="-0.25" :max="0.25" :step="0.025" :textConverter="(v) => `${Math.floor(v * 100)}%`">
+					<template #label>X {{ i18n.ts.position }}</template>
+				</MkRange>
+				<MkRange v-model="offsetY" continuousUpdate :min="-0.25" :max="0.25" :step="0.025" :textConverter="(v) => `${Math.floor(v * 100)}%`">
+					<template #label>Y {{ i18n.ts.position }}</template>
 				</MkRange>
 				<MkSwitch v-model="flipH">
 					<template #label>{{ i18n.ts.flip }}</template>
@@ -27,9 +33,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</MkSpacer>
 		<div :class="$style.footer" class="_buttonsCenter">
-			<MkButton v-if="using" primary rounded @click="attach"><i class="ti ti-check"></i> {{ i18n.ts.update }}</MkButton>
-			<MkButton v-if="using" rounded @click="detach"><i class="ti ti-x"></i> {{ i18n.ts.detach }}</MkButton>
-			<MkButton v-else primary rounded @click="attach"><i class="ti ti-check"></i> {{ i18n.ts.attach }}</MkButton>
+			<MkButton v-if="usingIndex != null" primary rounded @click="update"><i class="ti ti-check"></i> {{ i18n.ts.update }}</MkButton>
+			<MkButton v-if="usingIndex != null" rounded @click="detach"><i class="ti ti-x"></i> {{ i18n.ts.detach }}</MkButton>
+			<MkButton v-else :disabled="exceeded" primary rounded @click="attach"><i class="ti ti-check"></i> {{ i18n.ts.attach }}</MkButton>
 		</div>
 	</div>
 </MkModalWindow>
@@ -47,46 +53,79 @@ import MkRange from '@/components/MkRange.vue';
 import { $i } from '@/account.js';
 
 const props = defineProps<{
+		usingIndex: number | null;
 		decoration: {
 			id: string;
 			url: string;
 			name: string;
-		}
+		};
 	}>();
 const emit = defineEmits<{
 		(ev: 'closed'): void;
+		(ev: 'attach', payload: {
+		angle: number;
+		flipH: boolean;
+		offsetX: number;
+		offsetY: number;
+	}): void;
+	(ev: 'update', payload: {
+		angle: number;
+		flipH: boolean;
+		offsetX: number;
+		offsetY: number;
+	}): void;
+	(ev: 'detach'): void;
 	}>();
 const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();
-const using = computed(() => $i.avatarDecorations.some(x => x.id === props.decoration.id));
-const angle = ref(using.value ? $i.avatarDecorations.find(x => x.id === props.decoration.id).angle ?? 0 : 0);
-const flipH = ref(using.value ? $i.avatarDecorations.find(x => x.id === props.decoration.id).flipH ?? false : false);
+const exceeded = computed(() => ($i.policies.avatarDecorationLimit - $i.avatarDecorations.length) <= 0);
+const angle = ref((props.usingIndex != null ? $i.avatarDecorations[props.usingIndex].angle : null) ?? 0);
+const flipH = ref((props.usingIndex != null ? $i.avatarDecorations[props.usingIndex].flipH : null) ?? false);
+const offsetX = ref((props.usingIndex != null ? $i.avatarDecorations[props.usingIndex].offsetX : null) ?? 0);
+const offsetY = ref((props.usingIndex != null ? $i.avatarDecorations[props.usingIndex].offsetY : null) ?? 0);
+const decorationsForPreview = computed(() => {
+	const decoration = {
+		id: props.decoration.id,
+		url: props.decoration.url,
+		angle: angle.value,
+		flipH: flipH.value,
+		offsetX: offsetX.value,
+		offsetY: offsetY.value,
+	};
+	const decorations = [...$i.avatarDecorations];
+	if (props.usingIndex != null) {
+		decorations[props.usingIndex] = decoration;
+	} else {
+		decorations.push(decoration);
+	}
+	return decorations;
+});
 
 function cancel() {
 	dialog.value.close();
 }
 
-async function attach() {
-	const decoration = {
-		id: props.decoration.id,
+async function update() {
+	emit('update', {
 		angle: angle.value,
 		flipH: flipH.value,
-	};
-	const update = [...$i.avatarDecorations, decoration];
-	await os.apiWithDialog('i/update', {
-		avatarDecorations: update,
+		offsetX: offsetX.value,
+		offsetY: offsetY.value,
 	});
-	$i.avatarDecorations = update;
+	dialog.value.close();
+}
 
+async function attach() {
+	emit('attach', {
+		angle: angle.value,
+		flipH: flipH.value,
+		offsetX: offsetX.value,
+		offsetY: offsetY.value,
+	});
 	dialog.value.close();
 }
 
 async function detach() {
-	const update = $i.avatarDecorations.filter(x => x.id !== props.decoration.id);
-	await os.apiWithDialog('i/update', {
-		avatarDecorations: update,
-	});
-	$i.avatarDecorations = update;
-	
+	emit('detach');
 	dialog.value.close();
 }
 

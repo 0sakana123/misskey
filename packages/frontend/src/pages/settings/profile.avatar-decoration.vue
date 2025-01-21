@@ -4,21 +4,27 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 <template>
 <div v-if="!loading" class="_gaps">
-	<MkInfo>{{ i18n.t('_profile.avatarDecorationMax', { max: $i?.policies.avatarDecorationLimit }) }} ({{ i18n.t('remainingN', { n: $i?.policies.avatarDecorationLimit - $i.avatarDecorations.length }) }})</MkInfo>
+	<MkInfo>{{ i18n.t('_profile.avatarDecorationMax', { max: $i.policies.avatarDecorationLimit }) }} ({{ i18n.t('remainingN', { n: $i.policies.avatarDecorationLimit - $i.avatarDecorations.length }) }})</MkInfo>
+
 	<div v-if="$i.avatarDecorations.length > 0" v-panel :class="$style.current" class="_gaps_s">
 		<div>{{ i18n.ts.inUse }}</div>
+
 		<div :class="$style.decorations">
 			<XDecoration
 				v-for="(avatarDecoration, i) in $i.avatarDecorations"
 				:decoration="avatarDecorations.find(d => d.id === avatarDecoration.id)"
 				:angle="avatarDecoration.angle"
 				:flipH="avatarDecoration.flipH"
+				:offsetX="avatarDecoration.offsetX"
+				:offsetY="avatarDecoration.offsetY"
 				:active="true"
 				@click="openDecoration(avatarDecoration, i)"
 			/>
 		</div>
+
 		<MkButton danger @click="detachAllDecorations">{{ i18n.ts.detachAll }}</MkButton>
 	</div>
+
 	<div :class="$style.decorations">
 		<XDecoration
 			v-for="avatarDecoration in avatarDecorations"
@@ -32,6 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkLoading/>
 </div>
 </template>
+
 <script lang="ts" setup>
 import { ref, defineAsyncComponent } from 'vue';
 import * as Misskey from 'misskey-js';
@@ -41,6 +48,7 @@ import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import MkInfo from '@/components/MkInfo.vue';
+
 const loading = ref(true);
 const avatarDecorations = ref<Misskey.entities.GetAvatarDecorationsResponse>([]);
 os.api('get-avatar-decorations').then(_avatarDecorations => {
@@ -57,6 +65,8 @@ function openDecoration(avatarDecoration, index?: number) {
 				id: avatarDecoration.id,
 				angle: payload.angle,
 				flipH: payload.flipH,
+				offsetX: payload.offsetX,
+				offsetY: payload.offsetY,
 			};
 			const update = [...$i.avatarDecorations, decoration];
 			await os.apiWithDialog('i/update', {
@@ -69,6 +79,8 @@ function openDecoration(avatarDecoration, index?: number) {
 				id: avatarDecoration.id,
 				angle: payload.angle,
 				flipH: payload.flipH,
+				offsetX: payload.offsetX,
+				offsetY: payload.offsetY,
 			};
 			const update = [...$i.avatarDecorations];
 			update[index] = decoration;

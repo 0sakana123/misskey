@@ -40,6 +40,7 @@ import type { ApLoggerService } from '../ApLoggerService.js';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { ApImageService } from './ApImageService.js';
 import type { IActor, IObject, IApPropertyValue } from '../type.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -87,6 +88,8 @@ export class ApPersonService implements OnModuleInit {
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
+
+		private avatarDecorationService: AvatarDecorationService,
 
 		//private utilityService: UtilityService,
 		//private userEntityService: UserEntityService,
@@ -335,6 +338,8 @@ export class ApPersonService implements OnModuleInit {
 		// ハッシュタグ更新
 		this.hashtagService.updateUsertags(user!, tags);
 
+		this.avatarDecorationService.remoteUserUpdate(user!);
+
 		//#region アバターとヘッダー画像をフェッチ
 		const [avatar, banner] = await Promise.all([
 			person.icon,
@@ -461,6 +466,8 @@ export class ApPersonService implements OnModuleInit {
 		}
 
 		// Update user
+		const user = await this.usersRepository.findOneByOrFail({ id: exist.id });
+		await this.avatarDecorationService.remoteUserUpdate(user);
 		await this.usersRepository.update(exist.id, updates);
 
 		if (person.publicKey) {
