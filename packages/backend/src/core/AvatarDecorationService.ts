@@ -123,52 +123,66 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		}
 		const res = await this.httpRequestService.send(showUserApiUrl, {
 			method: 'POST',
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ "username": user.username }),
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ 'username': user.username }),
 		});
 		const userData: any = await res.json();
-		const avatarDecorations = userData.avatarDecorations[0];
-		if (avatarDecorations != null) {
-			const avatarDecorationId = avatarDecorations.id;
-			const instanceHost = instance?.host;
-			const decorationApiUrl = `https://${instanceHost}/api/get-avatar-decorations`;
-			const allRes = await this.httpRequestService.send(decorationApiUrl, {
-				method: 'POST',
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({}),
-			});
-			const allDecorations: any = await allRes.json();
-			let name;
-			let description;
-			for (const decoration of allDecorations) {
-				if (decoration.id === avatarDecorationId) {
-					name = decoration.name;
-					description = decoration.description;
-					break;
-				}
-			}
-			const existingDecoration = await this.avatarDecorationsRepository.findOneBy({ host: userHost, remoteId: avatarDecorationId });
-			const decorationData = {
-				name: name,
-				description: description,
-				url: this.getProxiedUrl(avatarDecorations.url, 'static'),
-				remoteId: avatarDecorationId,
-				host: userHost,
-			};
-			if (existingDecoration == null) {
-				await this.create(decorationData);
-			} else {
-				await this.update(existingDecoration.id, decorationData);
-			}
-			const findDecoration = await this.avatarDecorationsRepository.findOneBy({ host: userHost, remoteId: avatarDecorationId });
+		const avatarDecorations = userData.avatarDecorations?.[0];
+
+		if (!avatarDecorations) {
 			const updates = {} as Partial<User>;
-			updates.avatarDecorations = [{
-				id: findDecoration?.id ?? '',
-				angle: avatarDecorations.angle ?? 0,
-				flipH: avatarDecorations.flipH ?? false,
-			}];
+			updates.avatarDecorations = [];
 			await this.usersRepository.update({ id: user.id }, updates);
+			return;
 		}
+
+		const avatarDecorationId = avatarDecorations.id;
+		const instanceHost = instance?.host;
+		const decorationApiUrl = `https://${instanceHost}/api/get-avatar-decorations`;
+		const allRes = await this.httpRequestService.send(decorationApiUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({}),
+		});
+		const allDecorations: any = await allRes.json();
+		let name;
+		let description;
+		for (const decoration of allDecorations) {
+			if (decoration.id === avatarDecorationId) {
+				name = decoration.name;
+				description = decoration.description;
+				break;
+			}
+		}
+		const existingDecoration = await this.avatarDecorationsRepository.findOneBy({
+			host: userHost,
+			remoteId: avatarDecorationId,
+		});
+		const decorationData = {
+			name: name,
+			description: description,
+			url: this.getProxiedUrl(avatarDecorations.url, 'static'),
+			remoteId: avatarDecorationId,
+			host: userHost,
+		};
+		if (existingDecoration == null) {
+			await this.create(decorationData);
+		} else {
+			await this.update(existingDecoration.id, decorationData);
+		}
+		const findDecoration = await this.avatarDecorationsRepository.findOneBy({
+			host: userHost,
+			remoteId: avatarDecorationId,
+		});
+		const updates = {} as Partial<User>;
+		updates.avatarDecorations = [{
+			id: findDecoration?.id ?? '',
+			angle: avatarDecorations.angle ?? 0,
+			flipH: avatarDecorations.flipH ?? false,
+			offsetX: avatarDecorations.offsetX ?? 0,
+			offsetY: avatarDecorations.offsetY ?? 0,
+		}];
+		await this.usersRepository.update({ id: user.id }, updates);
 	}
 
 	@bindThis
