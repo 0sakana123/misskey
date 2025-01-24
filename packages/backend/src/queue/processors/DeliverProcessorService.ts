@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, InstancesRepository } from '@/models/index.js';
 import type { Config } from '@/config.js';
@@ -61,9 +60,9 @@ export class DeliverProcessorService {
 		}
 
 		// ソフトウェアブロックしてたら中断
-		let toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
+		const toInstance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(host) });
 		//let toInstance = await this.instancesRepository.findOneBy({ host: this.federatedInstanceService.fetch(host) });
-		if (toInstance.softwareName != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
+		if (toInstance != null && this.utilityService.isBlockedSoftware(meta.blockedSoftwares, toInstance.softwareName)) {
 			return 'skip (software blocked)';
 		}
 
