@@ -4,7 +4,7 @@
  */
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import { IsNull } from "typeorm";
+import { Not, IsNull } from "typeorm";
 import type { AvatarDecorationsRepository, InstancesRepository, UsersRepository, AvatarDecoration, User } from '@/models';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -174,10 +174,10 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			};
 			if (existingDecoration == null) {
 				await this.create(decorationData);
-				this.cacheWithRemote.delete();
+				this.cacheWithRemote.delete(null);
 			} else {
 				await this.update(existingDecoration.id, decorationData);
-				this.cacheWithRemote.delete();
+				this.cacheWithRemote.delete(null);
 			}
 			const findDecoration = await this.avatarDecorationsRepository.findOneBy({
 				host: userHost,
@@ -215,7 +215,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		if (!withRemote) {
 			return this.cache.fetch(null, () => this.avatarDecorationsRepository.find({ where: { host: IsNull() } }));
 		} else {
-			return this.cacheWithRemote.fetch(null, () => this.avatarDecorationsRepository.find());
+			return this.cacheWithRemote.fetch(null, () => this.avatarDecorationsRepository.find({ where: { host: Not(IsNull()) } }));
 		}
 	}
 
