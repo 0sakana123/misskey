@@ -247,6 +247,8 @@ import * as ep___notes_globalTimeline from './endpoints/notes/global-timeline.js
 import * as ep___notes_hybridTimeline from './endpoints/notes/hybrid-timeline.js';
 import * as ep___notes_localTimeline from './endpoints/notes/local-timeline.js';
 import * as ep___notes_mentions from './endpoints/notes/mentions.js';
+import * as ep___notes_mutes_create from './endpoints/notes/mutes/create.js';
+import * as ep___notes_mutes_delete from './endpoints/notes/mutes/delete.js';
 import * as ep___notes_polls_recommendation from './endpoints/notes/polls/recommendation.js';
 import * as ep___notes_polls_vote from './endpoints/notes/polls/vote.js';
 import * as ep___notes_reactions from './endpoints/notes/reactions.js';
@@ -585,6 +587,8 @@ const eps = [
 	['notes/hybrid-timeline', ep___notes_hybridTimeline],
 	['notes/local-timeline', ep___notes_localTimeline],
 	['notes/mentions', ep___notes_mentions],
+	['notes/mutes/create', ep___notes_mutes_create],
+	['notes/mutes/delete', ep___notes_mutes_delete],
 	['notes/polls/recommendation', ep___notes_polls_recommendation],
 	['notes/polls/vote', ep___notes_polls_vote],
 	['notes/reactions', ep___notes_reactions],
