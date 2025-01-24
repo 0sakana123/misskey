@@ -4,7 +4,7 @@
  */
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import { Not, IsNull } from "typeorm";
+import { IsNull } from "typeorm";
 import type { AvatarDecorationsRepository, InstancesRepository, UsersRepository, AvatarDecoration, User } from '@/models';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -45,6 +45,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 
 	) {
 		this.cache = new Cache<AvatarDecoration[]>(1000 * 60 * 30);
+		this.cacheWithRemote = new Cache<AvatarDecoration[]>(1000 * 60 * 30);
 		this.redisForSub.on('message', this.onMessage);
 	}
 
@@ -118,10 +119,16 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		const userHost = user.host ?? '';
 		const instance = await this.instancesRepository.findOneBy({ host: userHost });
 		const userHostUrl = `https://${user.host}`;
+		const endpointsApiUrl = `${userHostUrl}/api/endpoints`;
 		const showUserApiUrl = `${userHostUrl}/api/users/show`;
-		if (instance?.softwareName !== 'misskey' && instance?.softwareName !== 'cherrypick') {
-			return;
-		}
+		const ep = await this.httpRequestService.send(endpointsApiUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({}),
+		});
+		const endpoints: any = await ep.json();
+		// endpointsにget-avatar-decorationsが無ければアバターデコ非対応
+		if (!endpoints.includes('get-avatar-decorations')) return;
 		const res = await this.httpRequestService.send(showUserApiUrl, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -185,10 +192,10 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			});
 			updates.avatarDecorations.push({
 				id: findDecoration?.id ?? '',
-				angle: userAvatarDecorations.angle ?? 0,
-				flipH: userAvatarDecorations.flipH ?? false,
-				offsetX: userAvatarDecorations.offsetX ?? 0,
-				offsetY: userAvatarDecorations.offsetY ?? 0,
+				angle: avatarDecoration.angle ?? 0,
+				flipH: avatarDecoration.flipH ?? false,
+				offsetX: avatarDecoration.offsetX ?? 0,
+				offsetY: avatarDecoration.offsetY ?? 0,
 			});
 		}
 		await this.usersRepository.update({ id: user.id }, updates);
@@ -215,7 +222,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		if (!withRemote) {
 			return this.cache.fetch(null, () => this.avatarDecorationsRepository.find({ where: { host: IsNull() } }));
 		} else {
-			return this.cacheWithRemote.fetch(null, () => this.avatarDecorationsRepository.find({ where: { host: Not(IsNull()) } }));
+			return this.cacheWithRemote.fetch(null, () => this.avatarDecorationsRepository.find({}));
 		}
 	}
 
