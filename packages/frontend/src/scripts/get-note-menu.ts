@@ -78,6 +78,12 @@ export function getNoteMenu(props: {
 		});
 	}
 
+	function toggleNoteMute(mute: boolean): void {
+		os.apiWithDialog(mute ? 'notes/mutes/create' : 'notes/mutes/delete', {
+			noteId: appearNote.id,
+		});
+	}
+
 	function copyContent(): void {
 		copyToClipboard(appearNote.text);
 		os.success();
@@ -242,7 +248,7 @@ export function getNoteMenu(props: {
 				icon: 'ti ti-external-link',
 				text: i18n.ts.showOnRemote,
 				action: () => {
-					window.open(appearNote.url || appearNote.uri, '_blank');
+					window.open(appearNote.url ?? appearNote.uri, '_blank');
 				},
 			} : undefined,
 			{
@@ -278,6 +284,15 @@ export function getNoteMenu(props: {
 				icon: 'ti ti-message-off',
 				text: i18n.ts.muteThread,
 				action: () => toggleThreadMute(true),
+			}),
+			statePromise.then(state => state.isMutedNote ? {
+				icon: 'ti ti-eye-off',
+				text: i18n.ts.unmuteNote,
+				action: () => toggleNoteMute(false),
+			} : {
+				icon: 'ti ti-eye-off',
+				text: i18n.ts.muteNote,
+				action: () => toggleNoteMute(true),
 			}),
 			appearNote.userId === $i.id ? ($i.pinnedNoteIds || []).includes(appearNote.id) ? {
 				icon: 'ti ti-pinned-off',
