@@ -1,6 +1,6 @@
 {
 	"name": "missingkey",
-	"version": "1.2.2-missingkey.develop.250127.6",
+	"version": "1.2.2-missingkey.release",
 	"codename": "isle",
 	"repository": {
 		"type": "git",
