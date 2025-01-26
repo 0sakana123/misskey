@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { NotesRepository, MutedNotesRepository } from '@/models/index.js';
 import { QueryService } from '@/core/QueryService.js';
-import type { Note } from '@/models/entities/Note.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 
@@ -61,7 +60,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.leftJoinAndSelect('renoteUser.avatar', 'renoteUserAvatar')
 				.leftJoinAndSelect('renoteUser.banner', 'renoteUserBanner');
 
-			this.queryService.generateMutedNoteQuery(query, me);
+			const mutedQuery = this.mutedNotesRepository.createQueryBuilder('muted')
+				.select('muted.noteId')
+				.where('muted.userId = :userId', { userId: me.id });
+
+			query.andWhere(`note.id IN (${ mutedQuery.getQuery() })`);
+
+			query.setParameters(mutedQuery.getParameters());
 
 			const mutes = await query
 				.take(ps.limit)
