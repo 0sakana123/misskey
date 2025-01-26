@@ -18,13 +18,14 @@
 				<span>{{ i18n.ts._wordMute.muteWords }}</span>
 				<template #caption>{{ i18n.ts._wordMute.muteWordsDescription }}<br>{{ i18n.ts._wordMute.muteWordsDescription2 }}</template>
 			</MkTextarea>
-			<MkKeyValue v-if="hardWordMutedNotesCount != null">
-				<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
-				<template #value>{{ number(hardWordMutedNotesCount) }}</template>
-			</MkKeyValue>
 		</div>
 	</div>
 	<MkButton primary inline :disabled="!changed" @click="save()"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
+	<MkKeyValue v-if="hardWordMutedNotesCount != null">
+		<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
+		<template #value>{{ number(hardWordMutedNotesCount) }}</template>
+	</MkKeyValue>
+	<FormLink to="/settings/word-mute/list">{{ i18n.ts.hardMutedNotes }}</FormLink>
 </div>
 </template>
 
