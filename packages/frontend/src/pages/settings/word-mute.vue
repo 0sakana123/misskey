@@ -18,14 +18,14 @@
 				<span>{{ i18n.ts._wordMute.muteWords }}</span>
 				<template #caption>{{ i18n.ts._wordMute.muteWordsDescription }}<br>{{ i18n.ts._wordMute.muteWordsDescription2 }}</template>
 			</MkTextarea>
+			<MkKeyValue v-if="hardWordMutedNotesCount != null">
+				<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
+				<template #value>{{ number(hardWordMutedNotesCount) }}</template>
+			</MkKeyValue>
+			<FormLink to="/settings/word-mute/list">{{ i18n.ts.hardMutedNotes }}</FormLink>
 		</div>
 	</div>
 	<MkButton primary inline :disabled="!changed" @click="save()"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
-	<MkKeyValue v-if="hardWordMutedNotesCount != null">
-		<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
-		<template #value>{{ number(hardWordMutedNotesCount) }}</template>
-	</MkKeyValue>
-	<FormLink to="/settings/word-mute/list">{{ i18n.ts.hardMutedNotes }}</FormLink>
 </div>
 </template>
 
@@ -36,6 +36,7 @@ import MkKeyValue from '@/components/MkKeyValue.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import MkTab from '@/components/MkTab.vue';
+import FormLink from '@/components/form/link.vue';
 import * as os from '@/os';
 import number from '@/filters/number';
 import { defaultStore } from '@/store';
