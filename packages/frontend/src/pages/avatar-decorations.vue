@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkTextarea v-model="avatarDecoration.description">
 								<template #label>{{ i18n.ts.description }}</template>
 							</MkTextarea>
-							<MkInput ref="urlInputEl" v-model="avatarDecoration.url">
+							<MkInput v-model="avatarDecoration.url">
 								<template #label>{{ i18n.ts.imageUrl }}</template>
 							</MkInput>
 							<MkButton @click="addFile($event)"><i class="ti ti-upload"></i> {{ i18n.ts.selectFile }}</MkButton>
@@ -45,7 +45,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 <script lang="ts" setup>
 import { } from 'vue';
-import insertTextAtCursor from 'insert-text-at-cursor';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
@@ -54,6 +53,7 @@ import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFolder from '@/components/MkFolder.vue';
 import { selectFile } from '@/scripts/select-file';
+import copyToClipboard from '@/scripts/copy-to-clipboard';
 
 let avatarDecorations: any[] = $ref([]);
 
@@ -93,12 +93,10 @@ function load() {
 	});
 }
 
-const urlInputEl = $shallowRef<HTMLTextAreaElement | null>(null);
-
 const addFile = async (ev: MouseEvent) => {
 	const file = await selectFile(ev.currentTarget ?? ev.target);
-
-	insertTextAtCursor(urlInputEl, ` ${file.url} `);
+	copyToClipboard(file.url);
+	os.toast(i18n.ts.urlCopiedToClipboard);
 };
 
 load();
