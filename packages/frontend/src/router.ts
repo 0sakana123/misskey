@@ -131,6 +131,10 @@ export const routes = [{
 		name: 'word-mute',
 		component: page(() => import('./pages/settings/word-mute.vue')),
 	}, {
+		path: '/word-mute/list',
+		name: 'word-mute',
+		component: page(() => import('./pages/settings/word-mute.list.vue')),
+	}, {
 		path: '/api',
 		name: 'api',
 		component: page(() => import('./pages/settings/api.vue')),
