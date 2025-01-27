@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/require-v-for-key -->
 <template>
 <component :is="link ? MkA : 'span'" v-user-preview="preview ? user.id : undefined" v-bind="bound" class="_noSelect" :class="[$style.root, { [$style.animation]: animation, [$style.cat]: user.isCat, [$style.square]: squareAvatars }]" :style="{ color }" :title="acct(user)" @click="onClick">
 	<img :class="$style.inner" :src="url" decoding="async"/>
@@ -22,7 +23,9 @@
 		<img
 			v-for="decoration in decorations ?? user.avatarDecorations"
 			:class="[$style.decoration]"
-			:src="decoration.url"
+			:src="defaultStore.state.disableShowingAnimatedImages
+				? getStaticImageUrl(decoration.url)
+				: getProxiedImageUrl(decoration.url)"
 			:style="{
 				rotate: getDecorationAngle(decoration),
 				scale: getDecorationScale(decoration),
@@ -38,7 +41,7 @@
 import { watch } from 'vue';
 import * as misskey from 'misskey-js';
 import MkA from './MkA.vue';
-import { getStaticImageUrl } from '@/scripts/media-proxy';
+import { getStaticImageUrl, getProxiedImageUrl } from '@/scripts/media-proxy';
 import { extractAvgColorFromBlurhash } from '@/scripts/extract-avg-color-from-blurhash';
 import { acct, userPage } from '@/filters/user';
 import MkUserOnlineIndicator from '@/components/MkUserOnlineIndicator.vue';
@@ -49,7 +52,7 @@ const squareAvatars = $ref(defaultStore.state.squareAvatars);
 const useBlurEffect = $ref(defaultStore.state.useBlurEffect);
 
 const props = withDefaults(defineProps<{
-	user: misskey.entities.User;
+	user: misskey.entities.UserDetailed;
 	target?: string | null;
 	link?: boolean;
 	preview?: boolean;
@@ -68,7 +71,7 @@ const emit = defineEmits<{
 	(ev: 'click', v: MouseEvent): void;
 }>();
 
-const showDecoration = props.forceShowDecoration || defaultStore.state.showAvatarDecorations;
+const showDecoration = defaultStore.state.showAvatarDecorations;
 
 const bound = $computed(() => props.link
 	? { to: userPage(props.user), target: props.target }
@@ -83,16 +86,16 @@ function onClick(ev: MouseEvent): void {
 	emit('click', ev);
 }
 
-function getDecorationAngle(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+function getDecorationAngle(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) : string | undefined {
 	const angle = decoration.angle ?? 0;
 	return angle === 0 ? undefined : `${angle * 360}deg`;
 }
-function getDecorationScale(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+function getDecorationScale(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) : string | undefined {
 	const scaleX = decoration.flipH ? -1 : 1;
 	return scaleX === 1 ? undefined : `${scaleX} 1`;
 }
 
-function getDecorationOffset(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) {
+function getDecorationOffset(decoration: Omit<misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>) : string | undefined {
 	const offsetX = decoration.offsetX ?? 0;
 	const offsetY = decoration.offsetY ?? 0;
 	return offsetX === 0 && offsetY === 0 ? undefined : `${offsetX * 100}% ${offsetY * 100}%`;
@@ -192,6 +195,7 @@ watch(() => props.user.avatarBlurhash, () => {
 				url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><filter id="a"><feGaussianBlur in="SourceGraphic" stdDeviation="1"/></filter><circle cx="16" cy="16" r="15" filter="url(%23a)"/></svg>') center / 50% 50%,
 				linear-gradient(#fff, #fff);
 			-webkit-mask-composite: destination-out, source-over;
+			mask-composite: destination-out, source-over;
 			mask:
 				url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><filter id="a"><feGaussianBlur in="SourceGraphic" stdDeviation="1"/></filter><circle cx="16" cy="16" r="15" filter="url(%23a)"/></svg>') exclude center / 50% 50%,
 				linear-gradient(#fff, #fff); // polyfill of `image(#fff)`

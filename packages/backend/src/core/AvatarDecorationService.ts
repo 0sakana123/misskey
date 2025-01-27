@@ -104,17 +104,6 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 	
 	// From CherryPick (Remote avatar)
 	@bindThis
-	private getProxiedUrl(url: string, mode?: 'static' | 'avatar'): string {
-		return appendQuery(
-			`${this.config.mediaProxy}/${mode ?? 'image'}.webp`,
-			query({
-				url,
-				...(mode ? { [mode]: '1' } : {}),
-			}),
-		);
-	}
-
-	@bindThis
 	public async remoteUserUpdate(user: User) {
 		const userHost = user.host ?? '';
 		const instance = await this.instancesRepository.findOneBy({ host: userHost });
@@ -175,7 +164,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			const decorationData = {
 				name: name,
 				description: description,
-				url: this.getProxiedUrl(avatarDecoration.url, 'static'),
+				url: avatarDecoration.url,
 				remoteId: avatarDecorationId,
 				host: userHost,
 			};
