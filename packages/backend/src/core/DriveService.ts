@@ -256,7 +256,7 @@ export class DriveService {
 				return {
 					webpublic: null,
 					thumbnail: null,
-				}
+				};
 			}
 
 			try {
@@ -320,7 +320,7 @@ export class DriveService {
 
 			try {
 				if (['image/jpeg', 'image/webp', 'image/avif'].includes(type)) {
-					webpublic = await this.imageProcessingService.convertSharpToJpeg(img, 2048, 2048);
+					webpublic = await this.imageProcessingService.convertSharpToWebp(img, 2048, 2048);
 				} else if (['image/png'].includes(type)) {
 					webpublic = await this.imageProcessingService.convertSharpToPng(img, 2048, 2048);
 				} else if (['image/svg+xml'].includes(type)) {
@@ -476,7 +476,7 @@ export class DriveService {
 			// DriveFile.nameは256文字, validateFileNameは200文字制限であるため、
 			// extを付加してデータベースの文字数制限に当たることはまずない
 			(name && this.driveFileEntityService.validateFileName(name)) ? name : 'untitled',
-			info.type.ext
+			info.type.ext,
 		);
 
 		if (user && !force) {
