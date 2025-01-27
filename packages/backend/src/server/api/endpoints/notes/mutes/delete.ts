@@ -10,7 +10,7 @@ export const meta = {
 
 	requireCredential: true,
 
-	kind: 'write:account',
+	kind: 'write:mutes',
 
 	errors: {
 		noSuchNote: {

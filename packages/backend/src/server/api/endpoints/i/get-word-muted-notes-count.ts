@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { MutedNotesRepository } from '@/models/index.js';
 import { DI } from '@/di-symbols.js';
@@ -39,7 +40,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			return {
 				count: await this.mutedNotesRepository.countBy({
 					userId: me.id,
-					reason: 'word',
+					reason: In(['word', 'manual']),
 				}),
 			};
 		});

@@ -239,6 +239,9 @@ export function getNoteMenu(props: {
 		const statePromise = os.api('notes/state', {
 			noteId: appearNote.id,
 		});
+		const renoteStatePromise = os.api('notes/state', {
+			noteId: props.note.id,
+		});
 
 		menu = [
 			...(
@@ -305,7 +308,7 @@ export function getNoteMenu(props: {
 				text: i18n.ts.muteThread,
 				action: () => toggleThreadMute(true),
 			}),
-			statePromise.then(state => state.isMutedNote ? {
+			renoteStatePromise.then(state => state.isMutedNote ? {
 				icon: 'ti ti-eye-off',
 				text: i18n.ts.unmuteNote,
 				action: () => toggleNoteMute(false),
