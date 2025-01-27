@@ -79,6 +79,26 @@ export function getNoteMenu(props: {
 	}
 
 	function toggleNoteMute(mute: boolean): void {
+		// renoteへの処理
+		if (isRenote) {
+			// renote自体を処理
+			os.api(mute ? 'notes/mutes/create' : 'notes/mutes/delete', {
+				noteId: props.note.id,
+			});
+			// originの状態を取得
+			const originNoteState = os.api('notes/state', {
+				noteId: appearNote.id,
+			});
+			// originとrenoteの状態が同じならreturn
+			originNoteState.then(state => state.isMutedNote === mute ? {
+				action: () => {
+					os.success();
+					return;
+				},
+			} : {
+			});
+		}
+		// originへの処理
 		os.apiWithDialog(mute ? 'notes/mutes/create' : 'notes/mutes/delete', {
 			noteId: appearNote.id,
 		});
