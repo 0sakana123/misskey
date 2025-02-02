@@ -125,7 +125,7 @@ export class NotificationEntityService implements OnModuleInit {
 				header: notification.customHeader ?? token?.name,
 				icon: notification.customIcon ?? token?.iconUrl,
 			} : {}),
-			...(notification.type === 'chatMessageRecieved' ? {
+			...(notification.type === 'chatMessageReceived' ? {
 				message: this.messagingMessageEntityService.pack(notification.messageId!),
 			} : {}),
 		});

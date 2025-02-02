@@ -177,7 +177,7 @@ export class Notification {
 		...id(),
 		nullable: true,
 	})
-	public messageId: MessagingMessage['groupId'] | null;
+	public messageId: MessagingMessage['id'] | null;
 
 	@ManyToOne(type => AccessToken, {
 		onDelete: 'CASCADE',

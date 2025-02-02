@@ -84,7 +84,7 @@
 			<span v-else-if="notification.type === 'app'" :class="$style.text">
 				<Mfm :text="notification.body" :nowrap="false"/>
 			</span>
-			<MkA v-else-if="notification.type === 'chatMessageReceived'" :class="$style.text" :to="notification.message.groupId ? `/my/messaging/group/${notification.message.groupId}` : ( notification.message.user.host === null ? `/my/message/${notification.message.user.username}` : `/my/message/${notification.message.user.username}@${notification.message.user.host}` )">
+			<MkA v-else-if="notification.type === 'chatMessageReceived'" :class="$style.text" :to="notification.message.groupId ? `/my/messaging/group/${notification.message.groupId}` : ( notification.message.user.host === null ? `/my/messaging/${notification.message.user.username}` : `/my/messaging/${notification.message.user.username}@${notification.message.user.host}` )">
 				<Mfm :text="i18n.ts.chatMessageReceived" :plain="true" :nowrap="true" :author="notification.message.user"/>
 			</MkA>
 		</div>
@@ -267,6 +267,12 @@ useTooltip(reactionRef, (showing) => {
 .t_achievementEarned {
 	padding: 3px;
 	background: #cb9a11;
+	pointer-events: none;
+}
+
+.t_chatMessageReceived {
+	padding: 3px;
+	background: #88a6b7;
 	pointer-events: none;
 }
 
