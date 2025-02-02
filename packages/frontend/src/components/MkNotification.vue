@@ -16,6 +16,7 @@
 			<i v-else-if="notification.type === 'quote'" class="ti ti-quote"></i>
 			<i v-else-if="notification.type === 'pollEnded'" class="ti ti-chart-arrows"></i>
 			<i v-else-if="notification.type === 'achievementEarned'" class="ti ti-medal"></i>
+			<i v-else-if="notification.type === 'chatMessageReceived'" class="ti ti-messages"></i>
 			<!-- notification.reaction が null になることはまずないが、ここでoptional chaining使うと一部ブラウザで刺さるので念の為 -->
 			<MkReactionIcon
 				v-else-if="notification.type === 'reaction'"
@@ -83,6 +84,9 @@
 			<span v-else-if="notification.type === 'app'" :class="$style.text">
 				<Mfm :text="notification.body" :nowrap="false"/>
 			</span>
+			<MkA v-else-if="notification.type === 'chatMessageReceived'" :class="$style.text" :to="notification.message.groupId ? return `/my/messaging/group/${notification.message.groupId}` : ( notification.message.user.host === null ? return `/my/message/${notification.message.user.username}` : return `/my/message/${notification.message.user.username}@${notification.message.user.host}` )">
+				<Mfm :text="i18n.ts.chatMessageReceived" :plain="true" :nowrap="true" :author="notification.message.user"/>
+			</MkA>
 		</div>
 	</div>
 </div>

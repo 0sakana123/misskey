@@ -5,6 +5,7 @@ import { User } from './User.js';
 import { Note } from './Note.js';
 import { FollowRequest } from './FollowRequest.js';
 import { UserGroupInvitation } from './UserGroupInvitation.js';
+import { MessagingMessage } from './MessagingMessage.js';
 import { AccessToken } from './AccessToken.js';
 
 @Entity()
@@ -66,6 +67,7 @@ export class Notification {
 	 * groupInvited - グループに招待された
 	 * achievementEarned - 実績を獲得
 	 * app - アプリ通知
+	 * chatMessageReceived - チャットメッセージを受信した
 	 */
 	@Index()
 	@Column('enum', {
@@ -170,6 +172,12 @@ export class Notification {
 		nullable: true,
 	})
 	public appAccessTokenId: AccessToken['id'] | null;
+
+	@Column({
+		...id(),
+		nullable: true,
+	})
+	public messageId: MessagingMessage['groupId'] | null;
 
 	@ManyToOne(type => AccessToken, {
 		onDelete: 'CASCADE',

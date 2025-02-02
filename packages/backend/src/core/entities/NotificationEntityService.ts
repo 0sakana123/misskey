@@ -14,12 +14,14 @@ import type { CustomEmojiService } from '../CustomEmojiService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { NoteEntityService } from './NoteEntityService.js';
 import type { UserGroupInvitationEntityService } from './UserGroupInvitationEntityService.js';
+import type { MessagingMessageEntityService } from './MessagingMessageEntityService.js';
 
 @Injectable()
 export class NotificationEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
 	private noteEntityService: NoteEntityService;
 	private userGroupInvitationEntityService: UserGroupInvitationEntityService;
+	private messagingMessageEntityService: MessagingMessageEntityService;
 	private customEmojiService: CustomEmojiService;
 
 	constructor(
@@ -45,6 +47,7 @@ export class NotificationEntityService implements OnModuleInit {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.noteEntityService = this.moduleRef.get('NoteEntityService');
 		this.userGroupInvitationEntityService = this.moduleRef.get('UserGroupInvitationEntityService');
+		this.messagingMessageEntityService = this.moduleRef.get('MessagingMessageEntityService');
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 	}
 
@@ -121,6 +124,9 @@ export class NotificationEntityService implements OnModuleInit {
 				body: notification.customBody,
 				header: notification.customHeader ?? token?.name,
 				icon: notification.customIcon ?? token?.iconUrl,
+			} : {}),
+			...(notification.type === 'chatMessageRecieved' ? {
+				message: this.messagingMessageEntityService.pack(notification.messageId!),
 			} : {}),
 		});
 	}
