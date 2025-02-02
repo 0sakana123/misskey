@@ -18,6 +18,7 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { MessagingMessageEntityService } from '@/core/entities/MessagingMessageEntityService.js';
 import { PushNotificationService } from '@/core/PushNotificationService.js';
 import { bindThis } from '@/decorators.js';
+import { CreateNotificationService } from './CreateNotificationService';
 
 @Injectable()
 export class MessagingService {
@@ -44,6 +45,7 @@ export class MessagingService {
 		private apRendererService: ApRendererService,
 		private queueService: QueueService,
 		private pushNotificationService: PushNotificationService,
+		private createNotificationService: CreateNotificationService,
 	) {
 	}
 
@@ -109,12 +111,20 @@ export class MessagingService {
 	
 				this.globalEventService.publishMainStream(recipientUser.id, 'unreadMessagingMessage', messageObj);
 				this.pushNotificationService.pushNotification(recipientUser.id, 'unreadMessagingMessage', messageObj);
+				this.createNotificationService.createNotification(recipientUser.id, 'chatMessageReceived', {
+					notifierId: message.userId,
+					messageId: message.id,
+				});
 			} else if (recipientGroup) {
 				const joinings = await this.userGroupJoiningsRepository.findBy({ userGroupId: recipientGroup.id, userId: Not(user.id) });
 				for (const joining of joinings) {
 					if (freshMessage.reads.includes(joining.userId)) return; // 既読
 					this.globalEventService.publishMainStream(joining.userId, 'unreadMessagingMessage', messageObj);
 					this.pushNotificationService.pushNotification(joining.userId, 'unreadMessagingMessage', messageObj);
+					this.createNotificationService.createNotification(joining.userId, 'chatMessageReceived', {
+						notifierId: message.userId,
+						messageId: message.id,
+					});
 				}
 			}
 		}, 2000);
