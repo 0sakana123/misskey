@@ -18,7 +18,7 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { MessagingMessageEntityService } from '@/core/entities/MessagingMessageEntityService.js';
 import { PushNotificationService } from '@/core/PushNotificationService.js';
 import { bindThis } from '@/decorators.js';
-import { CreateNotificationService } from './CreateNotificationService';
+import { CreateNotificationService } from '@/core/CreateNotificationService';
 
 @Injectable()
 export class MessagingService {
