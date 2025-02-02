@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { BlockingsRepository, UserGroupJoiningsRepository, DriveFilesRepository, UserGroupsRepository } from '@/models/index.js';
+import type { BlockingsRepository, UserGroupJoiningsRepository, DriveFilesRepository, UserGroupsRepository} from '@/models/index.js';
 import type { User } from '@/models/entities/User.js';
 import type { UserGroup } from '@/models/entities/UserGroup.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { MessagingService } from '@/core/MessagingService.js';
 import { CreateNotificationService } from '@/core/CreateNotificationService.js';
+import { UserGroupEntityService } from '@/core/entities/UserGroupEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
 
@@ -114,6 +115,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private getterService: GetterService,
 		private messagingService: MessagingService,
 		private createNotificationService: CreateNotificationService,
+		private userGroupEntityService: UserGroupEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let recipientUser: User | null;
@@ -176,12 +178,24 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			const message = await this.messagingService.createMessage(me, recipientUser, recipientGroup, ps.text, file);
-
+			
 			// 通知を作成
-			this.createNotificationService.createNotification(recipientUser.id, 'chatMessageReceived', {
-				notifierId: me.id,
-				messageId: message.id,
-			});
+			if ( ps.userId != null) {
+				// 個人相手の場合
+				this.createNotificationService.createNotification(recipientUser.id, 'chatMessageReceived', {
+					notifierId: me.id,
+					messageId: message.id,
+				});
+			} else {
+				// グループ相手の場合
+				const group = await this.userGroupEntityService.pack(ps.groupId);
+				group.userIds?.forEach(userId => {
+					this.createNotificationService.createNotification(userId, 'chatMessageReceived', {
+						notifierId: me.id,
+						messageId: message.id,
+					});
+				});
+			}
 
 			return message;
 		});
