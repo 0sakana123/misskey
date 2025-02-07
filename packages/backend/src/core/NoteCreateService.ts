@@ -444,41 +444,63 @@ export class NoteCreateService {
 		// Increment notes count (user)
 		this.incNotesCountOfUser(user);
 
-		// Word mute
+		// Hard mute
 		await mutedWordsCache.fetch(null, () => this.userProfilesRepository.find({
 			where: {
 				enableWordMute: true,
 			},
 			select: ['userId', 'mutedWords'],
-		})).then(us => {
+		})).then(async us => {
 			for (const u of us) {
-				// Renoteの元ノート本文でのミュート判定
+				// Renoteの場合
 				if (data.renote !== null && data.renote !== undefined) {
-					checkWordMute(data.renote, { id: u.userId }, u.mutedWords).then(shouldMute => {
-						if (shouldMute) {
-							this.mutedNotesRepository.insert({
-								id: this.idService.genId(),
-								userId: u.userId,
-								noteId: note.id,
-								reason: 'word',
-							});
-						}
-					});
+					// 元ノートが既に手動ミュートされていればミュート
+					if(await this.mutedNotesRepository.findOneBy({ noteId: data.renote.id, userId: u.userId, reason: 'manual' })) {
+						this.mutedNotesRepository.insert({
+							id: this.idService.genId(),
+							userId: u.userId,
+							noteId: note.id,
+							reason: 'manual',
+						});
+					} else {
+						// 元ノートがミュートワードを含めばミュート
+						checkWordMute(data.renote, { id: u.userId }, u.mutedWords).then(shouldMute => {
+							if (shouldMute) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: note.id,
+									reason: 'word',
+								});
+							}
+						});
+					}
 				}
-				// Replyの元ノート本文でのミュート判定
+				// Replyの場合
 				if (data.reply !== null && data.reply !== undefined) {
-					checkWordMute(data.reply, { id: u.userId }, u.mutedWords).then(shouldMute => {
-						if (shouldMute) {
-							this.mutedNotesRepository.insert({
-								id: this.idService.genId(),
-								userId: u.userId,
-								noteId: note.id,
-								reason: 'word',
-							});
-						}
-					});
+					// 元ノートが既に手動ミュートされていればミュート
+					if(await this.mutedNotesRepository.findOneBy({ noteId: data.reply.id, userId: u.userId, reason: 'manual' })) {
+						this.mutedNotesRepository.insert({
+							id: this.idService.genId(),
+							userId: u.userId,
+							noteId: note.id,
+							reason: 'manual',
+						});
+					} else {
+						// 元ノートがミュートワードを含めばミュート
+						checkWordMute(data.reply, { id: u.userId }, u.mutedWords).then(shouldMute => {
+							if (shouldMute) {
+								this.mutedNotesRepository.insert({
+									id: this.idService.genId(),
+									userId: u.userId,
+									noteId: note.id,
+									reason: 'word',
+								});
+							}
+						});
+					}
 				}
-				// ミュート処理
+				// RenoteでもReplyでもない場合
 				checkWordMute(note, { id: u.userId }, u.mutedWords).then(shouldMute => {
 					// このノートにミュートすべき単語が含まれていればレコード追加
 					if (shouldMute) {

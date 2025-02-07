@@ -10,7 +10,7 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { User } from '@/models/entities/User.js';
 import type { Note } from '@/models/entities/Note.js';
 import type { NoteReaction } from '@/models/entities/NoteReaction.js';
-import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository, DriveFilesRepository } from '@/models/index.js';
+import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository, MutedNotesRepository } from '@/models/index.js';
 import { bindThis } from '@/decorators.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
@@ -52,8 +52,8 @@ export class NoteEntityService implements OnModuleInit {
 		@Inject(DI.channelsRepository)
 		private channelsRepository: ChannelsRepository,
 
-		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		@Inject(DI.mutedNotesRepository)
+		private mutedNotesRepository: MutedNotesRepository,
 
 		//private userEntityService: UserEntityService,
 		//private driveFileEntityService: DriveFileEntityService,
@@ -247,6 +247,13 @@ export class NoteEntityService implements OnModuleInit {
 		}
 
 		return true;
+	}
+
+	@bindThis
+	public async isManualMutedNote(noteId: Note['id'], meId: User['id']): Promise<boolean> {
+		if (await this.mutedNotesRepository.findOneBy({ noteId: noteId, userId: meId, reason: 'manual' })) return true;
+		
+		return false;
 	}
 
 	@bindThis
