@@ -166,6 +166,34 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: true,
 	},
+	mfmTada: {
+		where: 'device',
+		default: true,
+	},
+	mfmJelly: {
+		where: 'device',
+		default: true,
+	},
+	mfmTwitch: {
+		where: 'device',
+		default: true,
+	},
+	mfmShake: {
+		where: 'device',
+		default: true,
+	},
+	mfmSpin: {
+		where: 'device',
+		default: true,
+	},
+	mfmJump: {
+		where: 'device',
+		default: true,
+	},
+	mfmBounce: {
+		where: 'device',
+		default: true,
+	},
 	loadRawImages: {
 		where: 'device',
 		default: false,

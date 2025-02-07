@@ -48,6 +48,13 @@
 				<MkSwitch v-model="collapseRenotes">{{ i18n.ts.collapseRenotes }}</MkSwitch>
 				<MkSwitch v-model="advancedMfm">{{ i18n.ts.enableAdvancedMfm }}</MkSwitch>
 				<MkSwitch v-if="advancedMfm" v-model="animatedMfm">{{ i18n.ts.enableAnimatedMfm }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmTada">{{ i18n.ts.enableMfmTada }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmJelly">{{ i18n.ts.enableMfmJelly }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmTwitch">{{ i18n.ts.enableMfmTwitch }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmShake">{{ i18n.ts.enableMfmShake }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmSpin">{{ i18n.ts.enableMfmSpin }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmJump">{{ i18n.ts.enableMfmJump }}</MkSwitch>
+				<MkSwitch v-if="animatedMfm" v-model="mfmBounce">{{ i18n.ts.enableMfmBounce }}</MkSwitch>
 				<MkSwitch v-model="reduceAnimation">{{ i18n.ts.reduceUiAnimation }}</MkSwitch>
 				<MkSwitch v-model="useBlurEffect">{{ i18n.ts.useBlurEffect }}</MkSwitch>
 				<MkSwitch v-model="useBlurEffectForModal">
@@ -152,6 +159,13 @@ const useBlurEffect = computed(defaultStore.makeGetterSetter('useBlurEffect'));
 const showGapBetweenNotesInTimeline = computed(defaultStore.makeGetterSetter('showGapBetweenNotesInTimeline'));
 const animatedMfm = computed(defaultStore.makeGetterSetter('animatedMfm'));
 const advancedMfm = computed(defaultStore.makeGetterSetter('advancedMfm'));
+const mfmTada = computed(defaultStore.makeGetterSetter('mfmTada'));
+const mfmJelly = computed(defaultStore.makeGetterSetter('mfmJelly'));
+const mfmTwitch = computed(defaultStore.makeGetterSetter('mfmTwitch'));
+const mfmShake = computed(defaultStore.makeGetterSetter('mfmShake'));
+const mfmSpin = computed(defaultStore.makeGetterSetter('mfmSpin'));
+const mfmJump = computed(defaultStore.makeGetterSetter('mfmJump'));
+const mfmBounce = computed(defaultStore.makeGetterSetter('mfmBounce'));
 const emojiStyle = computed(defaultStore.makeGetterSetter('emojiStyle'));
 const disableDrawer = computed(defaultStore.makeGetterSetter('disableDrawer'));
 const disableShowingAnimatedImages = computed(defaultStore.makeGetterSetter('disableShowingAnimatedImages'));

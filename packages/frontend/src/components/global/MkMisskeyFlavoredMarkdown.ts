@@ -74,6 +74,13 @@ export default defineComponent({
 		};
 		
 		const useAnim = defaultStore.state.advancedMfm && defaultStore.state.animatedMfm;
+		const useMfmTada = useAnim && defaultStore.state.mfmTada;
+		const useMfmJelly = useAnim && defaultStore.state.mfmJelly;
+		const useMfmTwitch = useAnim && defaultStore.state.mfmTwitch;
+		const useMfmShake = useAnim && defaultStore.state.mfmShake;
+		const useMfmSpin = useAnim && defaultStore.state.mfmSpin;
+		const useMfmJump = useAnim && defaultStore.state.mfmJump;
+		const useMfmBounce = useAnim && defaultStore.state.mfmBounce;
 
 		/**
 		 * Gen Vue Elements from MFM AST
@@ -119,25 +126,25 @@ export default defineComponent({
 						case 'tada': {
 							const speed = validTime(token.props.args.speed) ?? '1s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = 'font-size: 150%;' + (useAnim ? `animation: tada ${speed} linear infinite both; animation-delay: ${delay};` : '');
+							style = 'font-size: 150%;' + (useMfmTada ? `animation: tada ${speed} linear infinite both; animation-delay: ${delay};` : '');
 							break;
 						}
 						case 'jelly': {
 							const speed = validTime(token.props.args.speed) ?? '1s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = (useAnim ? `animation: mfm-rubberBand ${speed} linear infinite both; animation-delay: ${delay};` : '');
+							style = (useMfmJelly ? `animation: mfm-rubberBand ${speed} linear infinite both; animation-delay: ${delay};` : '');
 							break;
 						}
 						case 'twitch': {
 							const speed = validTime(token.props.args.speed) ?? '0.5s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = useAnim ? `animation: mfm-twitch ${speed} ease infinite; animation-delay: ${delay};` : '';
+							style = useMfmTwitch ? `animation: mfm-twitch ${speed} ease infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'shake': {
 							const speed = validTime(token.props.args.speed) ?? '0.5s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = useAnim ? `animation: mfm-shake ${speed} ease infinite; animation-delay: ${delay};` : '';
+							style = useMfmShake ? `animation: mfm-shake ${speed} ease infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'spin': {
@@ -151,19 +158,19 @@ export default defineComponent({
 								'mfm-spin';
 							const speed = validTime(token.props.args.speed) ?? '1.5s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = useAnim ? `animation: ${anime} ${speed} linear infinite; animation-direction: ${direction}; animation-delay: ${delay};` : '';
+							style = useMfmSpin ? `animation: ${anime} ${speed} linear infinite; animation-direction: ${direction}; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'jump': {
 							const speed = validTime(token.props.args.speed) ?? '0.75s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = useAnim ? `animation: mfm-jump ${speed} linear infinite; animation-delay: ${delay};` : '';
+							style = useMfmJump ? `animation: mfm-jump ${speed} linear infinite; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'bounce': {
 							const speed = validTime(token.props.args.speed) ?? '0.75s';
 							const delay = validTime(token.props.args.delay) ?? '0s';
-							style = useAnim ? `animation: mfm-bounce ${speed} linear infinite; transform-origin: center bottom; animation-delay: ${delay};` : '';
+							style = useMfmBounce ? `animation: mfm-bounce ${speed} linear infinite; transform-origin: center bottom; animation-delay: ${delay};` : '';
 							break;
 						}
 						case 'flip': {
