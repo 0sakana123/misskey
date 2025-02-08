@@ -78,6 +78,7 @@ let users: misskey.entities.UserDetailed[] = $ref([]);
 let recentUsers: misskey.entities.UserDetailed[] = $ref([]);
 let selected: misskey.entities.UserDetailed | null = $ref(null);
 let dialogEl = $ref();
+let opening = false;
 
 const search = () => {
 	if (username === '' && host === '') {
@@ -107,11 +108,24 @@ const ok = () => {
 };
 
 const cancel = () => {
+	if (window.location.hash === '#userdialog') {
+		history.back();
+	}
+	opening = false;
 	emit('cancel');
 	dialogEl.close();
 };
 
 onMounted(() => {
+	opening = true;
+	history.pushState(null, '', '#userdialog');
+	window.addEventListener('popstate', () => {
+		if (opening === true) {
+			cancel();
+			return;
+		}
+	});
+
 	os.api('users/show', {
 		userIds: defaultStore.state.recentlyUsedUsers,
 	}).then(users => {
