@@ -364,8 +364,18 @@ function chooseFileFrom(ev) {
 	});
 }
 
-function detachFile(id) {
+async function detachFile(id) {
 	files = files.filter(x => x.id !== id);
+	const { canceled } = await os.confirm({
+		type: 'question',
+		text: i18n.t('removeFileFromDriveToo'),
+	});
+
+	if (canceled) return;
+
+	os.apiWithDialog('drive/files/delete', {
+		fileId: id,
+	});
 }
 
 function updateFileSensitive(file, sensitive) {
