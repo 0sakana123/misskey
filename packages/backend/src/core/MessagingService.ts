@@ -50,7 +50,7 @@ export class MessagingService {
 	}
 
 	@bindThis
-	public async createMessage(user: { id: User['id']; host: User['host']; }, recipientUser: CacheableUser | undefined, recipientGroup: UserGroup | undefined, text: string | null | undefined, file: DriveFile | null, uri?: string) {
+	public async createMessage(user: { id: User['id']; host: User['host']; }, recipientUser: CacheableUser | undefined, recipientGroup: UserGroup | undefined, text: string | null | undefined, file: DriveFile | null, uri?: string): Promise<any> {
 		const message = {
 			id: this.idService.genId(),
 			createdAt: new Date(),
@@ -60,7 +60,7 @@ export class MessagingService {
 			text: text ? text.trim() : null,
 			userId: user.id,
 			isRead: false,
-			reads: [] as any[],
+			reads: [] as string[],
 			uri,
 		} as MessagingMessage;
 	
@@ -153,13 +153,13 @@ export class MessagingService {
 	}
 
 	@bindThis
-	public async deleteMessage(message: MessagingMessage) {
+	public async deleteMessage(message: MessagingMessage): Promise<void> {
 		await this.messagingMessagesRepository.delete(message.id);
 		this.postDeleteMessage(message);
 	}
 	
 	@bindThis
-	private async postDeleteMessage(message: MessagingMessage) {
+	private async postDeleteMessage(message: MessagingMessage): Promise<void> {
 		if (message.recipientId) {
 			const user = await this.usersRepository.findOneByOrFail({ id: message.userId });
 			const recipient = await this.usersRepository.findOneByOrFail({ id: message.recipientId });
@@ -184,7 +184,7 @@ export class MessagingService {
 		userId: User['id'],
 		otherpartyId: User['id'],
 		messageIds: MessagingMessage['id'][],
-	) {
+	): Promise<void> {
 		if (messageIds.length === 0) return;
 
 		const messages = await this.messagingMessagesRepository.findBy({
@@ -240,7 +240,7 @@ export class MessagingService {
 		userId: User['id'],
 		groupId: UserGroup['id'],
 		messageIds: MessagingMessage['id'][],
-	) {
+	): Promise<void> {
 		if (messageIds.length === 0) return;
 
 		// check joined
@@ -301,9 +301,9 @@ export class MessagingService {
 	}
 
 	@bindThis
-	public async deliverReadActivity(user: { id: User['id']; host: null; }, recipient: IRemoteUser, messages: MessagingMessage | MessagingMessage[]) {
-		messages = toArray(messages).filter(x => x.uri);
-		const contents = messages.map(x => this.apRendererService.renderRead(user, x));
+	public async deliverReadActivity(user: { id: User['id']; host: null; }, recipient: IRemoteUser, messages: MessagingMessage | MessagingMessage[]): Promise<void> {
+		const convertedMessages = toArray(messages).filter(x => x.uri);
+		const contents = convertedMessages.map(x => this.apRendererService.renderRead(user, x));
 
 		if (contents.length > 1) {
 			const collection = this.apRendererService.renderOrderedCollection(null, contents.length, undefined, undefined, contents);

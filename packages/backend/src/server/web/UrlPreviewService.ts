@@ -30,7 +30,7 @@ export class UrlPreviewService {
 	}
 
 	@bindThis
-	private wrap(url?: string): string | null {
+	private wrap(url?: string): string {
 		return url != null
 			? url.match(/^https?:\/\//)
 				? `${this.config.mediaProxy}/preview.webp?${query({
@@ -38,14 +38,14 @@ export class UrlPreviewService {
 					preview: '1',
 				})}`
 				: url
-			: null;
+			: '';
 	}
 
 	@bindThis
 	public async handle(
 		request: FastifyRequest<{ Querystring: { url: string; lang: string; } }>,
 		reply: FastifyReply,
-	) {
+	): Promise<any> {
 		const url = request.query.url;
 		if (typeof url !== 'string') {
 			reply.code(400);
@@ -64,12 +64,12 @@ export class UrlPreviewService {
 			? `(Proxy) Getting preview of ${url}@${lang} ...`
 			: `Getting preview of ${url}@${lang} ...`);
 		try {
-			const summary = meta.summalyProxy ? await this.httpRequestService.getJson<ReturnType<typeof summaly.default>>(`${meta.summalyProxy}?${query({
+			const summary = meta.summalyProxy ? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(`${meta.summalyProxy}?${query({
 				url: url,
-				lang: lang ?? 'ja-JP',
-			})}`) : await summaly.default(url, {
+				lang: lang,
+			})}`) : await summaly(url, {
 				followRedirects: false,
-				lang: lang ?? 'ja-JP',
+				lang: lang,
 			});
 	
 			this.logger.succ(`Got preview of ${url}: ${summary.title}`);
@@ -78,7 +78,7 @@ export class UrlPreviewService {
 				throw new Error('unsupported schema included');
 			}
 
-			if (summary.player?.url && !(summary.player.url.startsWith('http://') || summary.player.url.startsWith('https://'))) {
+			if (summary.player.url && !(summary.player.url.startsWith('http://') || summary.player.url.startsWith('https://'))) {
 				throw new Error('unsupported schema included');
 			}
 	

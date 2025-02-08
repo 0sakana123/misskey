@@ -62,7 +62,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderAccept(object: any, user: { id: User['id']; host: null }) {
+	public renderAccept(object: any, user: { id: User['id']; host: null }): any {
 		return {
 			type: 'Accept',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -71,7 +71,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderAdd(user: ILocalUser, target: any, object: any) {
+	public renderAdd(user: ILocalUser, target: any, object: any): any {
 		return {
 			type: 'Add',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -81,7 +81,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderAnnounce(object: any, note: Note) {
+	public renderAnnounce(object: any, note: Note): any {
 		const attributedTo = `${this.config.url}/users/${note.userId}`;
 
 		let to: string[] = [];
@@ -114,7 +114,7 @@ export class ApRendererService {
 	 * @param block The block to be rendered. The blockee relation must be loaded.
 	 */
 	@bindThis
-	public renderBlock(block: Blocking) {
+	public renderBlock(block: Blocking): any {
 		if (block.blockee?.uri == null) {
 			throw new Error('renderBlock: missing blockee uri');
 		}
@@ -128,7 +128,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderCreate(object: any, note: Note) {
+	public renderCreate(object: any, note: Note): any {
 		const activity = {
 			id: `${this.config.url}/notes/${note.id}/activity`,
 			actor: `${this.config.url}/users/${note.userId}`,
@@ -144,7 +144,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderDelete(object: any, user: { id: User['id']; host: null }) {
+	public renderDelete(object: any, user: { id: User['id']; host: null }): any {
 		return {
 			type: 'Delete',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -154,7 +154,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderDocument(file: DriveFile) {
+	public renderDocument(file: DriveFile): any {
 		return {
 			type: 'Document',
 			mediaType: file.type,
@@ -164,7 +164,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderEmoji(emoji: Emoji) {
+	public renderEmoji(emoji: Emoji): any {
 		return {
 			id: `${this.config.url}/emojis/${emoji.name}`,
 			type: 'Emoji',
@@ -182,7 +182,7 @@ export class ApRendererService {
 	// to anonymise reporters, the reporting actor must be a system user
 	// object has to be a uri or array of uris
 	@bindThis
-	public renderFlag(user: ILocalUser, object: [string], content: string) {
+	public renderFlag(user: ILocalUser, object: [string], content: string): any {
 		return {
 			type: 'Flag',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -192,7 +192,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderFollowRelay(relay: Relay, relayActor: ILocalUser) {
+	public renderFollowRelay(relay: Relay, relayActor: ILocalUser): any {
 		const follow = {
 			id: `${this.config.url}/activities/follow-relay/${relay.id}`,
 			type: 'Follow',
@@ -208,7 +208,7 @@ export class ApRendererService {
 	 * @param id Follower|Followee ID
 	 */
 	@bindThis
-	public async renderFollowUser(id: User['id']) {
+	public async renderFollowUser(id: User['id']): Promise<any> {
 		const user = await this.usersRepository.findOneByOrFail({ id: id });
 		return this.userEntityService.isLocalUser(user) ? `${this.config.url}/users/${user.id}` : user.uri;
 	}
@@ -218,7 +218,7 @@ export class ApRendererService {
 		follower: { id: User['id']; host: User['host']; uri: User['host'] },
 		followee: { id: User['id']; host: User['host']; uri: User['host'] },
 		requestId?: string,
-	) {
+	): any {
 		const follow = {
 			id: requestId ?? `${this.config.url}/follows/${follower.id}/${followee.id}`,
 			type: 'Follow',
@@ -230,7 +230,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderHashtag(tag: string) {
+	public renderHashtag(tag: string): any {
 		return {
 			type: 'Hashtag',
 			href: `${this.config.url}/tags/${encodeURIComponent(tag)}`,
@@ -239,7 +239,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderImage(file: DriveFile) {
+	public renderImage(file: DriveFile): any {
 		return {
 			type: 'Image',
 			url: this.driveFileEntityService.getPublicUrl(file),
@@ -249,7 +249,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderKey(user: ILocalUser, key: UserKeypair, postfix?: string) {
+	public renderKey(user: ILocalUser, key: UserKeypair, postfix?: string): any {
 		return {
 			id: `${this.config.url}/users/${user.id}${postfix ?? '/publickey'}`,
 			type: 'Key',
@@ -262,7 +262,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async renderLike(noteReaction: NoteReaction, note: { uri: string | null }) {
+	public async renderLike(noteReaction: NoteReaction, note: { uri: string | null }): Promise<any> {
 		const reaction = noteReaction.reaction;
 
 		const object = {
@@ -288,7 +288,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderMention(mention: User) {
+	public renderMention(mention: User): any {
 		return {
 			type: 'Mention',
 			href: this.userEntityService.isRemoteUser(mention) ? mention.uri : `${this.config.url}/users/${(mention as ILocalUser).id}`,
@@ -442,7 +442,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async renderPerson(user: ILocalUser) {
+	public async renderPerson(user: ILocalUser): Promise<any> {
 		const id = `${this.config.url}/users/${user.id}`;
 		const isSystem = !!user.username.match(/\./);
 
@@ -519,7 +519,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async renderQuestion(user: { id: User['id'] }, note: Note, poll: Poll) {
+	public async renderQuestion(user: { id: User['id'] }, note: Note, poll: Poll): Promise<any> {
 		const question = {
 			type: 'Question',
 			id: `${this.config.url}/questions/${note.id}`,
@@ -539,7 +539,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderRead(user: { id: User['id'] }, message: MessagingMessage) {
+	public renderRead(user: { id: User['id'] }, message: MessagingMessage): any {
 		return {
 			type: 'Read',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -548,7 +548,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderReject(object: any, user: { id: User['id'] }) {
+	public renderReject(object: any, user: { id: User['id'] }): any {
 		return {
 			type: 'Reject',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -557,7 +557,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderRemove(user: { id: User['id'] }, target: any, object: any) {
+	public renderRemove(user: { id: User['id'] }, target: any, object: any): any {
 		return {
 			type: 'Remove',
 			actor: `${this.config.url}/users/${user.id}`,
@@ -567,7 +567,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderTombstone(id: string) {
+	public renderTombstone(id: string): any {
 		return {
 			id,
 			type: 'Tombstone',
@@ -575,7 +575,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderUndo(object: any, user: { id: User['id'] }) {
+	public renderUndo(object: any, user: { id: User['id'] }): any {
 		if (object == null) return null;
 		const id = typeof object.id === 'string' && object.id.startsWith(this.config.url) ? `${object.id}/undo` : undefined;
 
@@ -589,7 +589,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderUpdate(object: any, user: { id: User['id'] }) {
+	public renderUpdate(object: any, user: { id: User['id'] }): any {
 		const activity = {
 			id: `${this.config.url}/users/${user.id}#updates/${new Date().getTime()}`,
 			actor: `${this.config.url}/users/${user.id}`,
@@ -603,7 +603,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderVote(user: { id: User['id'] }, vote: PollVote, note: Note, poll: Poll, pollOwner: IRemoteUser) {
+	public renderVote(user: { id: User['id'] }, vote: PollVote, note: Note, poll: Poll, pollOwner: IRemoteUser): any {
 		return {
 			id: `${this.config.url}/users/${user.id}#votes/${vote.id}/activity`,
 			actor: `${this.config.url}/users/${user.id}`,
@@ -653,7 +653,7 @@ export class ApRendererService {
 	 * @param next URL of next page (optional)
 	 */
 	@bindThis
-	public renderOrderedCollectionPage(id: string, totalItems: any, orderedItems: any, partOf: string, prev?: string, next?: string) {
+	public renderOrderedCollectionPage(id: string, totalItems: any, orderedItems: any, partOf: string, prev?: string, next?: string): any {
 		const page = {
 			id,
 			partOf,
@@ -677,7 +677,7 @@ export class ApRendererService {
 	 * @param orderedItems attached objects (optional)
 	 */
 	@bindThis
-	public renderOrderedCollection(id: string | null, totalItems: any, first?: string, last?: string, orderedItems?: IObject[]) {
+	public renderOrderedCollection(id: string | null, totalItems: any, first?: string, last?: string, orderedItems?: IObject[]): any {
 		const page: any = {
 			id,
 			type: 'OrderedCollection',

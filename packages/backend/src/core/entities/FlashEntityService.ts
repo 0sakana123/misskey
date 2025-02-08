@@ -41,6 +41,7 @@ export class FlashEntityService {
 			script: flash.script,
 			likedCount: flash.likedCount,
 			isLiked: meId ? await this.flashLikesRepository.findOneBy({ flashId: flash.id, userId: meId }).then(x => x != null) : undefined,
+			permission: flash.permissions,
 		});
 	}
 
@@ -48,7 +49,7 @@ export class FlashEntityService {
 	public packMany(
 		flashs: Flash[],
 		me?: { id: User['id'] } | null | undefined,
-	) {
+	): Promise<any> {
 		return Promise.all(flashs.map(x => this.pack(x, me)));
 	}
 }

@@ -30,6 +30,7 @@ import { packedQueueCountSchema } from '@/models/schema/queue.js';
 import { packedGalleryPostSchema } from '@/models/schema/gallery-post.js';
 import { packedEmojiSchema } from '@/models/schema/emoji.js';
 import { packedRoleLiteSchema, packedRoleSchema } from '@/models/schema/role.js';
+import { packedFlashSchema } from '@/models/schema/flash.js';
 
 export const refs = {
 	UserLite: packedUserLiteSchema,
@@ -64,6 +65,7 @@ export const refs = {
 	Emoji: packedEmojiSchema,
 	RoleLite: packedRoleLiteSchema,
 	Role: packedRoleSchema,
+	Flash: packedFlashSchema,
 };
 
 export type Packed<x extends keyof typeof refs> = SchemaType<typeof refs[x]>;

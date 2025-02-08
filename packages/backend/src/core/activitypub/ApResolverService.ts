@@ -127,7 +127,7 @@ export class Resolver {
 					.then(note => {
 						if (parsed.rest === 'activity') {
 							// this refers to the create activity and not the note itself
-							return this.apRendererService.renderActivity(this.apRendererService.renderCreate(this.apRendererService.renderNote(note), note));
+							return this.apRendererService.renderActivity(this.apRendererService.renderCreate(this.apRendererService.renderNote(note), note))!;
 						} else {
 							return this.apRendererService.renderNote(note);
 						}
@@ -152,7 +152,7 @@ export class Resolver {
 				return Promise.all(
 					[parsed.id, parsed.rest].map(id => this.usersRepository.findOneByOrFail({ id })),
 				)
-					.then(([follower, followee]) => this.apRendererService.renderActivity(this.apRendererService.renderFollow(follower, followee, url)));
+					.then(([follower, followee]) => this.apRendererService.renderActivity(this.apRendererService.renderFollow(follower, followee, url))!);
 			default:
 				throw new Error(`resolveLocal: type ${parsed.type} unhandled`);
 		}
@@ -184,6 +184,7 @@ export class ApResolverService {
 		private httpRequestService: HttpRequestService,
 		private apRendererService: ApRendererService,
 		private apDbResolverService: ApDbResolverService,
+		private loggerService: LoggerService,
 	) {
 	}
 
@@ -202,6 +203,7 @@ export class ApResolverService {
 			this.httpRequestService,
 			this.apRendererService,
 			this.apDbResolverService,
+			this.loggerService,
 		);
 	}
 }

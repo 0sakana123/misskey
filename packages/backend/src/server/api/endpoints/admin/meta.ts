@@ -54,12 +54,12 @@ export const meta = {
 			},
 			mascotImageUrl: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 				default: '/assets/ai.png',
 			},
 			bannerUrl: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 			},
 			serverErrorImageUrl: {
 				type: 'string',
@@ -71,7 +71,7 @@ export const meta = {
 			},
 			notFoundImageUrl: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 			},
 			iconUrl: {
 				type: 'string',
@@ -80,66 +80,6 @@ export const meta = {
 			maxNoteTextLength: {
 				type: 'number',
 				optional: false, nullable: false,
-			},
-			emojis: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'object',
-					optional: false, nullable: false,
-					properties: {
-						id: {
-							type: 'string',
-							optional: false, nullable: false,
-							format: 'id',
-						},
-						aliases: {
-							type: 'array',
-							optional: false, nullable: false,
-							items: {
-								type: 'string',
-								optional: false, nullable: false,
-							},
-						},
-						category: {
-							type: 'string',
-							optional: false, nullable: true,
-						},
-						host: {
-							type: 'string',
-							optional: false, nullable: true,
-						},
-						url: {
-							type: 'string',
-							optional: false, nullable: false,
-							format: 'url',
-						},
-					},
-				},
-			},
-			ads: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'object',
-					optional: false, nullable: false,
-					properties: {
-						place: {
-							type: 'string',
-							optional: false, nullable: false,
-						},
-						url: {
-							type: 'string',
-							optional: false, nullable: false,
-							format: 'url',
-						},
-						imageUrl: {
-							type: 'string',
-							optional: false, nullable: false,
-							format: 'url',
-						},
-					},
-				},
 			},
 			enableEmail: {
 				type: 'boolean',
@@ -152,10 +92,6 @@ export const meta = {
 			translatorAvailable: {
 				type: 'boolean',
 				optional: false, nullable: false,
-			},
-			proxyAccountName: {
-				type: 'string',
-				optional: false, nullable: true,
 			},
 			userStarForReactionFallback: {
 				type: 'boolean',
@@ -243,7 +179,7 @@ export const meta = {
 				optional: true, nullable: true,
 			},
 			smtpPort: {
-				type: 'string',
+				type: 'number',
 				optional: true, nullable: true,
 			},
 			smtpUser: {
@@ -325,16 +261,15 @@ export const paramDef = {
 	required: [],
 } as const;
 
-// eslint-disable-next-line import/no-default-export
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
 
 		private metaService: MetaService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const instance = await this.metaService.fetch(true);
 
 			return {

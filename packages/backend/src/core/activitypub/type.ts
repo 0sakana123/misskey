@@ -2,18 +2,18 @@ export type obj = { [x: string]: any };
 export type ApObject = IObject | string | (IObject | string)[];
 
 export interface IObject {
-	'@context': string | string[] | obj | obj[];
+	'@context'?: string | string[] | obj | obj[];
 	type: string | string[];
 	id?: string;
 	summary?: string;
 	published?: string;
 	cc?: ApObject;
 	to?: ApObject;
-	attributedTo: ApObject;
+	attributedTo?: ApObject;
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
-	content?: string;
+	content?: string | null;
 	name?: string;
 	startTime?: Date;
 	endTime?: Date;
@@ -23,6 +23,10 @@ export interface IObject {
 	href?: string;
 	tag?: IObject | IObject[];
 	sensitive?: boolean;
+	source?: any;
+	quoteUrl?: string;
+	_misskey_content?: string;
+	_misskey_quote?: string;
 }
 
 /**

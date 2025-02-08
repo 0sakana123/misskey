@@ -2,13 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { NotificationsRepository } from '@/models/index.js';
-import type { UsersRepository } from '@/models/index.js';
 import type { User } from '@/models/entities/User.js';
 import type { Notification } from '@/models/entities/Notification.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { bindThis } from '@/decorators.js';
 import { GlobalEventService } from './GlobalEventService.js';
 import { PushNotificationService } from './PushNotificationService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class NotificationService {
@@ -26,7 +25,7 @@ export class NotificationService {
 	public async readNotification(
 		userId: User['id'],
 		notificationIds: Notification['id'][],
-	) {
+	): Promise<void> {
 		if (notificationIds.length === 0) return;
 
 		// Update documents
@@ -48,7 +47,7 @@ export class NotificationService {
 	public async readNotificationByQuery(
 		userId: User['id'],
 		query: Record<string, any>,
-	) {
+	): Promise<void> {
 		const notificationIds = await this.notificationsRepository.findBy({
 			...query,
 			notifieeId: userId,
@@ -59,13 +58,13 @@ export class NotificationService {
 	}
 
 	@bindThis
-	private postReadAllNotifications(userId: User['id']) {
+	private postReadAllNotifications(userId: User['id']): Promise<void> {
 		this.globalEventService.publishMainStream(userId, 'readAllNotifications');
 		return this.pushNotificationService.pushNotification(userId, 'readAllNotifications', undefined);
 	}
 
 	@bindThis
-	private postReadNotifications(userId: User['id'], notificationIds: Notification['id'][]) {
+	private postReadNotifications(userId: User['id'], notificationIds: Notification['id'][]): Promise<void> {
 		this.globalEventService.publishMainStream(userId, 'readNotifications', notificationIds);
 		return this.pushNotificationService.pushNotification(userId, 'readNotifications', { notificationIds });
 	}

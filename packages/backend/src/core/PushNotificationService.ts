@@ -40,7 +40,7 @@ function truncateBody<T extends keyof pushNotificationsTypes>(type: T, body: pus
 				reply: undefined,
 				renote: undefined,
 				user: type === 'notification' ? undefined as any : body.note.user,
-			}
+			},
 		} : {}),
 	};
 }
@@ -59,7 +59,7 @@ export class PushNotificationService {
 	}
 
 	@bindThis
-	public async pushNotification<T extends keyof pushNotificationsTypes>(userId: string, type: T, body: pushNotificationsTypes[T]) {
+	public async pushNotification<T extends keyof pushNotificationsTypes>(userId: string, type: T, body: pushNotificationsTypes[T]): Promise<void> {
 		const meta = await this.metaService.fetch();
 	
 		if (!meta.enableServiceWorker || meta.swPublicKey == null || meta.swPrivateKey == null) return;

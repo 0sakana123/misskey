@@ -58,7 +58,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 		reply: FastifyReply,
-	) {
+	): void {
 		const body = request.method === 'GET'
 			? request.query
 			: request.body;
@@ -99,7 +99,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
 		reply: FastifyReply,
-	) {
+	): Promise<void> {
 		const multipartData = await request.file();
 		if (multipartData == null) {
 			reply.code(400);
@@ -146,7 +146,7 @@ export class ApiCallService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private send(reply: FastifyReply, x?: any, y?: ApiError) {
+	private send(reply: FastifyReply, x?: any, y?: ApiError): void {
 		if (x == null) {
 			reply.code(204);
 			reply.send();
@@ -168,7 +168,7 @@ export class ApiCallService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private async logIp(request: FastifyRequest, user: ILocalUser) {
+	private async logIp(request: FastifyRequest, user: ILocalUser): Promise<void> {
 		const meta = await this.metaService.fetch();
 		if (!meta.enableIpLogging) return;
 		const ip = request.ip;
@@ -186,8 +186,7 @@ export class ApiCallService implements OnApplicationShutdown {
 					userId: user.id,
 					ip: ip,
 				}).orIgnore(true).execute();
-			} catch {
-			}
+			} catch { /* empty */ }
 		}
 	}
 
@@ -202,7 +201,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			path: string;
 		} | null,
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
-	) {
+	): Promise<void> {
 		const isSecure = user != null && token == null;
 
 		if (ep.meta.secure && !isSecure) {
@@ -229,7 +228,7 @@ export class ApiCallService implements OnApplicationShutdown {
 
 			if (factor > 0) {
 				// Rate limit
-				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(err => {
+				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(() => {
 					throw new ApiError({
 						message: 'Rate limit exceeded. Please try again later.',
 						code: 'RATE_LIMIT_EXCEEDED',
@@ -277,7 +276,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 
 		if (ep.meta.requireRolePolicy != null && !user!.isRoot) {
-			const policies = await this.roleService.getUserPolicies(user!.id);
+			const policies: any = await this.roleService.getUserPolicies(user!.id);
 			if (!policies[ep.meta.requireRolePolicy]) {
 				throw new ApiError({
 					message: 'You are not assigned to a required role.',
@@ -343,7 +342,7 @@ export class ApiCallService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public onApplicationShutdown(signal?: string | undefined) {
+	public onApplicationShutdown(signal?: string | undefined): void {
 		clearInterval(this.userIpHistoriesClearIntervalId);
 	}
 }
