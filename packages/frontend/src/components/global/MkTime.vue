@@ -52,7 +52,7 @@ const relative = $computed<string>(() => {
 
 let tickId: number;
 
-function tick() {
+function tick() : void {
 	now = (new Date()).getTime();
 	const ago = (now - _time) / 1000/*ms*/;
 	const next = ago < 60 ? 10000 : ago < 3600 ? 60000 : 180000;

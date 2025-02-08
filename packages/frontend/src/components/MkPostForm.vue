@@ -45,7 +45,6 @@
 				<button class="_buttonPrimary" style="padding: 4px; border-radius: 8px;" @click="addVisibleUser"><i class="ti ti-plus ti-fw"></i></button>
 			</div>
 		</div>
-		<MkInfo v-if="hasNotSpecifiedMentions" warn :class="$style.hasNotSpecifiedMentions">{{ i18n.ts.notSpecifiedMentionWarning }} - <button class="_textButton" @click="addMissingMention()">{{ i18n.ts.add }}</button></MkInfo>
 		<input v-show="useCw" ref="cwInputEl" v-model="cw" :class="$style.cw" :placeholder="i18n.ts.annotation" @keydown="onKeydown">
 		<textarea ref="textareaEl" v-model="text" :class="[$style.text, { [$style.withCw]: useCw }]" :disabled="posting || posted" :placeholder="placeholder" data-cy-post-form-text @keydown="onKeydown" @paste="onPaste" @compositionupdate="onCompositionUpdate" @compositionend="onCompositionEnd"/>
 		<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
@@ -325,22 +324,10 @@ function checkMissingMention() {
 
 		for (const x of extractMentions(ast)) {
 			if (!visibleUsers.some(u => (u.username === x.username) && (u.host === x.host))) {
-				hasNotSpecifiedMentions = true;
-				return;
+				os.api('users/show', { username: x.username, host: x.host }).then(user => {
+					visibleUsers.push(user);
+				});
 			}
-		}
-		hasNotSpecifiedMentions = false;
-	}
-}
-
-function addMissingMention() {
-	const ast = mfm.parse(text);
-
-	for (const x of extractMentions(ast)) {
-		if (!visibleUsers.some(u => (u.username === x.username) && (u.host === x.host))) {
-			os.api('users/show', { username: x.username, host: x.host }).then(user => {
-				visibleUsers.push(user);
-			});
 		}
 	}
 }
