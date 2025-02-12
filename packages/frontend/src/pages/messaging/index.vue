@@ -19,11 +19,11 @@
 						<MkAvatar class="avatar" :user="message.groupId ? message.user : isMe(message) ? message.recipient : message.user" indicator link preview/>
 						<header v-if="message.groupId">
 							<span class="name">{{ message.group.name }}</span>
+							<div class="isGroup">{{ i18n.ts.group }}</div>
 							<MkTime :time="message.createdAt" class="time"/>
 						</header>
 						<header v-else>
 							<span class="name"><MkUserName :user="isMe(message) ? message.recipient : message.user"/></span>
-							<span class="username">@{{ acct(isMe(message) ? message.recipient : message.user) }}</span>
 							<MkTime :time="message.createdAt" class="time"/>
 						</header>
 						<div class="body">
@@ -233,6 +233,16 @@ definePageMetadata({
 						font-size: 1em;
 						font-weight: bold;
 						transition: all 0.1s ease;
+					}
+
+					> .isGroup {
+						flex-shrink: 0;
+						align-self: center;
+						margin: 0 .5em;
+						padding: 1px 6px;
+						font-size: 80%;
+						border: solid 0.5px var(--divider);
+						border-radius: 3px;
 					}
 
 					> .username {
