@@ -75,7 +75,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			// アラート抜き出し
 			const $ = cheerio.load(res);
-			const rows = $('tr');
+			const rows = $('#mdStatusTroubleLine tr');
 			const alertRows = rows.filter((i, row) => $(row).find('.icnAlert').length > 0);
 			
 			// 配列に整形

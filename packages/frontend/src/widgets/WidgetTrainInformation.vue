@@ -18,7 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div v-for="alert in alerts" :key="alert.line">
 				<div class="alert">
 					<p class="title">{{ alert.line }}</p>
-					<p class="detail">{{ alert.status }}: {{ alert.detail }}</p>
+					<p class="detail" :style="alert.status.startsWith('運転見合わせ') ? 'color: red' : alert.status.startsWith('列車遅延') ? 'color: yellow' : undefined">{{ alert.status }}: {{ alert.detail }}</p>
 				</div>
 			</div>
 			<div class="notice">
@@ -155,7 +155,7 @@ defineExpose<WidgetComponentExpose>({
 					}
 					
 					> p.detail {
-						padding-top: 4px;
+						padding: 4px 0;
 						font-size: 80%;
 					}
 				}
