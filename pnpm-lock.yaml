@@ -433,7 +433,7 @@ importers:
       json5: 2.2.3
       matter-js: 0.18.0
       mfm-js: 0.23.3
-      misskey-js: git+https://github.com/hos1miya/misskey-js#v0.0.24
+      misskey-js: git+https://github.com/hos1miya/misskey-js#v0.0.25
       photoswipe: 5.3.5
       prismjs: 1.29.0
       punycode: 2.3.0
@@ -497,7 +497,7 @@ importers:
       json5: 2.2.3
       matter-js: 0.18.0
       mfm-js: 0.23.3
-      misskey-js: github.com/hos1miya/misskey-js/e62a18a8d39076695b317e7f88a4518bf9fcf417
+      misskey-js: github.com/hos1miya/misskey-js/d169807554202bf4c99cdc7aefa24e816081f30e
       photoswipe: 5.3.5
       prismjs: 1.29.0
       punycode: 2.3.0
@@ -561,12 +561,12 @@ importers:
       eslint: 8.33.0
       eslint-plugin-import: 2.27.5
       idb-keyval: 6.2.0
-      misskey-js: git+https://github.com/hos1miya/misskey-js#v0.0.24
+      misskey-js: git+https://github.com/hos1miya/misskey-js#v0.0.25
       typescript: 4.9.5
     dependencies:
       esbuild: 0.14.42
       idb-keyval: 6.2.0
-      misskey-js: github.com/hos1miya/misskey-js/e62a18a8d39076695b317e7f88a4518bf9fcf417
+      misskey-js: github.com/hos1miya/misskey-js/d169807554202bf4c99cdc7aefa24e816081f30e
     devDependencies:
       '@typescript-eslint/parser': 5.51.0_4vsywjlpuriuw3tl5oq6zy5a64
       '@typescript/lib-webworker': /@types/serviceworker/0.0.62
@@ -3766,7 +3766,7 @@ packages:
   /axios/0.24.0:
     resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3774,7 +3774,7 @@ packages:
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -6761,7 +6761,7 @@ packages:
       readable-stream: 2.3.7
     dev: false
 
-  /follow-redirects/1.15.2_debug@4.3.4:
+  /follow-redirects/1.15.2:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -6769,8 +6769,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dependencies:
-      debug: 4.3.4
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -14035,10 +14033,10 @@ packages:
       readable-stream: 3.6.0
     dev: false
 
-  github.com/hos1miya/misskey-js/e62a18a8d39076695b317e7f88a4518bf9fcf417:
-    resolution: {tarball: https://codeload.github.com/hos1miya/misskey-js/tar.gz/e62a18a8d39076695b317e7f88a4518bf9fcf417}
+  github.com/hos1miya/misskey-js/d169807554202bf4c99cdc7aefa24e816081f30e:
+    resolution: {tarball: https://codeload.github.com/hos1miya/misskey-js/tar.gz/d169807554202bf4c99cdc7aefa24e816081f30e}
     name: misskey-js
-    version: 0.0.24
+    version: 0.0.25
     dependencies:
       autobind-decorator: 2.4.0
       eventemitter3: 4.0.7

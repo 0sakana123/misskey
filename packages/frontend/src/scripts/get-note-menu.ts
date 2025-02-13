@@ -1,6 +1,6 @@
-import { defineAsyncComponent, Ref, inject } from 'vue';
+/* eslint-disable indent */
+import { defineAsyncComponent, Ref } from 'vue';
 import * as misskey from 'misskey-js';
-import { pleaseLogin } from './please-login';
 import { claimAchievement } from './achievements';
 import { $i } from '@/account';
 import { i18n } from '@/i18n';
@@ -9,8 +9,9 @@ import * as os from '@/os';
 import copyToClipboard from '@/scripts/copy-to-clipboard';
 import { url } from '@/config';
 import { noteActions } from '@/store';
-import { notePage } from '@/filters/note';
 import { miLocalStorage } from '@/local-storage';
+import { mainRouter } from '@/router';
+import { Router } from '@/nirax';
 
 export function getNoteMenu(props: {
 	note: misskey.entities.Note;
@@ -19,7 +20,7 @@ export function getNoteMenu(props: {
 	translating: Ref<boolean>;
 	isDeleted: Ref<boolean>;
 	currentClipPage?: Ref<misskey.entities.Clip>;
-}) {
+}) : any {
 	const isRenote = (
 		props.note.renote != null &&
 		props.note.text == null &&
@@ -119,8 +120,9 @@ export function getNoteMenu(props: {
 	function togglePin(pin: boolean) : void {
 		os.apiWithDialog(pin ? 'i/pin' : 'i/unpin', {
 			noteId: appearNote.id,
-		}, undefined, null, res => {
-			if (res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
+		})
+		.then(res => {
+			if (res.id && res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
 				os.alert({
 					type: 'error',
 					text: i18n.ts.pinLimitExceeded,
@@ -157,11 +159,11 @@ export function getNoteMenu(props: {
 				const clip = await os.apiWithDialog('clips/create', result);
 
 				claimAchievement('noteClipped1');
-				os.apiWithDialog('clips/add-note', { clipId: clip.id, noteId: appearNote.id });
+				os.apiWithDialog('clips/add-note', { clipId: clip!.id, noteId: appearNote.id });
 			},
-		}, null, ...clips.map(clip => ({
+		}, null, ...clips!.map(clip => ({
 			text: clip.name,
-			action: () => {
+			action: () : void => {
 				claimAchievement('noteClipped1');
 				os.promiseDialog(
 					os.api('clips/add-note', { clipId: clip.id, noteId: appearNote.id }),
@@ -190,10 +192,10 @@ export function getNoteMenu(props: {
 	}
 
 	async function unclip(): Promise<void> {
-		os.apiWithDialog('clips/remove-note', { clipId: props.currentClipPage.value.id, noteId: appearNote.id });
+		os.apiWithDialog('clips/remove-note', { clipId: props.currentClipPage!.value.id, noteId: appearNote.id });
 		props.isDeleted.value = true;
 	}
-
+	/*
 	async function promote(): Promise<void> {
 		const { canceled, result: days } = await os.inputNumber({
 			title: i18n.ts.numberOfDays,
@@ -206,11 +208,11 @@ export function getNoteMenu(props: {
 			expiresAt: Date.now() + (86400000 * days),
 		});
 	}
-
+	*/
 	function share() : void {
 		navigator.share({
 			title: i18n.t('noteOf', { user: appearNote.user.name }),
-			text: appearNote.text,
+			text: appearNote.text!,
 			url: `${url}/notes/${appearNote.id}`,
 		});
 	}
@@ -230,7 +232,7 @@ export function getNoteMenu(props: {
 		props.translating.value = true;
 		const res = await os.api('notes/translate', {
 			noteId: appearNote.id,
-			targetLang: miLocalStorage.getItem('lang') || navigator.language,
+			targetLang: miLocalStorage.getItem('lang') ?? navigator.language,
 		});
 		props.translating.value = false;
 		props.translation.value = res;
@@ -272,7 +274,7 @@ export function getNoteMenu(props: {
 			}, (appearNote.url || appearNote.uri) ? {
 				icon: 'ti ti-external-link',
 				text: i18n.ts.showOnRemote,
-				action: () => {
+				action: () : void => {
 					window.open(appearNote.url ?? appearNote.uri, '_blank');
 				},
 			} : undefined,
@@ -287,7 +289,7 @@ export function getNoteMenu(props: {
 				action: translate,
 			} : undefined,
 			null,
-			statePromise.then(state => state.isFavorited ? {
+			statePromise.then(state => state!.isFavorited ? {
 				icon: 'ti ti-star-off',
 				text: i18n.ts.unfavorite,
 				action: () => toggleFavorite(false),
@@ -301,7 +303,7 @@ export function getNoteMenu(props: {
 				text: i18n.ts.clip,
 				action: () => clip(),
 			},
-			statePromise.then(state => state.isMutedThread ? {
+			statePromise.then(state => state!.isMutedThread ? {
 				icon: 'ti ti-message-off',
 				text: i18n.ts.unmuteThread,
 				action: () => toggleThreadMute(false),
@@ -310,7 +312,7 @@ export function getNoteMenu(props: {
 				text: i18n.ts.muteThread,
 				action: () => toggleThreadMute(true),
 			}),
-			renoteStatePromise.then(state => state.isMutedNote ? {
+			renoteStatePromise.then(state => state!.isMutedNote ? {
 				icon: 'ti ti-eye-off',
 				text: i18n.ts.unmuteNote,
 				action: () => toggleNoteMute(false),
@@ -319,7 +321,7 @@ export function getNoteMenu(props: {
 				text: i18n.ts.muteNote,
 				action: () => toggleNoteMute(true),
 			}),
-			appearNote.userId === $i.id ? ($i.pinnedNoteIds || []).includes(appearNote.id) ? {
+			appearNote.userId === $i.id ? $i.pinnedNoteIds.includes(appearNote.id) ? {
 				icon: 'ti ti-pinned-off',
 				text: i18n.ts.unpin,
 				action: () => togglePin(false),
@@ -343,12 +345,24 @@ export function getNoteMenu(props: {
 				{
 					icon: 'ti ti-exclamation-circle',
 					text: i18n.ts.reportAbuse,
-					action: () => {
-						const u = appearNote.url || appearNote.uri || `${url}/notes/${appearNote.id}`;
+					action: () : void => {
+						const u = appearNote.url ?? appearNote.uri ?? `${url}/notes/${appearNote.id}`;
 						os.popup(defineAsyncComponent(() => import('@/components/MkAbuseReportWindow.vue')), {
 							user: appearNote.user,
 							initialComment: `Note: ${u}\n-----\n`,
 						}, {}, 'closed');
+					},
+				}]
+			: []
+			),
+			...(appearNote.userId !== $i.id && ($i.isModerator || $i.isAdmin) ? [
+				null,
+				{
+					icon: 'ti ti-user-exclamation',
+					text: i18n.ts.moderation,
+					action: () : void => {
+						const router: Router = mainRouter;
+						router.push('/user-info/' + appearNote.userId + '#moderation');
 					},
 				}]
 			: []
@@ -385,8 +399,8 @@ export function getNoteMenu(props: {
 		}, (appearNote.url || appearNote.uri) ? {
 			icon: 'ti ti-external-link',
 			text: i18n.ts.showOnRemote,
-			action: () => {
-				window.open(appearNote.url || appearNote.uri, '_blank');
+			action: () : void => {
+				window.open(appearNote.url ?? appearNote.uri, '_blank');
 			},
 		} : undefined]
 			.filter(x => x !== undefined);
@@ -396,7 +410,7 @@ export function getNoteMenu(props: {
 		menu = menu.concat([null, ...noteActions.map(action => ({
 			icon: 'ti ti-plug',
 			text: action.title,
-			action: () => {
+			action: () : void => {
 				action.handler(appearNote);
 			},
 		}))]);
