@@ -77,16 +77,36 @@ export function getUserMenu(user, router: Router = mainRouter) {
 					value: 'oneDay', text: i18n.ts.oneDay,
 				}, {
 					value: 'oneWeek', text: i18n.ts.oneWeek,
+				}, {
+					value: 'custom', text: i18n.ts.customMutePeriod,
 				}],
 				default: 'indefinitely',
 			});
 			if (canceled) return;
+
+			let hours = 0, days = 0;
+
+			if (period === 'custom') {
+				// 時間・日の入力
+				const { canceled, result: time } = await os.inputText({
+					title: i18n.ts.customMutePeriodInput,
+				});
+				if (canceled || time === '') return;
+
+				// 時間・日の判定
+				const hoursQuery = time.match(/([0-9]+)時間/);
+				const daysQuery = time.match(/([0-9]+)日/);
+				hours = hoursQuery ? parseInt(hoursQuery[1], 10) : 0;
+				days = daysQuery ? parseInt(daysQuery[1], 10) : 0;
+				if (hours + days === 0) return;	// 0時間0日ならキャンセル
+			}
 
 			const expiresAt = period === 'indefinitely' ? null
 				: period === 'tenMinutes' ? Date.now() + (1000 * 60 * 10)
 				: period === 'oneHour' ? Date.now() + (1000 * 60 * 60)
 				: period === 'oneDay' ? Date.now() + (1000 * 60 * 60 * 24)
 				: period === 'oneWeek' ? Date.now() + (1000 * 60 * 60 * 24 * 7)
+				: period === 'custom' ? Date.now() + (1000 * 60 * 60 * hours) + (1000 * 60 * 60 * 24 * days)
 				: null;
 
 			os.apiWithDialog('mute/create', {

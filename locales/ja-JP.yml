@@ -993,6 +993,8 @@ createAvatarDecoration: "アイコンデコレーションを作成"
 updateAvatarDecoration: "アイコンデコレーションを更新"
 deleteAvatarDecoration: "アイコンデコレーションを削除"
 chatMessageReceived: "新規チャットメッセージがあります"
+customMutePeriod: "カスタム(時間・日)"
+customMutePeriodInput: "ミュート期間を入力(～時間もしくは～日)"
 
 _achievements:
   earnedAt: "獲得日時"
