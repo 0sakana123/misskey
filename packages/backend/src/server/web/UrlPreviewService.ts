@@ -64,10 +64,10 @@ export class UrlPreviewService {
 			? `(Proxy) Getting preview of ${url}@${lang} ...`
 			: `Getting preview of ${url}@${lang} ...`);
 		try {
-			const summary = meta.summalyProxy ? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(`${meta.summalyProxy}?${query({
+			const summary = meta.summalyProxy ? await this.httpRequestService.getJson<ReturnType<typeof summaly.default>>(`${meta.summalyProxy}?${query({
 				url: url,
 				lang: lang,
-			})}`) : await summaly(url, {
+			})}`) : await summaly.default(url, {
 				followRedirects: false,
 				lang: lang,
 			});
@@ -78,7 +78,7 @@ export class UrlPreviewService {
 				throw new Error('unsupported schema included');
 			}
 
-			if (summary.player.url && !(summary.player.url.startsWith('http://') || summary.player.url.startsWith('https://'))) {
+			if (summary.player?.url && !(summary.player.url.startsWith('http://') || summary.player.url.startsWith('https://'))) {
 				throw new Error('unsupported schema included');
 			}
 	
