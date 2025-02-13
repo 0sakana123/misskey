@@ -16,7 +16,9 @@
 		stroke-width="0.1"
 		:stroke="color"
 	/>
-	<text x="50%" y="50%" dy="0.05" text-anchor="middle">{{ (value * 100).toFixed(0) }}%</text>
+	<text v-if="!title" x="50%" y="50%" dy="0.05" text-anchor="middle">{{ (value * 100).toFixed(0) }}%</text>
+	<text v-if="title" x="50%" y="40%" dy="0.05" text-anchor="middle">{{ title }}</text>
+	<text v-if="title" x="50%" y="60%" dy="0.05" text-anchor="middle">{{ (value * 100).toFixed(0) }}%</text>
 </svg>
 </template>
 
@@ -25,6 +27,7 @@ import { } from 'vue';
 
 const props = defineProps<{
 	value: number;
+	title?: string;
 }>();
 
 const r = 0.45;
