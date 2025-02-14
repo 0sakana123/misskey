@@ -11,8 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div class="kjidhajs" :style="`height: ${widgetProps.height}px;`">
 		<MkLoading v-if="fetching"/>
 		<div v-else-if="(!alerts || alerts.length === 0) && widgetProps.showHeader" class="_fullinfo">
-			<img :src="infoImageUrl" class="_ghost"/>
-			<div>{{ i18n.ts.nothing }}</div>
+			<div>{{ i18n.ts._widgets._trainInformation.normal }}</div>
 		</div>
 		<div v-else class="alerts">
 			<div v-for="alert in alerts" :key="alert.line">

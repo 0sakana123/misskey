@@ -1,5 +1,5 @@
 <template>
-<div class="vrvdvrys">
+<div class="vrvdvsas">
 	<XPie class="pie" :value="cpuUsage" :title="`CPU`"/>
 	<XPie class="pie" :value="memUsage" :title="`MEM`"/>
 	<XPie class="pie" :value="diskUsage" :title="`DISK`"/>
@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 </script>
 	
 	<style lang="scss" scoped>
-	.vrvdvrys {
+	.vrvdvsas {
 		display: flex;
 		padding: 16px;
 	

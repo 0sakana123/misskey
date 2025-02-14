@@ -1686,6 +1686,7 @@ _widgets:
   clicker: "クリッカー"
   trainInformation: "路線情報"
   _trainInformation:
+    normal: "現在、事故・遅延情報はありません"
     notice: "当ウィジェットは約5分間隔での更新です。"
 
 _cw:
