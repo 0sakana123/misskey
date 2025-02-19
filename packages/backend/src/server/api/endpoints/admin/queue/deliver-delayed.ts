@@ -2,12 +2,13 @@ import { URL } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { DeliverQueue } from '@/core/QueueModule.js';
+import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 
 export const meta = {
 	tags: ['admin'],
 
 	requireCredential: true,
-	requireModerator: true,
+	//requireModerator: true, //未ログインでも見えるのにモデレーター権限いる？
 
 	res: {
 		type: 'array',
@@ -23,12 +24,16 @@ export const meta = {
 					{
 						type: 'number',
 					},
+					{
+						type: 'boolean',
+					},
 				],
 			},
 		},
 		example: [[
 			'example.com',
 			12,
+			true,	// isNotResponding
 		]],
 	},
 } as const;
@@ -44,21 +49,32 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject('queue:deliver') public deliverQueue: DeliverQueue,
+		private federatedInstanceService: FederatedInstanceService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const jobs = await this.deliverQueue.getJobs(['delayed']);
-
-			const res = [] as [string, number][];
-
+	
+			const resMap = new Map<string, { count: number; flag: boolean }>();
+	
 			for (const job of jobs) {
 				const host = new URL(job.data.to).host;
-				if (res.find(x => x[0] === host)) {
-					res.find(x => x[0] === host)![1]++;
+				const entry = resMap.get(host);
+				if (entry) {
+					entry.count++;
 				} else {
-					res.push([host, 1]);
+					resMap.set(host, { count: 1, flag: false });
 				}
 			}
 
+			await Promise.all(
+				Array.from(resMap.keys()).map(async (host) => {
+					const instanceInfo = await this.federatedInstanceService.fetch(host);
+					resMap.get(host)!.flag = instanceInfo.isNotResponding;
+				}),
+			);
+
+			// 配列に変換し、カウントの降順でソート
+			const res: [string, number, boolean][] = Array.from(resMap, ([host, data]) => [host, data.count, data.flag]);
 			res.sort((a, b) => b[1] - a[1]);
 
 			return res;
