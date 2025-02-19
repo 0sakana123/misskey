@@ -472,7 +472,7 @@ export class DriveService {
 		//}
 
 		// detect name
-		const detectedName = correctFilename(
+		let detectedName = correctFilename(
 			// DriveFile.nameは256文字, validateFileNameは200文字制限であるため、
 			// extを付加してデータベースの文字数制限に当たることはまずない
 			(name && this.driveFileEntityService.validateFileName(name)) ? name : 'untitled',
@@ -533,10 +533,10 @@ export class DriveService {
 		};
 
 		const properties: {
-		width?: number;
-		height?: number;
-		orientation?: number;
-	} = {};
+			width?: number;
+			height?: number;
+			orientation?: number;
+		} = {};
 
 		if (info.width) {
 			properties['width'] = info.width;
@@ -544,6 +544,20 @@ export class DriveService {
 		}
 		if (info.orientation != null) {
 			properties['orientation'] = info.orientation;
+		}
+
+		// 3gp形式の動画をmp4形式に変換(互換性の問題で3gpは再生できないことがあるため)
+		let newPath = path;
+		let newMime = info.type.mime;
+		if (user && !isLink && info.type.mime === 'video/3gpp') {
+			await this.videoProcessingService.convert3gppToMp4(path)
+				.then((savedPath) => {
+					newPath = savedPath;
+					newMime = 'video/mp4';
+					detectedName = detectedName.replace(/(\.mp4)?\.3gp$/, '.mp4');
+					this.registerLogger.info(`3gp to mp4 convert success. saved to ${detectedName}`);
+				})
+				.catch(err => this.registerLogger.warn(`3gp to mp4 convert failed: ${err.message}`));
 		}
 
 		const profile = user ? await this.userProfilesRepository.findOneBy({ userId: user.id }) : null;
@@ -614,7 +628,7 @@ export class DriveService {
 				}
 			}
 		} else {
-			file = await (this.save(file, path, detectedName, info.type.mime, info.md5, info.size));
+			file = await (this.save(file, newPath, detectedName, newMime, info.md5, info.size));
 		}
 
 		this.registerLogger.succ(`drive file has been created ${file.id}`);

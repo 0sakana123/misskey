@@ -55,5 +55,25 @@ export class VideoProcessingService {
 			})
 		);
 	}
+
+	@bindThis
+	public async convert3gppToMp4(source: string): Promise<string> {
+		const dir = source.replace(/[^/]+$/, '');
+	
+		return await new Promise((res, rej) => {
+			FFmpeg({
+				source,
+			})
+				.output(`${dir}out.mp4`)
+				.videoCodec('libx264') // H.264 コーデックでエンコード
+				.audioCodec('aac') // AAC コーデックでエンコード
+				.format('mp4') // 出力フォーマットを mp4 に指定
+				.outputOptions('-preset fast') // 高速エンコード
+				.on('stderr', (err) => console.error(`FFmpeg stderr: ${err}`)) // FFmpegエラー
+				.on('end', () => { res(`${dir}/out.mp4`); }) // 成功時に出力パスを返す
+				.on('error', (err) => { rej(new Error(`Conversion failed: ${err.message}`)); }) // 失敗時にエラーを返す
+				.run();
+		});
+	}
 }
 
