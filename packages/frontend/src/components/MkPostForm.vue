@@ -325,8 +325,9 @@ function checkMissingMention() {
 		for (const x of extractMentions(ast)) {
 			if (!visibleUsers.some(u => (u.username === x.username) && (u.host === x.host))) {
 				os.api('users/show', { username: x.username, host: x.host }).then(user => {
-					visibleUsers.push(user);
+					pushVisibleUser(user);
 				});
+				return;
 			}
 		}
 	}
