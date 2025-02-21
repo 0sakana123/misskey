@@ -47,6 +47,7 @@ import * as ep___admin_queue_clear from './endpoints/admin/queue/clear.js';
 import * as ep___admin_queue_deliverDelayed from './endpoints/admin/queue/deliver-delayed.js';
 import * as ep___admin_queue_inboxDelayed from './endpoints/admin/queue/inbox-delayed.js';
 import * as ep___admin_queue_stats from './endpoints/admin/queue/stats.js';
+import * as ep___admin_rebootServer from './endpoints/admin/reboot-server.js';
 import * as ep___admin_relays_add from './endpoints/admin/relays/add.js';
 import * as ep___admin_relays_list from './endpoints/admin/relays/list.js';
 import * as ep___admin_relays_remove from './endpoints/admin/relays/remove.js';
@@ -391,6 +392,7 @@ const $admin_queue_clear: Provider = { provide: 'ep:admin/queue/clear', useClass
 const $admin_queue_deliverDelayed: Provider = { provide: 'ep:admin/queue/deliver-delayed', useClass: ep___admin_queue_deliverDelayed.default };
 const $admin_queue_inboxDelayed: Provider = { provide: 'ep:admin/queue/inbox-delayed', useClass: ep___admin_queue_inboxDelayed.default };
 const $admin_queue_stats: Provider = { provide: 'ep:admin/queue/stats', useClass: ep___admin_queue_stats.default };
+const $admin_rebootServer: Provider = { provide: 'ep:admin/reboot-server', useClass: ep___admin_rebootServer.default };
 const $admin_relays_add: Provider = { provide: 'ep:admin/relays/add', useClass: ep___admin_relays_add.default };
 const $admin_relays_list: Provider = { provide: 'ep:admin/relays/list', useClass: ep___admin_relays_list.default };
 const $admin_relays_remove: Provider = { provide: 'ep:admin/relays/remove', useClass: ep___admin_relays_remove.default };
@@ -739,6 +741,7 @@ const $trainInformation: Provider = { provide: 'ep:train-information', useClass:
 		$admin_queue_deliverDelayed,
 		$admin_queue_inboxDelayed,
 		$admin_queue_stats,
+		$admin_rebootServer,
 		$admin_relays_add,
 		$admin_relays_list,
 		$admin_relays_remove,
@@ -1081,6 +1084,7 @@ const $trainInformation: Provider = { provide: 'ep:train-information', useClass:
 		$admin_queue_deliverDelayed,
 		$admin_queue_inboxDelayed,
 		$admin_queue_stats,
+		$admin_rebootServer,
 		$admin_relays_add,
 		$admin_relays_list,
 		$admin_relays_remove,

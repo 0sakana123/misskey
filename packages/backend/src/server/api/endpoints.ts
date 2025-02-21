@@ -46,6 +46,7 @@ import * as ep___admin_queue_clear from './endpoints/admin/queue/clear.js';
 import * as ep___admin_queue_deliverDelayed from './endpoints/admin/queue/deliver-delayed.js';
 import * as ep___admin_queue_inboxDelayed from './endpoints/admin/queue/inbox-delayed.js';
 import * as ep___admin_queue_stats from './endpoints/admin/queue/stats.js';
+import * as ep___admin_rebootServer from './endpoints/admin/reboot-server.js';
 import * as ep___admin_relays_add from './endpoints/admin/relays/add.js';
 import * as ep___admin_relays_list from './endpoints/admin/relays/list.js';
 import * as ep___admin_relays_remove from './endpoints/admin/relays/remove.js';
@@ -388,6 +389,7 @@ const eps = [
 	['admin/queue/deliver-delayed', ep___admin_queue_deliverDelayed],
 	['admin/queue/inbox-delayed', ep___admin_queue_inboxDelayed],
 	['admin/queue/stats', ep___admin_queue_stats],
+	['admin/reboot-server', ep___admin_rebootServer],
 	['admin/relays/add', ep___admin_relays_add],
 	['admin/relays/list', ep___admin_relays_list],
 	['admin/relays/remove', ep___admin_relays_remove],
