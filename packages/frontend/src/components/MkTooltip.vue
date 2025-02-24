@@ -104,4 +104,8 @@ onUnmounted(() => {
 	pointer-events: none;
 	transform-origin: center center;
 }
+
+.root[style*='left: -'] {
+  left: 0 !important;
+}
 </style>
