@@ -64,6 +64,14 @@ export const FILE_TYPE_BROWSERSAFE = [
 	'audio/x-flac',
 	'audio/vnd.wave',
 ];
+
+export const FILE_TYPE_INCOMPATIBLE = [
+	'video/quicktime',
+	'video/x-m4v',
+	'video/3gpp',
+	'video/3gpp2',
+	'video/mpeg',
+];
 /*
 https://github.com/sindresorhus/file-type/blob/main/supported.js
 https://github.com/sindresorhus/file-type/blob/main/core.js

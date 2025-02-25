@@ -12,7 +12,7 @@ import { MetaService } from '@/core/MetaService.js';
 import { DriveFile } from '@/models/entities/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
-import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
+import { FILE_TYPE_BROWSERSAFE, FILE_TYPE_INCOMPATIBLE } from '@/const.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { contentDisposition } from '@/misc/content-disposition.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -546,18 +546,18 @@ export class DriveService {
 			properties['orientation'] = info.orientation;
 		}
 
-		// 3gp形式の動画をmp4形式に変換(互換性の問題で3gpは再生できないことがあるため)
+		// 一部形式の動画をmp4形式に変換(互換性の問題で再生できないことがあるため)
 		let newPath = path;
 		let newMime = info.type.mime;
-		if (user && !isLink && info.type.mime === 'video/3gpp') {
-			await this.videoProcessingService.convert3gppToMp4(path)
+		if (user && !isLink && FILE_TYPE_INCOMPATIBLE.includes(info.type.mime)) {
+			await this.videoProcessingService.convertToMp4(path)
 				.then((savedPath) => {
 					newPath = savedPath;
 					newMime = 'video/mp4';
-					detectedName = detectedName.replace(/(\.mp4)?\.3gp$/, '.mp4');
-					this.registerLogger.info(`3gp to mp4 convert success. saved to ${detectedName}`);
+					detectedName = detectedName.replace(/(\.mp4)?\.[^.]+$/, '.mp4');
+					this.registerLogger.info(`convert to mp4 success. saved to ${detectedName}`);
 				})
-				.catch(err => this.registerLogger.warn(`3gp to mp4 convert failed: ${err.message}`));
+				.catch(err => this.registerLogger.warn(`convert to mp4 failed: ${err.message}`));
 		}
 
 		const profile = user ? await this.userProfilesRepository.findOneBy({ userId: user.id }) : null;

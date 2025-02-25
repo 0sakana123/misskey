@@ -57,7 +57,7 @@ export class VideoProcessingService {
 	}
 
 	@bindThis
-	public async convert3gppToMp4(source: string): Promise<string> {
+	public async convertToMp4(source: string): Promise<string> {
 		const dir = source.replace(/[^/]+$/, '');
 	
 		return await new Promise((res, rej) => {
