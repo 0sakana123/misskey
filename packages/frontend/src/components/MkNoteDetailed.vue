@@ -87,8 +87,9 @@
 			<footer class="footer">
 				<div class="info">
 					<MkA class="created-at" :to="notePage(appearNote)">
-						<MkTime :time="appearNote.createdAt" mode="detail"/><span v-if="appearNote.via"> {{ appearNote.via }} </span>
+						<MkTime :time="appearNote.createdAt" mode="detail"/>
 					</MkA>
+					<span v-if="appearNote.via" class="via">{{ appearNote.via }}</span>
 				</div>
 				<MkReactionsViewer ref="reactionsViewer" :note="appearNote"/>
 				<button class="button _button" @click="reply()">
@@ -606,6 +607,11 @@ if (appearNote.replyId) {
 					margin: 16px 0;
 					opacity: 0.7;
 					font-size: 0.9em;
+					
+					> .via {
+						font-size: .8em;
+						margin-left: 8px;
+					}
 				}
 
 				> .button {
