@@ -27,6 +27,12 @@ export function incNotesCount() {
 
 export async function signout() {
 	waiting();
+	document.cookie.split(';').forEach((cookie) => {
+		const cookieName = cookie.split('=')[0].trim();
+		if (cookieName === 'token') {
+			document.cookie = `${cookieName}=; max-age=0; path=/`;
+		}
+	});
 	miLocalStorage.removeItem('account');
 
 	await removeAccount($i.id);
@@ -85,6 +91,9 @@ export async function removeAccount(id: Account['id']) {
 }
 
 function fetchAccount(token: string): Promise<Account> {
+	document.cookie = 'token=; path=/; max-age=0';
+	document.cookie = `token=${token}; path=/queue; max-age=86400; SameSite=Strict; Secure`; // bull dashboardの認証とかで使う
+
 	return new Promise((done, fail) => {
 		// Fetch user
 		window.fetch(`${apiUrl}/i`, {
@@ -135,7 +144,6 @@ export async function login(token: Account['token'], redirect?: string) {
 	if (_DEV_) console.log('logging as token ', token);
 	const me = await fetchAccount(token);
 	miLocalStorage.setItem('account', JSON.stringify(me));
-	document.cookie = `token=${token}; path=/; max-age=31536000`; // bull dashboardの認証とかで使う
 	await addAccount(me.id, token);
 
 	if (redirect) {
