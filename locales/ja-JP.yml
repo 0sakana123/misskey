@@ -995,6 +995,7 @@ deleteAvatarDecoration: "アイコンデコレーションを削除"
 chatMessageReceived: "新規チャットメッセージがあります"
 customMutePeriod: "カスタム(時間・日)"
 customMutePeriodInput: "ミュート期間を入力(～時間もしくは～日)"
+deleteFromHistory: "履歴から削除しますか？"
 
 _achievements:
   earnedAt: "獲得日時"

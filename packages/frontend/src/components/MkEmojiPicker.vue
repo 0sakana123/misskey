@@ -53,6 +53,7 @@
 						:key="emoji"
 						class="_button item"
 						@click="chosen(emoji, $event)"
+						@contextmenu.stop="onContextmenu(emoji, $event)"
 					>
 						<MkCustomEmoji v-if="emoji[0] === ':'" class="emoji" :name="emoji" :normal="true"/>
 						<MkEmoji v-else class="emoji" :emoji="emoji" :normal="true"/>
@@ -355,6 +356,22 @@ function done(query?: string): boolean | void {
 		chosen(searchResultUnicode.value[0]);
 		return true;
 	}
+}
+
+async function onContextmenu(emoji: any, ev?: MouseEvent) : Promise<void> {
+	ev.preventDefault();
+	const confirm = await os.confirm({
+		type: 'info',
+		text: i18n.ts.deleteFromHistory,
+	});
+
+	if (confirm.canceled) return;
+
+	const key = getKey(emoji);
+
+	let recents = defaultStore.state.recentlyUsedEmojis;
+	recents = recents.filter((emoji: any) => emoji !== key);
+	defaultStore.set('recentlyUsedEmojis', recents.splice(0, 32));
 }
 
 onMounted(() => {
